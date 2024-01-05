@@ -77,8 +77,10 @@ WSGI_APPLICATION = 'fantasy_football_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'fantasy_app_db',
+        'USER': 'root',
+        'PASSWORD': 'pass',
     }
 }
 
