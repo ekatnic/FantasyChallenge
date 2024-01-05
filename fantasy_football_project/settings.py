@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'fantasy_football_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'fantasy_challenge_db',
+        'NAME': os.environ.get("DB_NAME", 'fantasy_challenge_db'),
         'USER': os.environ.get("DB_USER", 'postgres'),
         'PASSWORD': os.environ.get("DB_PASS", 'pass'),
         'HOST': os.environ.get("DB_HOST", 'localhost'),
