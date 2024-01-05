@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Challenge Standings</title>
+    <!-- Add your CSS links here -->
+</head>
+<body>
+    <h1>Challenge Standings</h1>
+
+    <table>
+        <tr>
+            <th>Place</th>
+            <th>Entry Name</th>
+            <th>Score</th>
+        </tr>
+        {% for standing in standings %}
+        <tr>
+            <td>{{ standing.standings_place }}</td>
+            <td>{{ standing.entry_name }}</td>
+            <td>{{ standing.entry_score }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Fantasy Football Playoff Challenge</title>
+   <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+   <header>
+      <h1>Welcome to the Fantasy Football Playoff Challenge!</h1>
+   </header>
+
+   <main>
+      <section>
+         <h2>Rules</h2>
+         <p>Learn about the rules of the Fantasy Football Playoff Challenge.</p>
+         <!-- Add rules content here -->
+      </section>
+
+      <section id="landing">
+            <h2>Get Ready for the Challenge!</h2>
+            <p>Sign up or log in to start building your fantasy team and compete in the playoffs.</p>
+            <div class="cta-buttons">
+                <a href="{% url 'register' %}">Register</a>
+                <a href="{% url 'sign_in' %}">Sign In</a>
+            </div>
+      </section>
+   </main>
+
+   <footer>
+       <!-- Your footer content will go here -->
+   </footer>
+</body>
+</html>

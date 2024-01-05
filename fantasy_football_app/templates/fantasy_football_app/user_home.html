@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }} Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>{{ user.username }} Home</h1>
+    </header>
+    <main>
+        <a href="{% url 'create_entry' %}" class="btn btn-primary">Create New Entry</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Week 1 Score</th>
+                    <th>Week 2 Score</th>
+                    <th>Week 3 Score</th>
+                    <th>Super Bowl Score</th>
+                    <th>Total Score</th>
+                    <th>Standings Place</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                    <tr>
+                        <td>{{ entry.name }}</td>
+                        <td>{{ entry.week1_score }}</td>
+                        <td>{{ entry.week2_score }}</td>
+                        <td>{{ entry.week3_score }}</td>
+                        <td>{{ entry.super_bowl_score }}</td>
+                        <td>{{ entry.total_score }}</td>
+                        <td>{{ entry.standings_place }}</td>
+                        <td><a href="{% url 'edit_entry' entry.id %}">Edit</a></td>
+                        <td><a href="{% url 'delete_entry' entry.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</a></td>
+                    </tr>
+                    <tr>
+                        <td colspan="9">
+                            <div class="collapse" id="collapse{{ entry.id }}">
+                                <!-- Display the players and their scores here -->
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+    <footer>
+        <!-- Your footer content will go here -->
+    </footer>
+</body>
+</html>

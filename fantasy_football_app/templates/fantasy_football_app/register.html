@@ -1,0 +1,43 @@
+<!-- register.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Fantasy Football Playoff Challenge</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Register for the Fantasy Football Playoff Challenge</h1>
+    </header>
+    <main>
+      <section id="registration-form">
+          <h2>Create Your Account</h2>
+          <form action="{% url 'register' %}" method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <ul class="errorlist">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+            {% endif %}
+            {{ form.first_name.label_tag }} {{ form.first_name }}
+            {{ form.last_name.label_tag }} {{ form.last_name }}
+            {{ form.username.label_tag }} {{ form.username }}
+            {{ form.email.label_tag }} {{ form.email }}
+            {{ form.password1.label_tag }} {{ form.password1 }}
+            {{ form.password2.label_tag }} {{ form.password2 }}
+            <button type="submit">Register</button>
+          </form>
+      </section>
+    </main>
+    <footer>
+        <!-- Your footer content will go here -->
+    </footer>
+</body>
+</html>

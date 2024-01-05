@@ -1,0 +1,71 @@
+<!-- create-entry.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Entry - Fantasy Football Playoff Challenge</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>My Entry</h1>
+    </header>
+    <main>
+        <section id="create-entry-form">
+            <h2>Select Your Players</h2>
+            <form action="{% url 'create_entry' %}" method="post">
+                {% csrf_token %}
+                <!-- Quarterback (QB) -->
+                <label for="id_quarterback">QB:</label>
+                {{ form.quarterback }}
+
+                <!-- Running Backs (RB) -->
+                <label for="id_running_back1">RB 1:</label>
+                {{ form.running_back1 }}
+
+                <label for="id_running_back2">RB 2:</label>
+                {{ form.running_back2 }}
+
+                <!-- Wide Receivers (WR) -->
+                <label for="id_wide_receiver1">WR 1:</label>
+                {{ form.wide_receiver1 }}
+
+                <label for="id_wide_receiver2">WR 2:</label>
+                {{ form.wide_receiver2 }}
+
+                <!-- Tight End (TE) -->
+                <label for="id_tight_end">TE:</label>
+                {{ form.tight_end }}
+
+                <!-- Flex Positions (FLEX 1, FLEX 2, FLEX 3, FLEX 4) -->
+                <label for="id_flex1">FLEX 1:</label>
+                {{ form.flex1 }}
+
+                <label for="id_flex2">FLEX 2:</label>
+                {{ form.flex2 }}
+
+                <label for="id_flex3">FLEX 3:</label>
+                {{ form.flex3 }}
+
+                <label for="id_scaled_flex">FLEX 4:</label>
+                {{ form.scaled_flex }}
+
+                <!-- Kicker (K) -->
+                <label for="id_kicker">K:</label>
+                {{ form.kicker }}
+
+                <!-- Defense/ST (D/ST) -->
+                <label for="id_defense">D/ST:</label>
+                {{ form.defense }}
+
+                <button type="submit">Submit Entry</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <!-- Your footer content will go here -->
+    </footer>
+</body>
+</html>
