@@ -6,7 +6,7 @@ from django.db.models import F
 def calculate_weekly_score_for_player(player_stats, weekly_stats_attr):
     weekly_stats = getattr(player_stats, weekly_stats_attr)
     base_score = 0.0
-    if player_stats.position == 'D/ST':
+    if player_stats.position == 'DEF':
         base_score += weekly_stats.sacks * 1
         base_score += weekly_stats.interceptions * 2
         base_score += weekly_stats.blocks * 2
