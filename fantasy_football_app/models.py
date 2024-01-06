@@ -28,7 +28,7 @@ class Entry(models.Model):
     name = models.CharField(max_length=200, blank=True)
     wild_card_score = models.FloatField(default=0.0)
     divisional_score = models.FloatField(default=0.0)
-    conference_score = models.FloatField(default=0.0)
+    conference_score = models.FloatField(default=0.1)
     super_bowl_score = models.FloatField(default=0.0)
     total = models.FloatField(default=0.0)
 
