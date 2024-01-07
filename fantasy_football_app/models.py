@@ -22,9 +22,11 @@ class Player(models.Model):
         return f'{self.name} ({self.position}) - {self.team}'
 
 
+
+
 class Entry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    players = models.ManyToManyField(Player)
+    players = models.ManyToManyField(Player, through='RosteredPlayers')
     name = models.CharField(max_length=200, blank=True)
     wild_card_score = models.FloatField(default=0.0)
     divisional_score = models.FloatField(default=0.0)
@@ -39,6 +41,12 @@ class Entry(models.Model):
             #Set the name field
             self.name = f"{self.user.first_name} {self.user.last_name} #{num_entries + 1}"
         super().save(*args, **kwargs)
+
+class RosteredPlayers(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    roster_id = models.IntegerField(default=0)
+    is_captain = models.BooleanField(default=False)
 
 from django.db import models
 

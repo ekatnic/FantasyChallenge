@@ -1,27 +1,56 @@
 # forms.py
 from django import forms
-from .models import Player, Entry
+from .models import Player, Entry, RosteredPlayers
 
 class EntryForm(forms.ModelForm):
     quarterback = forms.ModelChoiceField(queryset=Player.objects.filter(position='QB'))
     running_back1 = forms.ModelChoiceField(queryset=Player.objects.filter(position='RB'))
+    captain_running_back1 = forms.BooleanField(required=False)
     running_back2 = forms.ModelChoiceField(queryset=Player.objects.filter(position='RB'))
+    captain_running_back2 = forms.BooleanField(required=False)
     wide_receiver1 = forms.ModelChoiceField(queryset=Player.objects.filter(position='WR'))
+    captain_wide_receiver1 = forms.BooleanField(required=False)
     wide_receiver2 = forms.ModelChoiceField(queryset=Player.objects.filter(position='WR'))
+    captain_wide_receiver2 = forms.BooleanField(required=False)
     tight_end = forms.ModelChoiceField(queryset=Player.objects.filter(position='TE'))
+    captain_tight_end = forms.BooleanField(required=False)
     flex1 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
+    captain_flex1 = forms.BooleanField(required=False)
     flex2 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
+    captain_flex2 = forms.BooleanField(required=False)
     flex3 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
+    captain_flex3 = forms.BooleanField(required=False)
+    flex4 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
+    captain_flex4 = forms.BooleanField(required=False)
     scaled_flex = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
-    kicker = forms.ModelChoiceField(queryset=Player.objects.filter(position='K'))
     defense = forms.ModelChoiceField(queryset=Player.objects.filter(position='DEF'))
+    captain_defense = forms.BooleanField(required=False)
 
+    def save(self, commit=True):
+        entry = super().save(commit=False)
+
+        if commit:
+            entry.save()
+
+            for field_name in self.cleaned_data:
+                player = self.cleaned_data[field_name]
+                import pdb; pdb.set_trace()
+                if player is not None and not field_name.startswith('captain_'):
+                    is_captain = self.data.get('captain_' + field_name) == 'on'
+                    RosteredPlayers.objects.create(
+                        entry=entry, 
+                        player=player, 
+                        is_captain=is_captain
+                    )
+
+        return entry
+    
     def clean(self):
         cleaned_data = super().clean()
-        teams = [player.team for player in cleaned_data.values() if player is not None]
+        teams = [player.team for player in cleaned_data.values() if isinstance(player, Player)]
         if len(teams) != len(set(teams)):
-            raise forms.ValidationError("You can't select two players from the same team.")
+            raise forms.ValidationError("Your message here.")
 
     class Meta:
         model = Entry
-        fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'scaled_flex', 'kicker', 'defense']
+        fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
