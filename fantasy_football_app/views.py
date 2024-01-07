@@ -9,7 +9,7 @@ from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
 from .models import Entry, PlayerStats, Standings
-
+from .utils import create_player_totals_dict_list
     
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -136,3 +136,12 @@ def edit_entry(request, entry_id):
 def standings(request):
     standings = Standings.objects.all().order_by('standings_place')
     return render(request, 'fantasy_football_app/standings.html', {'standings': standings})
+
+@login_required
+def view_entry(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    context = {
+        "player_total_dict": create_player_totals_dict_list(entry),
+        "entry_total": entry.total,
+    }
+    return render(request, 'fantasy_football_app/view_entry.html', context) 

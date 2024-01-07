@@ -14,7 +14,7 @@ class EntryForm(forms.ModelForm):
     flex3 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
     scaled_flex = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
     kicker = forms.ModelChoiceField(queryset=Player.objects.filter(position='K'))
-    defense = forms.ModelChoiceField(queryset=Player.objects.filter(position='D/ST'))
+    defense = forms.ModelChoiceField(queryset=Player.objects.filter(position='DEF'))
 
     def clean(self):
         cleaned_data = super().clean()
