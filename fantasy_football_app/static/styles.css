@@ -61,3 +61,20 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+/* New class for form field container */
+.field-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px; /* To keep consistent spacing with other form elements */
+}
+
+/* New classes for form field and captain checkbox */
+.field {
+    flex: 4;
+}
+
+.captain {
+    flex: 1;
+}
