@@ -21,7 +21,11 @@ class Migration(migrations.Migration):
                 ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fantasy_football_app.player')),
             ],
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='entry',
+            name='players',
+        ),
+        migrations.AddField(
             model_name='entry',
             name='players',
             field=models.ManyToManyField(through='fantasy_football_app.RosteredPlayers', to='fantasy_football_app.player'),
