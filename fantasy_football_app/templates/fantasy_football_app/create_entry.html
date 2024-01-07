@@ -7,6 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Your Entry - Fantasy Football Playoff Challenge</title>
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $('input[type="checkbox"]').on('change', function() {
+            $('input[type="checkbox"]').not(this).prop('checked', false);
+        });
+    });
+    </script>
 </head>
 <body>
     <header>
@@ -18,47 +26,134 @@
             <form action="{% url 'create_entry' %}" method="post">
                 {% csrf_token %}
                 <!-- Quarterback (QB) -->
-                <label for="id_quarterback">QB:</label>
-                {{ form.quarterback }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_quarterback">QB:</label>
+                        {{ form.quarterback }}
+                    </div>
+                </div>
 
                 <!-- Running Backs (RB) -->
-                <label for="id_running_back1">RB 1:</label>
-                {{ form.running_back1 }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_running_back1">RB 1:</label>
+                        {{ form.running_back1 }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.running_back1.id_for_label }}">Captain?</label>
+                        {{ form.captain_running_back1 }}
+                    </div>
+                </div>
 
-                <label for="id_running_back2">RB 2:</label>
-                {{ form.running_back2 }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_running_back2">RB 2:</label>
+                        {{ form.running_back2 }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.running_back2.id_for_label }}">Captain?</label>
+                        {{ form.captain_running_back2 }}
+                    </div>
+                </div>
 
                 <!-- Wide Receivers (WR) -->
-                <label for="id_wide_receiver1">WR 1:</label>
-                {{ form.wide_receiver1 }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_wide_receiver1">WR 1:</label>
+                        {{ form.wide_receiver1 }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.wide_receiver1.id_for_label }}">Captain?</label>
+                        {{ form.captain_wide_receiver1 }}
+                    </div>
+                </div>
 
-                <label for="id_wide_receiver2">WR 2:</label>
-                {{ form.wide_receiver2 }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_wide_receiver2">WR 2:</label>
+                        {{ form.wide_receiver2 }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.wide_receiver2.id_for_label }}">Captain?</label>
+                        {{ form.captain_wide_receiver2 }}
+                    </div>
+                </div>
 
                 <!-- Tight End (TE) -->
-                <label for="id_tight_end">TE:</label>
-                {{ form.tight_end }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_tight_end">TE:</label>
+                        {{ form.tight_end }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.tight_end.id_for_label }}">Captain?</label>
+                        {{ form.captain_tight_end }}
+                    </div>
+                </div>
 
-                <!-- Flex Positions (FLEX 1, FLEX 2, FLEX 3, FLEX 4) -->
-                <label for="id_flex1">FLEX 1:</label>
-                {{ form.flex1 }}
+                <!-- FLEX (RB, WR, TE)-->
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_flex">FLEX 1:</label>
+                        {{ form.flex1 }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.flex1.id_for_label }}">Captain?</label>
+                        {{ form.captain_flex1 }}
+                    </div>
+                </div>
 
-                <label for="id_flex2">FLEX 2:</label>
-                {{ form.flex2 }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_flex">FLEX 2:</label>
+                        {{ form.flex2 }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.flex2.id_for_label }}">Captain?</label>
+                        {{ form.captain_flex2 }}
+                    </div>
+                </div>
 
-                <label for="id_flex3">FLEX 3:</label>
-                {{ form.flex3 }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_flex">FLEX 3:</label>
+                        {{ form.flex3 }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.flex3.id_for_label }}">Captain?</label>
+                        {{ form.captain_flex3 }}
+                    </div>
+                </div>
 
-                <label for="id_scaled_flex">FLEX 4:</label>
-                {{ form.scaled_flex }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_flex">FLEX 4:</label>
+                        {{ form.flex4 }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.flex4.id_for_label }}">Captain?</label>
+                        {{ form.captain_flex4 }}
+                    </div>
+                </div>
 
-                <!-- Kicker (K) -->
-                <label for="id_kicker">K:</label>
-                {{ form.kicker }}
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_scaled_flex">SCALED FLEX:</label>
+                        {{ form.scaled_flex }}
+                    </div>
+                </div>
 
-                <!-- Defense/ST (D/ST) -->
-                <label for="id_defense">D/ST:</label>
-                {{ form.defense }}
+                <!-- Defense (DEF)-->
+                <div class="field-container">
+                    <div class="field">
+                        <label for="id_defense">DEF:</label>
+                        {{ form.defense }}
+                    </div>
+                    <div class="captain">
+                        <label for="id_captain_{{ form.defense.id_for_label }}">Captain?</label>
+                        {{ form.captain_defense }}
+                    </div>
+                </div>
 
                 <button type="submit">Submit Entry</button>
             </form>

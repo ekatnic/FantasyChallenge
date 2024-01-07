@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
-from .models import Entry, PlayerStats, Standings
+from .models import Entry, PlayerStats, Standings, RosteredPlayers
 
     
 class RegistrationForm(UserCreationForm):
@@ -84,17 +84,24 @@ def create_entry(request):
             entry = form.save(commit=False)
             entry.user = request.user
             entry.save()
-            players = [form.cleaned_data[field] for field in form.fields]
-            entry.players.set(players)
-            entry.save()  # Save the many-to-many data
+
+            player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
+
+            # Create RosteredPlayers instance for each Player
+            for field_name in player_fields:
+                player = form.cleaned_data[field_name]
+                is_captain = form.data.get('captain_' + field_name) == 'on'
+                RosteredPlayers.objects.create(player=player, entry=entry, is_captain=is_captain)
 
             # Create PlayerStats instance for each Player
-            for player in players:
-                PlayerStats.objects.create(player=player, entry = entry, name = player.name, team = player.team, position = player.position)
+            #for field_name in player_fields:
+                #player = form.cleaned_data[field_name]
+                #PlayerStats.objects.create(player=player, entry=entry, name=player.name, team=player.team, position=player.position)
 
             messages.success(request, 'Entry submitted successfully.')
             return redirect('user_home')
         else:
+            print(form.errors)
             messages.error(request, 'Error submitting entry. Please check the form.')
     else:
         form = EntryForm()
