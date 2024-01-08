@@ -1,0 +1,1 @@
+flex_positions = ['RB', 'WR', 'TE']

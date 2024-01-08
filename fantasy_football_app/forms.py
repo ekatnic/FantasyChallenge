@@ -1,29 +1,31 @@
 # forms.py
 from django import forms
 from .models import Player, Entry, RosteredPlayers
+from .custom_field_choices import GroupedModelChoiceField, get_custom_grouped_model_choice_field
+from .constants import flex_positions
 
 class EntryForm(forms.ModelForm):
-    quarterback = forms.ModelChoiceField(queryset=Player.objects.filter(position='QB'))
-    running_back1 = forms.ModelChoiceField(queryset=Player.objects.filter(position='RB'))
+    quarterback = get_custom_grouped_model_choice_field(['QB'])
+    running_back1 = get_custom_grouped_model_choice_field(['RB'])
     captain_running_back1 = forms.BooleanField(required=False)
-    running_back2 = forms.ModelChoiceField(queryset=Player.objects.filter(position='RB'))
+    running_back2 = get_custom_grouped_model_choice_field(['RB'])
     captain_running_back2 = forms.BooleanField(required=False)
-    wide_receiver1 = forms.ModelChoiceField(queryset=Player.objects.filter(position='WR'))
+    wide_receiver1 = get_custom_grouped_model_choice_field(['WR'])
     captain_wide_receiver1 = forms.BooleanField(required=False)
-    wide_receiver2 = forms.ModelChoiceField(queryset=Player.objects.filter(position='WR'))
+    wide_receiver2 = get_custom_grouped_model_choice_field(['WR'])
     captain_wide_receiver2 = forms.BooleanField(required=False)
-    tight_end = forms.ModelChoiceField(queryset=Player.objects.filter(position='TE'))
+    tight_end = get_custom_grouped_model_choice_field(['TE'])
     captain_tight_end = forms.BooleanField(required=False)
-    flex1 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
+    flex1 = get_custom_grouped_model_choice_field(flex_positions)
     captain_flex1 = forms.BooleanField(required=False)
-    flex2 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
+    flex2 =  get_custom_grouped_model_choice_field(flex_positions)
     captain_flex2 = forms.BooleanField(required=False)
-    flex3 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
+    flex3 =  get_custom_grouped_model_choice_field(flex_positions)
     captain_flex3 = forms.BooleanField(required=False)
-    flex4 = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
+    flex4 =  get_custom_grouped_model_choice_field(flex_positions)
     captain_flex4 = forms.BooleanField(required=False)
-    scaled_flex = forms.ModelChoiceField(queryset=Player.objects.filter(position__in=['RB', 'WR', 'TE']))
-    defense = forms.ModelChoiceField(queryset=Player.objects.filter(position='DEF'))
+    scaled_flex =  get_custom_grouped_model_choice_field(flex_positions)
+    defense =  get_custom_grouped_model_choice_field(['DEF'])
     captain_defense = forms.BooleanField(required=False)
 
     def save(self, commit=True):
