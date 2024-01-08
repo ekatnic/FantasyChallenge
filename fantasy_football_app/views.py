@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django import forms  # Import Django's built-in forms module
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
 from .models import Entry, PlayerStats, Standings, RosteredPlayers
 from .utils import create_player_totals_dict_list
@@ -52,7 +52,8 @@ def register(request):
     return render(request, 'fantasy_football_app/register.html', {'form': form})
 
 def index(request):
-    # You can add any logic here if needed
+    if request.user.is_authenticated:
+        return redirect('user_home')
     return render(request, 'fantasy_football_app/index.html')
 
 from django.contrib.auth.forms import AuthenticationForm
@@ -125,7 +126,9 @@ def delete_entry(request, entry_id):
 @login_required
 def edit_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-
+    if entry.user is not request.user:
+        messages.error(request, 'You do not have permission to edit this entry.')
+        return redirect('user_home')
     if request.method != 'POST':
         # Initial request; pre-fill form with the current entry.
         form = EntryForm(instance=entry)
@@ -147,8 +150,16 @@ def standings(request):
 @login_required
 def view_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
+    if entry.user.id is not request.user.id:
+        messages.error(request, 'You do not have permission to view this entry.')
+        return redirect('user_home')
     context = {
         "player_total_dict": create_player_totals_dict_list(entry),
         "entry_total": entry.total,
     }
     return render(request, 'fantasy_football_app/view_entry.html', context) 
+
+
+def sign_out(request):
+    logout(request)
+    return redirect('index')
