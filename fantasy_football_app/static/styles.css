@@ -78,3 +78,8 @@ button:hover {
 .captain {
     flex: 1;
 }
+
+.navbar-brand-custom {
+    background-color: blue;
+    color: white;
+}
