@@ -83,3 +83,12 @@ button:hover {
     background-color: blue;
     color: white;
 }
+
+.page-title {
+    text-align: center;
+    padding-top: 25px;
+}
+
+.create-button {
+    margin: 10px;
+}
