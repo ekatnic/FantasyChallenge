@@ -11,4 +11,4 @@ class Command(BaseCommand):
         with open('data/All_Players_Test.csv', 'r') as f:
             reader = csv.reader(f)
             for row in reader:
-                Player.objects.update_or_create(name=row[0], team=row[2], defaults={'position': row[1]})
+                Player.objects.create(name=row[0], position=row[1], team=row[2])
