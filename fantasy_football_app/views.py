@@ -88,20 +88,14 @@ def create_entry(request):
             player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
 
             # Create RosteredPlayers instance for each Player
-            for field_name in player_fields:
+            for roster_id, field_name in enumerate(player_fields, start=1):
                 player = form.cleaned_data[field_name]
                 is_captain = form.data.get('captain_' + field_name) == 'on'
-                RosteredPlayers.objects.create(player=player, entry=entry, is_captain=is_captain)
-
-            # Create PlayerStats instance for each Player
-            #for field_name in player_fields:
-                #player = form.cleaned_data[field_name]
-                #PlayerStats.objects.create(player=player, entry=entry, name=player.name, team=player.team, position=player.position)
+                RosteredPlayers.objects.create(player=player, entry=entry, is_captain=is_captain, roster_id=roster_id)
 
             messages.success(request, 'Entry submitted successfully.')
             return redirect('user_home')
         else:
-            print(form.errors)
             messages.error(request, 'Error submitting entry. Please check the form.')
     else:
         form = EntryForm()
@@ -127,14 +121,25 @@ def edit_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
 
     if request.method != 'POST':
-        # Initial request; pre-fill form with the current entry.
-        form = EntryForm(instance=entry)
+        # Get the rostered players sorted by roster_id
+        rostered_players = RosteredPlayers.objects.filter(entry=entry).order_by('roster_id')
+
+        # Create a list of form field names in the order they should be populated
+        player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
+
+        # Create a dictionary to pre-populate the form fields
+        initial_data = {field_name: rp.player for field_name, rp in zip(player_fields, rostered_players)}
+        initial_data.update({f'captain_{field_name}': rp.is_captain for field_name, rp in zip(player_fields, rostered_players)})
+
+        form = EntryForm(initial=initial_data)
     else:
-        # POST data submitted; process data.
-        form = EntryForm(instance=entry, data=request.POST)
+        form = EntryForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('user_home')
+            for field_name in player_fields:
+                player = form.cleaned_data[field_name]
+                is_captain = form.data.get('captain_' + field_name) == 'on'
+                RosteredPlayers.objects.filter(entry=entry, player=player).update(is_captain=is_captain)
 
     context = {'entry': entry, 'form': form}
     return render(request, 'fantasy_football_app/edit_entry.html', context)
