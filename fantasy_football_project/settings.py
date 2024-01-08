@@ -103,12 +103,12 @@ if IS_HEROKU_APP:
     # https://github.com/jazzband/dj-database-url
     DATABASES = {
         "default": dj_database_url.config(
-            engine="django.db.backends.postgresql",
             conn_max_age=600,
             conn_health_checks=True,
             ssl_require=True,
         ),
     }
+    DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 else:
     # When running locally in development or in CI, a sqlite database file will be used instead
     # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
