@@ -17,6 +17,7 @@ Including another URLconf
 # fantasy_football_project/urls.py
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from fantasy_football_app.views import (
     index, 
     sign_in, 
@@ -42,4 +43,6 @@ urlpatterns = [
     path('standings/', standings, name='standings'),
     path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
     path('sign_out/', sign_out, name='sign_out'),
+    path('reset_password/', auth_views.PasswordChangeView.as_view(template_name='fantasy_football_app/registration/password_change.html'), name='password_change'),
+    path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='fantasy_football_app/registration/password_change_done.html'), name='password_change_done'),
 ]
