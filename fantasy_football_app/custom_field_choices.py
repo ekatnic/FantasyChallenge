@@ -21,6 +21,8 @@ class GroupedModelChoiceField(forms.ModelChoiceField):
 
 class GroupedModelChoiceIterator(forms.models.ModelChoiceIterator):
     def __iter__(self):
+        if self.field.empty_label is not None:
+            yield ("", self.field.empty_label)
         queryset = self.field.queryset
         if not isinstance(queryset, QuerySet):
             queryset = queryset.all()
