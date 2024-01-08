@@ -103,6 +103,7 @@ if IS_HEROKU_APP:
     # https://github.com/jazzband/dj-database-url
     DATABASES = {
         "default": dj_database_url.config(
+            engine="django.db.backends.postgresql",
             conn_max_age=600,
             conn_health_checks=True,
             ssl_require=True,
