@@ -28,8 +28,9 @@ class EntryForm(forms.ModelForm):
     defense =  get_custom_grouped_model_choice_field(['DEF'])
     captain_defense = forms.BooleanField(required=False)
 
-    def save(self, commit=True):
+    def save(self, user=None, commit=True):
         entry = super().save(commit=False)
+        entry.user = user if user else entry.user
 
         if commit:
             entry.save()

@@ -82,17 +82,10 @@ def create_entry(request):
     if request.method == 'POST':
         form = EntryForm(request.POST)
         if form.is_valid():
-            entry = form.save(commit=False)
-            entry.user = request.user
+            entry = form.save(commit=True, user=request.user)
             entry.save()
 
             player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
-
-            # Create RosteredPlayers instance for each Player
-            for roster_id, field_name in enumerate(player_fields, start=1):
-                player = form.cleaned_data[field_name]
-                is_captain = form.data.get('captain_' + field_name) == 'on'
-                RosteredPlayers.objects.create(player=player, entry=entry, is_captain=is_captain, roster_id=roster_id)
 
             messages.success(request, 'Entry submitted successfully.')
             return redirect('user_home')
@@ -138,13 +131,8 @@ def edit_entry(request, entry_id):
     else:
         form = EntryForm(instance=entry, data=request.POST)  # Pass instance to EntryForm
         if form.is_valid():
-            form.save()
             RosteredPlayers.objects.filter(entry=entry).delete()
-            for field_name in player_fields:
-                player = form.cleaned_data[field_name]
-                is_captain = form.data.get('captain_' + field_name) == 'on'
-                RosteredPlayers.objects.create(player=player, entry=entry, is_captain=is_captain)
-            messages.success(request, 'Entry updated successfully.')
+            form.save()
             return redirect('user_home')  # Redirect to user_home after successfully submitting the form
 
     context = {'entry': entry, 'form': form}
