@@ -1,14 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ user.username }} Home</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>View Entry - Fantasy Football Playoff Challenge</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
+    {% include 'fantasy_football_app/navbar.html' %}
+
     <header>
-        <h1>{{ user.username }} Home</h1>
+        <h1>{{ user.first_name }} {{ user.last_name }}'s Home Page</h1>
     </header>
     <main>
         <a href="{% url 'create_entry' %}" class="btn btn-primary">Create New Entry</a>
