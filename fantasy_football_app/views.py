@@ -82,17 +82,10 @@ def create_entry(request):
     if request.method == 'POST':
         form = EntryForm(request.POST)
         if form.is_valid():
-            entry = form.save(commit=False)
-            entry.user = request.user
+            entry = form.save(commit=True, user=request.user)
             entry.save()
 
             player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
-
-            # Create RosteredPlayers instance for each Player
-            for roster_id, field_name in enumerate(player_fields, start=1):
-                player = form.cleaned_data[field_name]
-                is_captain = form.data.get('captain_' + field_name) == 'on'
-                RosteredPlayers.objects.create(player=player, entry=entry, is_captain=is_captain, roster_id=roster_id)
 
             messages.success(request, 'Entry submitted successfully.')
             return redirect('user_home')
@@ -119,7 +112,10 @@ def delete_entry(request, entry_id):
 
 @login_required
 def edit_entry(request, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
+    entry = get_object_or_404(Entry.objects.select_related('user'), id=entry_id)
+
+    player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
+
     if entry.user.id is not request.user.id:
         messages.error(request, 'You do not have permission to edit this entry.')
         return redirect('user_home')
@@ -127,22 +123,17 @@ def edit_entry(request, entry_id):
         # Get the rostered players sorted by roster_id
         rostered_players = RosteredPlayers.objects.filter(entry=entry).order_by('roster_id')
 
-        # Create a list of form field names in the order they should be populated
-        player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
-
         # Create a dictionary to pre-populate the form fields
         initial_data = {field_name: rp.player for field_name, rp in zip(player_fields, rostered_players)}
         initial_data.update({f'captain_{field_name}': rp.is_captain for field_name, rp in zip(player_fields, rostered_players)})
 
-        form = EntryForm(initial=initial_data)
+        form = EntryForm(instance=entry, initial=initial_data)  # Pass instance to EntryForm
     else:
-        form = EntryForm(data=request.POST)
+        form = EntryForm(instance=entry, data=request.POST)  # Pass instance to EntryForm
         if form.is_valid():
+            RosteredPlayers.objects.filter(entry=entry).delete()
             form.save()
-            for field_name in player_fields:
-                player = form.cleaned_data[field_name]
-                is_captain = form.data.get('captain_' + field_name) == 'on'
-                RosteredPlayers.objects.filter(entry=entry, player=player).update(is_captain=is_captain)
+            return redirect('user_home')  # Redirect to user_home after successfully submitting the form
 
     context = {'entry': entry, 'form': form}
     return render(request, 'fantasy_football_app/edit_entry.html', context)

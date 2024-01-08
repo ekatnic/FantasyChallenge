@@ -1,4 +1,4 @@
-<!-- create-entry.html -->
+<!-- edit-entry.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -41,9 +41,9 @@
         <h1>My Entry</h1>
     </header>
     <main>
-        <section id="create-entry-form">
+        <section id="edit-entry-form">
             <div class="container">
-                <form class="form-container" action="{% url 'create_entry' %}" method="post">
+                <form class="form-container" action="{% url 'edit_entry' entry.id %}" method="post">
                     {% csrf_token %}
 
                     {% if form.errors %}
