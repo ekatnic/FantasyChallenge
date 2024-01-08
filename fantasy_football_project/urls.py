@@ -17,7 +17,17 @@ Including another URLconf
 # fantasy_football_project/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from fantasy_football_app.views import index, sign_in, register, create_entry, user_home, delete_entry, edit_entry, standings
+from fantasy_football_app.views import (
+    index, 
+    sign_in, 
+    register, 
+    create_entry, 
+    user_home, 
+    delete_entry, 
+    edit_entry, 
+    standings, 
+    view_entry,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +39,5 @@ urlpatterns = [
     path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
     path('edit_entry/<int:entry_id>/', edit_entry, name='edit_entry'),
     path('standings/', standings, name='standings'),
+    path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
 ]

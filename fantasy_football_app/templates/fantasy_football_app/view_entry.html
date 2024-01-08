@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Entry - Fantasy Football Playoff Challenge</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <header>
+        <h1>View Entry</h1>
+    </header>
+    <main>
+        {% block content %}
+        <div class="container">
+            <div class="row justify-content-center">
+            <div class="col-md-12"> <!-- Adjusted from col-md-8 to col-md-12 -->
+                <h1 class="text-center">Entry Scores</h1>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Player</th>
+                            <th>Total</th>
+                            <th>WC Score</th>
+                            <th>DIV Score</th>
+                            <th>CONF Score</th>
+                            <th>SB Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player, player_stats in player_total_dict.items %}
+                        <tr>
+                            <td>{{ player.position }}</td>
+                            <td>{{ player.name }}</td>
+                            <td>{{ player_stats.total }}</td>
+                            <td>{{ player_stats.wild_card_stats.week_score }}</td>
+                            <td>{{ player_stats.divisional_stats.week_score }}</td>
+                            <td>{{ player_stats.conference_stats.week_score }}</td>
+                            <td>{{ player_stats.super_bowl_stats.week_score }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No players in this entry.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h2 class="text-center font-weight-bold">Total: {{ entry_total }}</h2>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        {% endblock %}
+    </main>
+    <footer>
+        <!-- Your footer content will go here -->
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+</body>
+</html>
