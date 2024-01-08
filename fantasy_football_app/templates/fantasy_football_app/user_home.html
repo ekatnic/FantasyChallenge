@@ -36,7 +36,7 @@
                     <tbody>
                     {% for entry in entries %}
                         <tr>
-                        <th scope="row"><a href="{% url 'view_entry' entry.id %}">Entry {{ entry.id }}</a></th>
+                        <th scope="row"><a href="{% url 'view_entry' entry.id %}">{{ user.first_name }} - {{ forloop.counter }}</a></th>
                         <td>{{ entry.wild_card_score }}</td>
                         <td>{{ entry.divisional_score }}</td>
                         <td>{{ entry.conference_score }}</td>
@@ -62,10 +62,10 @@
                 <div class="card-body">
                     <p>Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup. </p>
                     <p>The catch is that you can only select <b>ONE PLAYER PER TEAM</b>. So if you choose Christian McCaffery you cannot also have Deebo Samuel in your lineup.</p>
-                    <p>$20/team
-                    5 for $90
-                    10 for $175
-                    Max of 10</p>
+                    <p><b>Pricing:</b></p>
+                    <p>&emsp;$20 - 1 entry&emsp;$90 - 5 entries&emsp;$175 - 10 entries &emsp;Max of 10 entries</p>
+                    <img src="{% static 'images/venmo.png' %}" alt="Venmo QR Code" class="img-fluid">
+                    <p></p>
                     <p>Payouts will be determined as a percentage after all entries have been locked</p>
                     <p>Full rules will be shown on the Create a Team Page</p>
                     <p>Good Luck!</p>
