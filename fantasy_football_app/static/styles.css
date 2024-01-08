@@ -99,3 +99,17 @@ button:hover {
     box-sizing: border-box;
     text-align: left; /* Aligns text to the left within the textboxes */
 }
+
+.navbar-brand-custom {
+    background-color: blue;
+    color: white;
+}
+
+.page-title {
+    text-align: center;
+    padding-top: 25px;
+}
+
+.create-button {
+    margin: 10px;
+}
