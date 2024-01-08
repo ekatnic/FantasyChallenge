@@ -7,6 +7,7 @@ class Command(BaseCommand):
     help = 'Load players from CSV file'
 
     def handle(self, *args, **options):
+        Player.objects.all().delete()
         with open('data/All_Players_Test.csv', 'r') as f:
             reader = csv.reader(f)
             for row in reader:
