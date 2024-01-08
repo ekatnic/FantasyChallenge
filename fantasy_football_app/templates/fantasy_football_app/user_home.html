@@ -5,56 +5,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Entry - Fantasy Football Playoff Challenge</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     {% include 'fantasy_football_app/navbar.html' %}
 
     <header>
-        <h1>{{ user.first_name }} {{ user.last_name }}'s Home Page</h1>
+        <h1 class="page-title">{{ user.first_name }} {{ user.last_name }}'s Home Page</h1>
     </header>
-    <main>
-        <a href="{% url 'create_entry' %}" class="btn btn-primary">Create New Entry</a>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Week 1 Score</th>
-                    <th>Week 2 Score</th>
-                    <th>Week 3 Score</th>
-                    <th>Super Bowl Score</th>
-                    <th>Total Score</th>
-                    <th>Standings Place</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for entry in entries %}
+    <br/>
+
+        {% block content %}
+        <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
                     <tr>
-                        <td>{{ entry.name }}</td>
-                        <td>{{ entry.week1_score }}</td>
-                        <td>{{ entry.week2_score }}</td>
-                        <td>{{ entry.week3_score }}</td>
+                        <th scope="col">Entry #</th>
+                        <th scope="col">Wild Card</th>
+                        <th scope="col">Divisional</th>
+                        <th scope="col">Conference</th>
+                        <th scope="col">Super Bowl</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for entry in entries %}
+                        <tr>
+                        <th scope="row"><a href="{% url 'view_entry' entry.id %}">Entry {{ entry.id }}</a></th>
+                        <td>{{ entry.wild_card_score }}</td>
+                        <td>{{ entry.divisional_score }}</td>
+                        <td>{{ entry.conference_score }}</td>
                         <td>{{ entry.super_bowl_score }}</td>
-                        <td>{{ entry.total_score }}</td>
-                        <td>{{ entry.standings_place }}</td>
-                        <td><a href="{% url 'edit_entry' entry.id %}">Edit</a></td>
-                        <td><a href="{% url 'delete_entry' entry.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</a></td>
-                    </tr>
-                    <tr>
-                        <td colspan="9">
-                            <div class="collapse" id="collapse{{ entry.id }}">
-                                <!-- Display the players and their scores here -->
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </main>
-    <footer>
-        <!-- Your footer content will go here -->
-    </footer>
+                        <td>{{ entry.total }}</td>
+                        <td>
+                            <a href="{% url 'view_entry' entry.id %}" class="btn btn-primary">Edit</a>
+                            <a href="{% url 'delete_entry' entry.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</a>                    </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'create_entry' %}" class="btn btn-primary mb-3 create-button">Create New Entry</a>
+
+            </div>
+            </div>
+    
+            <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                Entry Rules
+                </div>
+                <div class="card-body">
+                    <p>Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup. </p>
+                    <p>The catch is that you can only select <b>ONE PLAYER PER TEAM</b>. So if you choose Christian McCaffery you cannot also have Deebo Samuel in your lineup.</p>
+                    <p>$20/team
+                    5 for $90
+                    10 for $175
+                    Max of 10</p>
+                    <p>Payouts will be determined as a percentage after all entries have been locked</p>
+                    <p>Full rules will be shown on the Create a Team Page</p>
+                    <p>Good Luck!</p>
+                    <p>Any questions please reach out: spenserjwyatt@gmail.com</p>
+                    <p>Special thanks to Imtiaz Fatteh and Ethan Katnic for their hard work in putting this website together</p>                    
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    {% endblock %}
+    </br>
+        <footer>
+            <!-- Your footer content will go here -->
+        </footer>
+    </div>
 </body>
 </html>
