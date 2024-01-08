@@ -164,7 +164,6 @@ def view_entry(request, entry_id):
     }
     return render(request, 'fantasy_football_app/view_entry.html', context) 
 
-
 def sign_out(request):
     logout(request)
     return redirect('index')
