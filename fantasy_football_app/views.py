@@ -120,7 +120,7 @@ def delete_entry(request, entry_id):
 @login_required
 def edit_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-    if entry.user is not request.user:
+    if entry.user.id is not request.user.id:
         messages.error(request, 'You do not have permission to edit this entry.')
         return redirect('user_home')
     if request.method != 'POST':
