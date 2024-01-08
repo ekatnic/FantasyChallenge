@@ -27,6 +27,7 @@ from fantasy_football_app.views import (
     edit_entry, 
     standings, 
     view_entry,
+    sign_out,
 )
 
 urlpatterns = [
@@ -40,4 +41,5 @@ urlpatterns = [
     path('edit_entry/<int:entry_id>/', edit_entry, name='edit_entry'),
     path('standings/', standings, name='standings'),
     path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
+    path('sign_out/', sign_out, name='sign_out'),
 ]

@@ -7,16 +7,14 @@
     <title>{% block title %}Fantasy Football{% endblock %}</title>
 </head>
 <body>
-    <header>
-        <!-- Your header content goes here -->
-    </header>
-
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer>
-        <!-- Your footer content goes here -->
-    </footer>
+    {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 </body>
 </html>
