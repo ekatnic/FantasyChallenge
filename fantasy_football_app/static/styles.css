@@ -30,8 +30,10 @@ section {
 }
 
 form {
+    flex: 2;
     max-width: 400px;
     margin: 0 auto;
+    text-align: center; /* Aligns text to the center within the form */
 }
 
 label {
@@ -77,4 +79,23 @@ button:hover {
 
 .captain {
     flex: 1;
+}
+
+/* New styles for the container of the textboxes and the form */
+.container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+/* New styles for textboxes */
+.textbox {
+    flex: 1;
+    margin-right: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    box-sizing: border-box;
+    text-align: left; /* Aligns text to the left within the textboxes */
 }

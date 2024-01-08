@@ -10,7 +10,6 @@ class Player(models.Model):
         ('RB', 'Running Back'),
         ('WR', 'Wide Receiver'),
         ('TE', 'Tight End'),
-        ('K', 'Kicker'),
         ('DEF', 'Defense/Special Teams'),
     ]
 
