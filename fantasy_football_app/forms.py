@@ -26,15 +26,15 @@ class EntryForm(forms.ModelForm):
     defense = forms.ModelChoiceField(queryset=Player.objects.filter(position='DEF'))
     captain_defense = forms.BooleanField(required=False)
 
-    def save(self, commit=True):
+    def save(self, user, commit=True):
         entry = super().save(commit=False)
+        entry.user = user
 
         if commit:
             entry.save()
 
             for field_name in self.cleaned_data:
                 player = self.cleaned_data[field_name]
-                import pdb; pdb.set_trace()
                 if player is not None and not field_name.startswith('captain_'):
                     is_captain = self.data.get('captain_' + field_name) == 'on'
                     RosteredPlayers.objects.create(
