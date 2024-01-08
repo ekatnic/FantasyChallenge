@@ -5,8 +5,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Fantasy Football Playoff Challenge</title>
+    <title>Create Your Entry - Fantasy Football Playoff Challenge</title>
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .container {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+        .textbox-container {
+            width: 30%;
+            display: flex;
+            justify-content: flex-start;
+        }
+        .textbox {
+            width: 100%;
+            border: 1px solid black;
+            padding: 10px;
+            margin: 20px;
+        }
+        .form-container {
+            width: 70%;
+            margin: 20px;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -14,8 +37,8 @@
     </header>
     <main>
       <section id="registration-form">
-          <h2>Create Your Account</h2>
-          <form action="{% url 'register' %}" method="post">
+        <div class="container">
+          <form class="form-container" action="{% url 'register' %}" method="post">
             {% csrf_token %}
             {% if form.errors %}
             <ul class="errorlist">
@@ -26,6 +49,7 @@
             {% endfor %}
             </ul>
             {% endif %}
+            <h2>Create Your Account</h2>
             {{ form.first_name.label_tag }} {{ form.first_name }}
             {{ form.last_name.label_tag }} {{ form.last_name }}
             {{ form.username.label_tag }} {{ form.username }}
@@ -34,6 +58,23 @@
             {{ form.password2.label_tag }} {{ form.password2 }}
             <button type="submit">Register</button>
           </form>
+          <div class="textbox-container">
+            <div class="textbox" id="textbox1">
+                <h3>Full Rules</h3>
+                <p>Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup.</p>
+                <p>You can only select one player per team.</p>
+                <p>Points will NOT be doubled in the Super Bowl.</p>
+                <p>You CANNOT combine your captain and scaled FLEX.</p>
+                <p>Full scoring can be seen when you create your team.</p>
+                <hr>
+                <h3>Pricing:</h3>
+                <p>$20 per entry</p>
+                <p>$90 for 5 entries</p>
+                <p>175 for 10 entries</p>
+                <p>Maximum of 10 entries</p>
+            </div>
+        </div>
+
       </section>
     </main>
     <footer>
