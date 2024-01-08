@@ -26,9 +26,8 @@ class EntryForm(forms.ModelForm):
     defense = forms.ModelChoiceField(queryset=Player.objects.filter(position='DEF'))
     captain_defense = forms.BooleanField(required=False)
 
-    def save(self, user, commit=True):
+    def save(self, commit=True):
         entry = super().save(commit=False)
-        entry.user = user
 
         if commit:
             entry.save()

@@ -82,8 +82,8 @@ def create_entry(request):
     if request.method == 'POST':
         form = EntryForm(request.POST)
         if form.is_valid():
-            # Pass user to form.save
-            entry = form.save(commit=False, user=request.user)
+            entry = form.save(commit=False)
+            entry.user = request.user
             entry.save()
 
             player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
@@ -138,7 +138,7 @@ def edit_entry(request, entry_id):
     else:
         form = EntryForm(instance=entry, data=request.POST)  # Pass instance to EntryForm
         if form.is_valid():
-            form.save(user=request.user)
+            form.save()
             RosteredPlayers.objects.filter(entry=entry).delete()
             for field_name in player_fields:
                 player = form.cleaned_data[field_name]
