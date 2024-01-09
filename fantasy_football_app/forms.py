@@ -51,10 +51,15 @@ class EntryForm(forms.ModelForm):
         cleaned_data = super().clean()
 
         # Existing team validation
-        teams = [player.team for player in cleaned_data.values() if isinstance(player, Player)]
-        if len(teams) != len(set(teams)):
-            raise forms.ValidationError("You cannot take two players from the same team.")
-
+        team_dict = {}
+        for field, player in cleaned_data.items():
+            if field.startswith('captain_'):
+                continue
+            if team_dict.get(player.team):
+                self.add_error(field, f"You cannot take two players from {player.team}.")
+                self.add_error(team_dict[player.team], f"You cannot take two players from {player.team}.")
+                raise forms.ValidationError(f"You cannot take two players from {player.team}")
+            team_dict[player.team] = field
         # Captain validation
         player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
         captain_fields = [f'captain_{field_name}' for field_name in player_fields]

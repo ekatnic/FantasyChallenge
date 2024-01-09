@@ -81,13 +81,6 @@ button:hover {
     flex: 1;
 }
 
-/* New styles for the container of the textboxes and the form */
-.container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-}
-
 /* New styles for textboxes */
 .textbox {
     flex: 1;
@@ -112,4 +105,8 @@ button:hover {
 
 .create-button {
     margin: 10px;
+}
+
+.custom-container {
+    min-width: 90%;
 }

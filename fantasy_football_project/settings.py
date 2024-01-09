@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fantasy_football_app',
     'django_extensions',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
