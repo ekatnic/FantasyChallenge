@@ -1,11 +1,13 @@
 <!-- edit-entry.html -->
 {% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Your Entry - Fantasy Football Playoff Challenge</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
@@ -38,156 +40,290 @@
 </head>
 <body>
     <header>
-        <h1>My Entry</h1>
+        {% include 'fantasy_football_app/navbar.html' %}
+        <h1>Edit Entry</h1>
     </header>
     <main>
         <section id="edit-entry-form">
-            <div class="container">
+            <div class="container custom-container">
                 <form class="form-container" action="{% url 'edit_entry' entry.id %}" method="post">
                     {% csrf_token %}
-
-                    {% if form.errors %}
-                        <ul class="errorlist">
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <li>{{ field.label }}: {{ error }}</li>
-                            {% endfor %}
-                        {% endfor %}
-                        </ul>
-                    {% endif %}
                     <h2>Select Your Players</h2>
+                    
+                    <div>
+                        {% if form.errors %}
+                            {% for error in form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
                     <!-- Quarterback (QB) -->
+                    {% with field=form.quarterback %}
                     <div class="field-container">
                         <div class="field">
                             <label for="id_quarterback">QB:</label>
-                            {{ form.quarterback }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}                            
                         </div>
                     </div>
+                    {% endwith %}
 
                     <!-- Running Backs (RB) -->
+                    {% with field=form.running_back1 %}
                     <div class="field-container">
                         <div class="field">
                             <label for="id_running_back1">RB 1:</label>
-                            {{ form.running_back1 }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}     
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.running_back1.id_for_label }}">Captain?</label>
                             {{ form.captain_running_back1 }}
                         </div>
                     </div>
+                    {% endwith %}
 
+                    {% with field=form.running_back2 %}
                     <div class="field-container">
                         <div class="field">
                             <label for="id_running_back2">RB 2:</label>
-                            {{ form.running_back2 }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}     
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.running_back2.id_for_label }}">Captain?</label>
                             {{ form.captain_running_back2 }}
                         </div>
                     </div>
+                    {% endwith %}
 
                     <!-- Wide Receivers (WR) -->
+                    {% with field=form.wide_receiver1 %}
                     <div class="field-container">
                         <div class="field">
                             <label for="id_wide_receiver1">WR 1:</label>
-                            {{ form.wide_receiver1 }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}     
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.wide_receiver1.id_for_label }}">Captain?</label>
                             {{ form.captain_wide_receiver1 }}
                         </div>
                     </div>
+                    {% endwith %}
 
+                    {% with field=form.wide_receiver2 %}
                     <div class="field-container">
                         <div class="field">
                             <label for="id_wide_receiver2">WR 2:</label>
-                            {{ form.wide_receiver2 }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}     
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.wide_receiver2.id_for_label }}">Captain?</label>
                             {{ form.captain_wide_receiver2 }}
                         </div>
                     </div>
+                    {% endwith %}
 
                     <!-- Tight End (TE) -->
+                    {% with field=form.tight_end %}
                     <div class="field-container">
                         <div class="field">
                             <label for="id_tight_end">TE:</label>
-                            {{ form.tight_end }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}     
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.tight_end.id_for_label }}">Captain?</label>
                             {{ form.captain_tight_end }}
                         </div>
                     </div>
+                    {% endwith %}
 
                     <!-- FLEX (RB, WR, TE)-->
-                    <div class="field-container">
+                    {% with field=form.flex1 %}
+                    <div class="field-container{% if field.errors %} is-invalid{% endif %}">
                         <div class="field">
                             <label for="id_flex">FLEX 1:</label>
-                            {{ form.flex1 }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}    
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.flex1.id_for_label }}">Captain?</label>
                             {{ form.captain_flex1 }}
+                            {% for error in field.errors %}
+                                <p class="help-block">{{ error }}</p>
+                            {% endfor %}
                         </div>
                     </div>
+                    {% endwith %}
 
-                    <div class="field-container">
+                    {% with field=form.flex2 %}
+                    <div class="field-container{% if field.errors %} is-invalid{% endif %}">
                         <div class="field">
                             <label for="id_flex">FLEX 2:</label>
-                            {{ form.flex2 }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}    
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.flex2.id_for_label }}">Captain?</label>
                             {{ form.captain_flex2 }}
                         </div>
                     </div>
+                    {% endwith %}
 
-                    <div class="field-container">
+                    {% with field=form.flex3 %}
+                    <div class="field-container{% if field.errors %} is-invalid{% endif %}">
                         <div class="field">
                             <label for="id_flex">FLEX 3:</label>
-                            {{ form.flex3 }}
+                            {% if field.errors %}
+                                {{ field|add_class:"form-control is-invalid" }}
+                                {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}    
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.flex3.id_for_label }}">Captain?</label>
                             {{ form.captain_flex3 }}
                         </div>
                     </div>
+                    {% endwith %}
 
-                    <div class="field-container">
+                    {% with field=form.flex4 %}
+                    <div class="field-container{% if field.errors %} is-invalid{% endif %}">
                         <div class="field">
                             <label for="id_flex">FLEX 4:</label>
-                            {{ form.flex4 }}
+                            {% if field.errors %}
+                            {{ field|add_class:"form-control is-invalid" }}
+                            {% for error in field.errors %}
+                            <div class="invalid-feedback">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            {{ field|add_class:"form-control" }}
+                        {% endif %}    
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.flex4.id_for_label }}">Captain?</label>
                             {{ form.captain_flex4 }}
                         </div>
                     </div>
+                    {% endwith %}
 
+                    {% with field=form.scaled_flex %}
                     <div class="field-container">
                         <div class="field">
                             <label for="id_scaled_flex">SCALED FLEX:</label>
-                            {{ form.scaled_flex }}
+                            {% if field.errors %}
+                            {{ field|add_class:"form-control is-invalid" }}
+                            {% for error in field.errors %}
+                            <div class="invalid-feedback">
+                                {{ error }}
+                            </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}    
                         </div>
                     </div>
+                    {% endwith %}
 
                     <!-- Defense (DEF)-->
+                    {% with field=form.defense %}
                     <div class="field-container">
                         <div class="field">
                             <label for="id_defense">DEF:</label>
-                            {{ form.defense }}
+                            {% if field.errors %}
+                            {{ field|add_class:"form-control is-invalid" }}
+                            {% for error in field.errors %}
+                            <div class="invalid-feedback">
+                                {{ error }}
+                            </div>
+                                {% endfor %}
+                            {% else %}
+                                {{ field|add_class:"form-control" }}
+                            {% endif %}    
                         </div>
                         <div class="captain">
                             <label for="id_captain_{{ form.defense.id_for_label }}">Captain?</label>
                             {{ form.captain_defense }}
                         </div>
                     </div>
+                    {% endwith %}
 
                     <button type="submit">Submit Entry</button>
                 </form>
@@ -241,7 +377,7 @@
         </section>
     </main>
     <footer>
-        <!-- Your footer content will go here -->
+        <a href="{% url 'user_home' %}" class="btn btn-primary">Return to Home</a>
     </footer>
 </body>
 </html>
