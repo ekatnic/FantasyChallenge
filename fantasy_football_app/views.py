@@ -120,8 +120,8 @@ def edit_entry(request, entry_id):
         messages.error(request, 'You do not have permission to edit this entry.')
         return redirect('user_home')
     if request.method != 'POST':
-        # Get the rostered players sorted by roster_id
-        rostered_players = RosteredPlayers.objects.filter(entry=entry).order_by('roster_id')
+        # Get the rostered players
+        rostered_players = RosteredPlayers.objects.filter(entry=entry)
 
         # Create a dictionary to pre-populate the form fields
         initial_data = {field_name: rp.player for field_name, rp in zip(player_fields, rostered_players)}
