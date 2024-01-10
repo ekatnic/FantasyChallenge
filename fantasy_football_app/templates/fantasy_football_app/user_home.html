@@ -12,15 +12,6 @@
 <body>
     <header>
         <h1 class="page-title">{{ user.first_name }} {{ user.last_name }}'s Home Page</h1>
-                {% if messages %}
-            <div class="container mt-3">
-            {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                {{ message }}
-                </div>
-            {% endfor %}
-            </div>
-        {% endif %}
     </header>
     <br/>
         {% block content %}
@@ -75,6 +66,7 @@
                     <p></p>
                     <p>Payouts will be determined as a percentage after all entries have been locked</p>
                     <p>Full rules will be shown on the Create a Team Page</p>
+                    <p>Standings will be available after the first game kicks off</p>
                     <p>Good Luck!</p>
                     <p>Any questions please reach out: spenserjwyatt@gmail.com</p>
                     <p>Special thanks to Imtiaz Fatteh and Ethan Katnic for their hard work in putting this website together</p>                    
