@@ -19,23 +19,30 @@
     });
     </script>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
         .container {
             display: flex;
-            justify-content: flex-start;
+            flex-direction: column-reverse; /* Stack the elements vertically */
+            align-items: center; /* Center the elements horizontally */
+            width: 100%;
         }
         .textbox-container {
-            width: 50%;
+            width: 100%; /* Change this to 100% */
             display: flex;
             justify-content: space-between;
+            margin: 0px;
         }
         .textbox {
-            width: 45%;
+            width: 50%; /* Change this to 48% to account for the space between */
             border: 1px solid black;
             padding: 10px;
-            margin: 10px;
+            margin: 5px;
         }
         .form-container {
-            width: 90%;
+            width: 70%; /* Change this to 30% */
         }
     </style>
 </head>
@@ -50,7 +57,7 @@
             <div class="container custom-container">
                 <form class="form-container" action="{% url 'create_entry' %}" method="post">
                     {% csrf_token %}
-                    <h2>Select Your Players</h2>
+                    <h3>Select Your Players</h3>
                     
                     <div>
                         {% if form.errors %}
@@ -337,42 +344,39 @@
                         <p>Points will NOT be doubled in the Super Bowl</p>
                         <p>You CANNOT combine your captain and scaled FLEX</p>
                         <h4>Offense Scoring:</h4>
-                        <ul>
-                            <li>4 pts for Passing TDs</li>
-                            <li>6 pts for non Passing TDs</li>
-                            <li>1 pt for every 20 Yards Passing</li>
-                            <li>-1 pt for every Interception Thrown</li>
-                            <li>-1 pt for every Fumble Lost</li>
-                            <li>1 pt for every 10 Rushing or Receiving yards</li>
-                            <li>1 pt per Reception by RBs and WRs</li>
-                            <li>1.5 pts per Reception by TEs</li>
-                            <li>2 pts for every 2 Point Conversion</li>
-                        </ul>
+                        <p>4 pts for Passing TDs</p>
+                        <p>6 pts for non Passing TDs</p>
+                        <p>1 pt for every 20 Yards Passing</p>
+                        <p>-1 pt for every Interception Thrown</p>
+                        <p>-1 pt for every Fumble Lost</p>
+                        <p>1 pt for every 10 Rushing or Receiving yards</p>
+                        <p>1 pt per Reception by RBs and WRs</p>
+                        <p>1.5 pts per Reception by TEs</p>
+                        <p>2 pts for every 2 Point Conversion</p>
                         <h4>Defense Scoring:</h4>
-                            <li>1 pt for every Sack</li>
-                            <li>2 pts for every Interception</li>
-                            <li>2 pts for every Fumble Recovery</li>
-                            <li>5 pts for every Safety</li>
-                            <li>6 pts for every Defensive/ST TD</li>
-                            <li>12 pts for a Shutout</li>
-                            <li>8 pts for allowing 1-6 points</li>
-                            <li>5 pts for allowing 7-10 points</li>
+                        <p>1 pt for every Sack</p>
+                        <p>2 pts for every Interception</p>
+                        <p>2 pts for every Fumble Recovery</p>
+                        <p>5 pts for every Safety</p>
+                        <p>6 pts for every Defensive/ST TD</p>
+                        <p>12 pts for a Shutout</p>
+                        <p>8 pts for allowing 1-6 points</p>
+                        <p>5 pts for allowing 7-10 points</p>
                     </div>
                     
                     <div class="textbox" id="textbox2">
-                        <h3>*New Rules this year*</h3>
+                        <h3>*New Rules*</h3>
                         <h4>Captain:</h4>
-                        <p>You will select 1 captain - this can be any position other than QB. This player will receive 1.5x points each week.</p>
+                        <p>You will select <strong>1 captain</strong> - this can be any position other than QB. This player will receive <strong>1.5x points</strong> each week.</p>
                         <h4>Scaled FLEX:</h4>
-                        <p>You will select 1 Scaled FLEX - this position is based on the ownership % of each player.</p>
+                        <p>You will select <strong>1 Scaled FLEX</strong> - this position is based on the ownership % of each player.</p>
                         <p>You are rewarded with a higher bonus if the player is less selected by others.</p>
                         <h5>Scaled FLEX Scoring:</h5>
-                        <ul>
-                            <li>If ownership is 50% or more = No multiplier, a player that scores 10 points will get you 10 points</li>
-                            <li>If 25-50% = 1.2 x multiplier, a player that scores 10 points will get you 12</li>
-                            <li>12.5-25% = 1.3x, a player that scores 10 points will get you 13</li>
-                            <li>5-12.5% = 1.5x, a player that scores 10 points will get you 15</li>
-                            <li>0-5% = 1.75 x, a player that scores 10 points will get you 17.5</li>
+                        <p>If ownership is <strong>50% or more = No multiplier</strong>, a player that scores 10 points will get you 10 points</p>
+                        <p>If <strong>25-50% = 1.2x</strong> multiplier, a player that scores 10 points will get you 12</p>
+                        <p><strong>12.5-25% = 1.3x</strong>, a player that scores 10 points will get you 13</p>
+                        <p><strong>5-12.5% = 1.5x</strong>, a player that scores 10 points will get you 15</p>
+                        <p><strong>0-5% = 1.75x</strong>, a player that scores 10 points will get you 17.5</p>
                     </div> 
                 </div>
             </div>
