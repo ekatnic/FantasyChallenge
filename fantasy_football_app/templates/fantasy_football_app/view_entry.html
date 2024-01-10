@@ -28,10 +28,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for player, player_info in player_total_dict.items %}
-                        {% with player_stats=player_info.player_stats %}
+                        {% for player, player_stats in player_total_dict.items %}
                         <tr>
-                            <td>{{ player_info.position }}</td>
+                            <td>{{ player.position }}</td>
                             <td>{{ player.name }}</td>
                             <td>{{ player_stats.total }}</td>
                             <td>{{ player_stats.wild_card_stats.week_score }}</td>
@@ -39,7 +38,6 @@
                             <td>{{ player_stats.conference_stats.week_score }}</td>
                             <td>{{ player_stats.super_bowl_stats.week_score }}</td>
                         </tr>
-                        {% endwith %}
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center">No players in this entry.</td>

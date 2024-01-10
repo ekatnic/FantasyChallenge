@@ -44,6 +44,7 @@ class Entry(models.Model):
 class RosteredPlayers(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    roster_id = models.IntegerField(default=0)
     is_captain = models.BooleanField(default=False)
 
 from django.db import models
