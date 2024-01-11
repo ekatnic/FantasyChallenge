@@ -103,10 +103,7 @@ if IS_HEROKU_APP:
     # https://devcenter.heroku.com/articles/provisioning-heroku-postgres
     # https://github.com/jazzband/dj-database-url
     DATABASES = {
-        "default": dj_database_url.config(
-            conn_max_age=600,
-            conn_health_checks=True,
-        ),
+        "default": dj_database_url.config(),
     }
     DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 else:
