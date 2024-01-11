@@ -7,9 +7,9 @@ def calculate_weekly_score_for_player(weekly_stats, position):
     base_score = 0.0
     if position == 'DEF':
         base_score += weekly_stats.sacks * 1
-        base_score += weekly_stats.fumbles_recovered * 2
-        base_score += weekly_stats.interceptions * 2
-        base_score += weekly_stats.safeties * 2
+        base_score += weekly_stats.fumbles_recovered * 1
+        base_score += weekly_stats.interceptions * 1
+        base_score += weekly_stats.safeties * 5
         base_score += weekly_stats.defensive_tds * 6
         base_score += weekly_stats.return_tds * 6
         if weekly_stats.points_allowed == 0:
