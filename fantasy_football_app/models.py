@@ -21,8 +21,6 @@ class Player(models.Model):
         return f'{self.name} ({self.position}) - {self.team}'
 
 
-
-
 class Entry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     players = models.ManyToManyField(Player, through='RosteredPlayers')
@@ -48,40 +46,36 @@ class RosteredPlayers(models.Model):
 
 from django.db import models
 
-class WeeklyStats(models.Model):
-    passing_yards = models.FloatField(default=0)
-    passing_tds = models.FloatField(default=0)
-    passing_interceptions = models.FloatField(default=0)
-    rushing_yards = models.FloatField(default=0)
-    rushing_tds = models.FloatField(default=0)
-    receptions = models.FloatField(default=0)
-    receiving_yards = models.FloatField(default=0)
-    receiving_tds = models.FloatField(default=0)
-    fumbles_lost = models.FloatField(default=0)
-    sacks = models.FloatField(default=0)
-    interceptions = models.FloatField(default=0)
-    blocks = models.FloatField(default=0)
-    safeties = models.FloatField(default=0)
-    defensive_tds = models.FloatField(default=0)
-    return_tds = models.FloatField(default=0)
-    points_allowed = models.FloatField(default=0)
+class WeeklyStats(models.Model):    
+    POSITION_CHOICES = [
+        ('WC', 'Wild Card'),
+        ('DIV', 'Divisional'),
+        ('CONF', 'Conference'),
+        ('SB', 'Super Bowl'),
+    ]
+    class Meta:
+        unique_together = (('player', 'week'),)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, null=True, blank=True)
+    week = models.CharField(max_length=12, choices=POSITION_CHOICES, null=True, blank=True)
+    passing_yards = models.IntegerField(default=0)
+    passing_tds = models.IntegerField(default=0)
+    passing_interceptions = models.IntegerField(default=0)
+    rushing_yards = models.IntegerField(default=0)
+    rushing_tds = models.IntegerField(default=0)
+    receptions = models.IntegerField(default=0)
+    receiving_yards = models.IntegerField(default=0)
+    receiving_tds = models.IntegerField(default=0)
+    fumbles_lost = models.IntegerField(default=0)
+    sacks = models.IntegerField(default=0)
+    interceptions = models.IntegerField(default=0)
+    fumbles_recovered = models.IntegerField(default=0)
+    safeties = models.IntegerField(default=0)
+    defensive_tds = models.IntegerField(default=0)
+    return_tds = models.IntegerField(default=0)
+    points_allowed = models.IntegerField(default=0)
+    two_pt_conversions = models.IntegerField(default=0)
     week_score = models.FloatField(default=0)
 
-class PlayerStats(models.Model):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    team = models.CharField(max_length=100)
-    position = models.CharField(max_length=100)
-    total = models.FloatField(default=0)
-    wild_card_stats = models.OneToOneField(WeeklyStats, on_delete=models.CASCADE, related_name='wild_card', null = True)
-    divisional_stats = models.OneToOneField(WeeklyStats, on_delete=models.CASCADE, related_name='divisional', null = True)
-    conference_stats = models.OneToOneField(WeeklyStats, on_delete=models.CASCADE, related_name='conference', null = True)
-    super_bowl_stats = models.OneToOneField(WeeklyStats, on_delete=models.CASCADE, related_name='super_bowl', null = True)
-
-    def __str__(self):
-        return self.name
-    
 class Standings(models.Model):
     entry_name = models.CharField(max_length=255)
     entry_score = models.FloatField()

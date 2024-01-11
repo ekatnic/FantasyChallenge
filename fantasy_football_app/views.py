@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login, logout
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
-from .models import Entry, PlayerStats, Standings, RosteredPlayers
+from .models import Entry, Standings, RosteredPlayers
 from .utils import create_player_totals_dict_list
     
 class RegistrationForm(UserCreationForm):
