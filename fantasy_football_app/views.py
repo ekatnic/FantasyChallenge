@@ -13,6 +13,8 @@ from .utils import create_player_totals_dict_list
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
+from waffle import flag_is_active
+
 
 
 
@@ -99,6 +101,10 @@ def sign_in(request):
 
 @login_required
 def create_entry(request):
+    if flag_is_active(request, 'create_locked'):
+        messages.error(request, "Entry Creation is Locked")
+        return redirect('user_home')
+    
     if request.method == 'POST':
         form = EntryForm(request.POST)
         if form.is_valid():
@@ -125,6 +131,10 @@ def user_home(request):
 
 @login_required
 def delete_entry(request, entry_id):
+    if flag_is_active(request, 'delete_locked'):
+        messages.error(request, "Entry Deleting is Locked")
+        return redirect('user_home')
+
     entry = get_object_or_404(Entry, id=entry_id, user=request.user)
     entry.delete()
     messages.success(request, 'Entry deleted successfully.')
@@ -132,6 +142,10 @@ def delete_entry(request, entry_id):
 
 @login_required
 def edit_entry(request, entry_id):
+    if flag_is_active(request, 'edit_locked'):
+        messages.error(request, "Entry Editing is Locked")
+        return redirect('user_home')
+
     entry = get_object_or_404(Entry.objects.select_related('user'), id=entry_id)
 
     player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
