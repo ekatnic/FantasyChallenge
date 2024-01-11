@@ -141,6 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = ['fantasy_football_app.views.CaseInsensitiveModelBackend']
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
