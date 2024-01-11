@@ -141,6 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = ['fantasy_football_app.views.CaseInsensitiveModelBackend']
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -169,4 +170,8 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_heroku.settings(locals())
 
-CSRF_TRUSTED_ORIGINS = ['https://fantasy-challenge-2024-59233a8817fc.herokuapp.com']
+CSRF_TRUSTED_ORIGINS = [
+    'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
+    'http://playoff-showdown.com',
+    'https://playoff-showdown.com',
+]

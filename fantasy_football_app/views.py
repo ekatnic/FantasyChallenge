@@ -10,7 +10,12 @@ from django.contrib.auth import authenticate, login, logout
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
 from .models import Entry, Standings, RosteredPlayers
 from .utils import create_player_totals_dict_list
-    
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend
+
+
+
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(max_length=30)
@@ -33,20 +38,11 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            print("Form is valid")  # Debugging print statement
-            form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')  # Get the password from the form
-            user = authenticate(request, username=username, password=password)  # Authenticate the user
-            if user is not None:
-                print("User is authenticated")  # Debugging print statement
-                login(request, user)  # Log in the user
-            else:
-                print("User is not authenticated")  # Debugging print statement
+            user = form.save()  # This will handle the first_name, last_name, email, and password fields
+            username = form.cleaned_data.get('username').lower()
             messages.success(request, f'Account created for {username}!')
+            login(request, user)  # Log the user in
             return redirect('create_entry')
-        else:
-            print("Form is not valid")  # Debugging print statement
     else:
         form = RegistrationForm()
     return render(request, 'fantasy_football_app/register.html', {'form': form})
@@ -56,24 +52,48 @@ def index(request):
         return redirect('user_home')
     return render(request, 'fantasy_football_app/index.html')
 
-from django.contrib.auth.forms import AuthenticationForm
+
+
+class CaseInsensitiveModelBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.get(username__iexact=username)
+            if user.check_password(password):
+                return user
+        except UserModel.DoesNotExist:
+            return None
+
+    def get_user(self, user_id):
+        UserModel = get_user_model()
+        try:
+            return UserModel.objects.get(pk=user_id)
+        except UserModel.DoesNotExist:
+            return None
+
+class CustomAuthenticationForm(AuthenticationForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        if username:
+            cleaned_data['username'] = username.lower()
+        return cleaned_data
 
 def sign_in(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
+            user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
                 return redirect('user_home')
             else:
                 messages.error(request,"Invalid username or password.")
-        else:
-            messages.error(request,"Invalid username or password.")
-    form = AuthenticationForm()
+
+    form = CustomAuthenticationForm()
     return render(request = request, template_name = "fantasy_football_app/sign_in.html", context={"form":form})
 
 
