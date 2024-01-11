@@ -101,7 +101,7 @@ def sign_in(request):
 
 @login_required
 def create_entry(request):
-    if flag_is_active(request, 'create_locked'):
+    if flag_is_active(request, 'entry_lock'):
         messages.error(request, "Entry Creation is Locked")
         return redirect('user_home')
     
@@ -131,7 +131,7 @@ def user_home(request):
 
 @login_required
 def delete_entry(request, entry_id):
-    if flag_is_active(request, 'delete_locked'):
+    if flag_is_active(request, 'entry_lock'):
         messages.error(request, "Entry Deleting is Locked")
         return redirect('user_home')
 
@@ -142,7 +142,7 @@ def delete_entry(request, entry_id):
 
 @login_required
 def edit_entry(request, entry_id):
-    if flag_is_active(request, 'edit_locked'):
+    if flag_is_active(request, 'entry_lock'):
         messages.error(request, "Entry Editing is Locked")
         return redirect('user_home')
 
