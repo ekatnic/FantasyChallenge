@@ -181,7 +181,7 @@ def standings(request):
 @login_required
 def view_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-    if entry.user.id is not request.user.id:
+    if not flag_is_active(request, 'entry_lock') and entry.user.id is not request.user.id:
         messages.error(request, 'You do not have permission to view this entry.')
         return redirect('user_home')
     context = {

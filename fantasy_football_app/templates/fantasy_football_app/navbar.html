@@ -1,27 +1,28 @@
 {% load waffle_tags %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Fantasy Football Challenge 2024</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item {% if request.resolver_match.url_name == 'user_home' %}active{% endif %}">
-          <a class="nav-link" href="{% url 'user_home' %}">Home</a>
-        </li>
-        {% if not entry_lock %}
-        <li class="nav-item {% if request.resolver_match.url_name == 'create_entry' %}active{% endif %}">
-          <a class="nav-link" href="{% url 'create_entry' %}">Create Entry</a>
-        </li>
-        {% endif %}
-        <!--<li class="nav-item {% if request.resolver_match.url_name == 'standings' %}active{% endif %}">
-          <a class="nav-link" href="{% url 'standings' %}">Standings</a>
-        </li>-->
-      </ul>
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'sign_out' %}">Logout</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Fantasy Football Challenge 2024</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item {% if request.resolver_match.url_name == 'user_home' %}active{% endif %}">
+            <a class="nav-link" href="{% url 'user_home' %}">Home</a>
+          </li>
+          {% flag 'entry_lock' %}
+          {% else %}
+            <li class="nav-item {% if request.resolver_match.url_name == 'create_entry' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'create_entry' %}">Create Entry</a>
+            </li>
+          {% endflag %}
+            <!--<li class="nav-item {% if request.resolver_match.url_name == 'standings' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'standings' %}">Standings</a>
+            </li>-->
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'sign_out' %}">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>

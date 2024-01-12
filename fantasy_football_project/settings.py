@@ -69,7 +69,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'fantasy_football_project.context_processors.entry_lock'
             ],
         },
     },
