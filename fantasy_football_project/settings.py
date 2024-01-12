@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'computedfields',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -175,3 +176,5 @@ CSRF_TRUSTED_ORIGINS = [
     'http://playoff-showdown.com',
     'https://playoff-showdown.com',
 ]
+
+COMPUTEDFIELDS_ADMIN = True

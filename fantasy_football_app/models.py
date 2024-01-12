@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from .model_utils import calculate_weekly_score_for_player
+from computedfields.models import ComputedFieldsModel, computed, compute
 
 class Player(models.Model):
     POSITION_CHOICES = [
@@ -16,6 +17,7 @@ class Player(models.Model):
     name = models.CharField(max_length=100)
     position = models.CharField(max_length=12, choices=POSITION_CHOICES)
     team = models.CharField(max_length=50)
+    #rostered_percentage = models.FloatField(default=0.0) 
 
     def __str__(self):
         return f'{self.name} ({self.position}) - {self.team}'
@@ -29,7 +31,7 @@ class Entry(models.Model):
     divisional_score = models.FloatField(default=0.0)
     conference_score = models.FloatField(default=0.0)
     super_bowl_score = models.FloatField(default=0.0)
-    total = models.FloatField(default=0.0)
+    total = models.FloatField(default=0.0) #a calculated field?
 
     def save(self, *args, **kwargs):
         if not self.name:
@@ -46,7 +48,7 @@ class RosteredPlayers(models.Model):
 
 from django.db import models
 
-class WeeklyStats(models.Model):    
+class WeeklyStats(ComputedFieldsModel):    
     POSITION_CHOICES = [
         ('WC', 'Wild Card'),
         ('DIV', 'Divisional'),
@@ -74,7 +76,17 @@ class WeeklyStats(models.Model):
     return_tds = models.IntegerField(default=0)
     points_allowed = models.IntegerField(default=0)
     two_pt_conversions = models.IntegerField(default=0)
-    week_score = models.FloatField(default=0)
+    @computed(models.FloatField(), depends=[
+       ('self', ['passing_yards', 'passing_tds', 'passing_interceptions', 
+        'rushing_yards', 'rushing_tds', 'receptions', 'receiving_yards', 
+        'receiving_tds', 'fumbles_lost', 'sacks', 'interceptions', 
+        'fumbles_recovered', 'safeties', 'defensive_tds', 'return_tds', 
+        'points_allowed', 'two_pt_conversions']),
+        ( 'player', ['position']),
+        ]
+    )
+    def week_score(self):
+        return calculate_weekly_score_for_player(self)
 
 class Standings(models.Model):
     entry_name = models.CharField(max_length=255)

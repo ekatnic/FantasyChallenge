@@ -10,8 +10,11 @@ class PlayerAdmin(admin.ModelAdmin):
 admin.site.register(Player, PlayerAdmin)
 
 
-
-admin.site.register(Entry)
+class EntryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user')
+    list_filter = ('user',)
+    search_fields = ('name', 'user__username')
+admin.site.register(Entry, EntryAdmin)
 # Register your models here.
 
 
@@ -27,5 +30,6 @@ class WeeklyStatsAdmin(admin.ModelAdmin):
     list_display = ('player', 'week', 'week_score')
     list_filter = ('week',)
     search_fields = ('player__name',)
+    readonly_fields = ('week_score',)
 
 admin.site.register(WeeklyStats, WeeklyStatsAdmin)

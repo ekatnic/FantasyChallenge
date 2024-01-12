@@ -9,7 +9,8 @@ from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login, logout
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
 from .models import Entry, Standings, RosteredPlayers
-from .utils import create_player_totals_dict_list
+from .utils import get_entry_score_dict, get_entry_total_dict
+from .constants import position_order
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
@@ -119,8 +120,9 @@ def create_entry(request):
 
 @login_required
 def user_home(request):
-    entries = Entry.objects.filter(user=request.user)  # Replace Entry with your actual model
-    context = {'entries': entries}
+    entries = Entry.objects.prefetch_related('players__weeklystats_set').filter(user=request.user)
+    entries_dict = {entry: get_entry_total_dict(get_entry_score_dict(entry)) for entry in entries}
+    context = {'entries': entries_dict}
     return render(request, 'fantasy_football_app/user_home.html', context)
 
 @login_required
@@ -165,13 +167,16 @@ def standings(request):
 
 @login_required
 def view_entry(request, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
+    entry = get_object_or_404(Entry.objects.prefetch_related('players__weeklystats_set'), id=entry_id)
     if entry.user.id is not request.user.id:
         messages.error(request, 'You do not have permission to view this entry.')
         return redirect('user_home')
+    player_total_dict = get_entry_score_dict(entry)
+    entry_total_dict = get_entry_total_dict(player_total_dict) 
+    zipped_player_list = zip(position_order, player_total_dict.items())
     context = {
-        "player_total_dict": create_player_totals_dict_list(entry),
-        "entry_total": entry.total,
+        "player_list": zipped_player_list,
+        "entry_total": entry_total_dict['total'],
     }
     return render(request, 'fantasy_football_app/view_entry.html', context) 
 

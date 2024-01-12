@@ -32,14 +32,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for entry in entries %}
+                    {% for entry, scoring_dict in entries.items %}
                         <tr>
                         <th scope="row"><a href="{% url 'view_entry' entry.id %}">{{ user.first_name }} - {{ forloop.counter }}</a></th>
-                        <td>{{ entry.wild_card_score }}</td>
-                        <td>{{ entry.divisional_score }}</td>
-                        <td>{{ entry.conference_score }}</td>
-                        <td>{{ entry.super_bowl_score }}</td>
-                        <td>{{ entry.total }}</td>
+                        <td>{{ scoring_dict.WC }}</td>
+                        <td>{{ scoring_dict.DIV }}</td>
+                        <td>{{ scoring_dict.CONF }}</td>
+                        <td>{{ scoring_dict.SB }}</td>
+                        <td><b>{{ scoring_dict.total }}</b></td>
                         <td>
                             <a href="{% url 'edit_entry' entry.id %}" class="btn btn-primary">Edit</a>
                             <a href="{% url 'delete_entry' entry.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</a>                    </td>

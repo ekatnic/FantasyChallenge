@@ -7,7 +7,7 @@ django.setup()
 
 from fantasy_football_app.models import Player, WeeklyStats
 from fantasy_football_app.constants import input_indexes
-from fantasy_football_app.scoring import calculate_weekly_score_for_player
+from fantasy_football_app.model_utils import calculate_weekly_score_for_player
 
 def update_player_stats_from_csv(csv_file_path, stats_attribute):
     updated_player_stats = []
@@ -37,7 +37,6 @@ def create_or_update_weekly_stats_from_row(row, player, stats_attribute):
                 setattr(weekly_stats, field, 0 if value in ('', '0', '0.00') else int(float(value)))
 
             # Convert the weekly stats for that week to fantasy points
-            weekly_stats.week_score = round(calculate_weekly_score_for_player(weekly_stats, player.position), 2)
             weekly_stats.save()
 
 if __name__ == "__main__":

@@ -20,24 +20,29 @@
                         <tr>
                             <th>Position</th>
                             <th>Player</th>
-                            <th>Total</th>
                             <th>WC Score</th>
                             <th>DIV Score</th>
                             <th>CONF Score</th>
                             <th>SB Score</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for player, player_info in player_total_dict.items %}
-                        {% with scoring_dict=player_info.scoring_dict %}
+                        {% for order, player_pair in player_list %}
+                        {% with rostered_player=player_pair.0 scoring_dict=player_pair.1 %} 
                         <tr>
-                            <td>{{ player_info.position }}</td>
-                            <td>{{ player.name }}</td>
-                            <td>{{ scoring_dict.total }}</td>
+                            <td {% if rostered_player.is_captain %}class="font-weight-bold"{% endif %}>
+                                {{ order }}
+                                {% if rostered_player.is_captain %}(C){% endif %}
+                            </td>
+                            <td {% if rostered_player.is_captain %}class="font-weight-bold"{% endif %}>
+                                {{ rostered_player.player.name }}
+                            </td>
                             <td>{{ scoring_dict.WC }}</td>
                             <td>{{ scoring_dict.DIV }}</td>
                             <td>{{ scoring_dict.CONF }}</td>
                             <td>{{ scoring_dict.SB }}</td>
+                            <td>{{ scoring_dict.total }}</td>
                         </tr>
                         {% endwith %}
                         {% empty %}
