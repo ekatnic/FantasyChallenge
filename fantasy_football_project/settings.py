@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'fantasy_football_app',
     'django_extensions',
     'widget_tweaks',
+    'waffle'
 ]
 
 MIDDLEWARE = [
@@ -94,7 +95,7 @@ DATABASES = {
 IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if not IS_HEROKU_APP:
+if IS_HEROKU_APP:
     DEBUG = False
 
 if IS_HEROKU_APP:
