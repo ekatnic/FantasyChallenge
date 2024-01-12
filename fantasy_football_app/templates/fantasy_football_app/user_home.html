@@ -41,18 +41,20 @@
                         <td>{{ entry.super_bowl_score }}</td>
                         <td>{{ entry.total }}</td>
                         <td>
-                            {% if not entry_lock %}
+                            {% flag 'entry_lock' %}
+                            {% else %}
                                 <a href="{% url 'edit_entry' entry.id %}" class="btn btn-primary">Edit</a>
                                 <a href="{% url 'delete_entry' entry.id %}" class="btn btn-danger" onclick="return confirm( 'Are you sure you want to delete this entry?')">Delete</a>         
-                            {% endif %}
+                            {% endflag %}
                         </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
-                {% if not entry_lock %}
+                {% flag 'entry_lock' %}
+                {% else %}
                     <a href="{% url 'create_entry' %}" class="btn btn-primary mb-3 create-button">Create New Entry</a>
-                {% endif %}
+                {% endflag %}
             </div>
             </div>
     
