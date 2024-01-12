@@ -126,7 +126,8 @@ def create_entry(request):
 @login_required
 def user_home(request):
     entries = Entry.objects.filter(user=request.user)  # Replace Entry with your actual model
-    context = {'entries': entries}
+    entry_lock = flag_is_active(request, 'entry_lock')
+    context = {'entries': entries, 'entry_lock': entry_lock}
     return render(request, 'fantasy_football_app/user_home.html', context)
 
 @login_required
