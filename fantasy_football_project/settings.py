@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'fantasy_football_app',
     'django_extensions',
     'widget_tweaks',
+    'waffle'
 ]
 
 MIDDLEWARE = [
