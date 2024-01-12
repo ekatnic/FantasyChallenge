@@ -39,12 +39,13 @@ class EntryForm(forms.ModelForm):
                 player = self.cleaned_data[field_name]
                 if player is not None and not field_name.startswith('captain_'):
                     is_captain = self.data.get('captain_' + field_name) == 'on'
+                    is_scaled_flex = field_name == 'scaled_flex'
                     RosteredPlayers.objects.create(
                         entry=entry, 
                         player=player, 
-                        is_captain=is_captain
+                        is_captain=is_captain,
+                        is_scaled_flex=is_scaled_flex
                     )
-
         return entry
     
     def clean(self):

@@ -11,8 +11,11 @@ admin.site.register(Player, PlayerAdmin)
 
 
 
-admin.site.register(Entry)
-# Register your models here.
+class EntryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user')
+    list_filter = ('user',)
+    search_fields = ('name', 'user__username')
+admin.site.register(Entry, EntryAdmin)# Register your models here.
 
 
 class RosteredPlayersAdmin(admin.ModelAdmin):
