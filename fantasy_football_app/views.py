@@ -119,7 +119,7 @@ def create_entry(request):
 
 @login_required
 def user_home(request):
-    entries = Entry.objects.filter(user=request.user)  # Replace Entry with your actual model
+    entries = Entry.objects.filter(user=request.user).order_by('id')  # Replace Entry with your actual model
     context = {'entries': entries}
     return render(request, 'fantasy_football_app/user_home.html', context)
 
