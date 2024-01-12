@@ -8,8 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login, logout
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
-from .models import Entry, Standings, RosteredPlayers
-from .utils import get_entry_score_dict, get_entry_total_dict
+from .models import Entry, RosteredPlayers
+from .utils import get_entry_score_dict, get_entry_total_dict, get_entry_list_score_dict
 from .constants import position_order
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
@@ -120,8 +120,8 @@ def create_entry(request):
 
 @login_required
 def user_home(request):
-    entries = Entry.objects.prefetch_related('players__weeklystats_set').filter(user=request.user).order_by('id')
-    entries_dict = {entry: get_entry_total_dict(get_entry_score_dict(entry)) for entry in entries}
+    user_entries = Entry.objects.prefetch_related('players__weeklystats_set').filter(user=request.user).order_by('id')
+    entries_dict = get_entry_list_score_dict(user_entries)
     context = {'entries': entries_dict}
     return render(request, 'fantasy_football_app/user_home.html', context)
 
@@ -162,8 +162,10 @@ def edit_entry(request, entry_id):
 
 @login_required
 def standings(request):
-    standings = Standings.objects.all().order_by('standings_place')
-    return render(request, 'fantasy_football_app/standings.html', {'standings': standings})
+    entries = Entry.objects.prefetch_related('players__weeklystats_set').all().order_by('id')
+    all_entries_dict = get_entry_list_score_dict(entries)
+    sorted_entries = sorted(all_entries_dict.items(), key=lambda item: item[1]['total'], reverse=True)
+    return render(request, 'fantasy_football_app/standings.html', {'entries': sorted_entries})
 
 @login_required
 def view_entry(request, entry_id):

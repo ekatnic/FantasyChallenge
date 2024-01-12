@@ -3,12 +3,21 @@ from .models import (
     Entry, 
     Player, 
     RosteredPlayers, 
-    Standings, 
     WeeklyStats,
 )
 from django.db.models import F
 
+  
 def get_scaled_flex_multiplier(player):
+    """
+    Calculate and return the scaled flex multiplier for a player based on the percentage of entries they are rostered in.
+
+    Args:
+        player (Player): The player to calculate the multiplier for.
+
+    Returns:
+        float: The scaled flex multiplier.
+    """
     total_entries = Entry.objects.all().count()
     rostered_count = RosteredPlayers.objects.filter(player=player).count()
     rostered_percentage = (rostered_count / total_entries) * 100
@@ -25,6 +34,15 @@ def get_scaled_flex_multiplier(player):
         return 1.75
 
 def get_scaled_player_scoring_dict(rostered_player):
+    """
+    Get the scoring dictionary for a player, applying multipliers for captain and scaled flex positions.
+
+    Args:
+        rostered_player (RosteredPlayers): The rostered player to get the scoring dictionary for.
+
+    Returns:
+        dict: The scoring dictionary.
+    """
     scoring_dict = get_raw_player_scoring_dict(rostered_player.player)
     for week, score in scoring_dict.items():
         if rostered_player.is_captain:
@@ -34,6 +52,15 @@ def get_scaled_player_scoring_dict(rostered_player):
     return scoring_dict
 
 def get_raw_player_scoring_dict(player):
+    """
+    Get the raw scoring dictionary for a player without applying any multipliers.
+
+    Args:
+        player (Player): The player to get the scoring dictionary for.
+
+    Returns:
+        dict: The raw scoring dictionary.
+    """
     total = 0.0
     scoring_dict = {
         "WC": 0.0,
@@ -48,19 +75,3 @@ def get_raw_player_scoring_dict(player):
         scoring_dict[week_score.week] = week_score.week_score
     scoring_dict['total'] = total
     return scoring_dict
-
-
-def calculate_standings():
-    # Delete existing standings
-    Standings.objects.all().delete()
-
-    # Get all entries and sort them by total score in descending order
-    entries = Entry.objects.all().order_by('-total')
-
-    # Create a Standings object for each entry
-    for i, entry in enumerate(entries, start=1):
-        Standings.objects.create(
-            entry_name=entry.name,
-            entry_score=entry.total,
-            standings_place=i,
-        )

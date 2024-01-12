@@ -88,8 +88,3 @@ class WeeklyStats(ComputedFieldsModel):
     )
     def week_score(self):
         return calculate_weekly_score_for_player(self)
-
-class Standings(models.Model):
-    entry_name = models.CharField(max_length=255)
-    entry_score = models.FloatField()
-    standings_place = models.IntegerField()
