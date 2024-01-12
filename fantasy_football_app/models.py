@@ -45,6 +45,7 @@ class RosteredPlayers(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
     is_captain = models.BooleanField(default=False)
+    is_scaled_flex = models.BooleanField(default=False)
 
 from django.db import models
 

@@ -34,7 +34,7 @@
                     <tbody>
                     {% for entry, scoring_dict in entries.items %}
                         <tr>
-                        <th scope="row"><a href="{% url 'view_entry' entry.id %}">{{ user.first_name }} - {{ forloop.counter }}</a></th>
+                        <th scope="row"><a href="{% url 'view_entry' entry.id %}">{{ entry.name }}</a></th>
                         <td>{{ scoring_dict.WC }}</td>
                         <td>{{ scoring_dict.DIV }}</td>
                         <td>{{ scoring_dict.CONF }}</td>

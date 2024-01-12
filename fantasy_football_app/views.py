@@ -120,7 +120,7 @@ def create_entry(request):
 
 @login_required
 def user_home(request):
-    entries = Entry.objects.prefetch_related('players__weeklystats_set').filter(user=request.user)
+    entries = Entry.objects.prefetch_related('players__weeklystats_set').filter(user=request.user).order_by('id')
     entries_dict = {entry: get_entry_total_dict(get_entry_score_dict(entry)) for entry in entries}
     context = {'entries': entries_dict}
     return render(request, 'fantasy_football_app/user_home.html', context)
