@@ -1,6 +1,26 @@
+from django.db.models import Prefetch
+from django.core.cache import cache
 from .constants import position_order
 from .scoring import get_scaled_player_scoring_dict
+from .models import Entry
 
+def get_all_entry_score_dicts():
+    """
+    Get a dictionary of total scores for each entry in db
+    Returns:
+        dict: A dictionary where the keys are entries and the values are dicts of their total scores.
+    """
+    # Try to get the result from the cache
+    all_entry_score_dict = cache.get('all_entry_score_dicts')
+
+    # If the result was not in the cache, calculate it and store it in the cache
+    if all_entry_score_dict is None:
+        entries = Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set').all().order_by('id')
+        all_entry_score_dict = get_entry_list_score_dict(entries)
+        all_entry_score_dict = sorted(all_entry_score_dict.items(), key=lambda item: item[1]['total'], reverse=True)
+        cache.set('all_entry_score_dicts', all_entry_score_dict, 60 * 30)  # Cache results for 30 minutes
+
+    return all_entry_score_dict
 
 def get_entry_list_score_dict(entry_list):
     """

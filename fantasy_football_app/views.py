@@ -9,7 +9,12 @@ from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login, logout
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
 from .models import Entry, RosteredPlayers
-from .utils import get_entry_score_dict, get_entry_total_dict, get_entry_list_score_dict
+from .utils import (
+    get_entry_score_dict, 
+    get_entry_total_dict, 
+    get_all_entry_score_dicts,
+    get_entry_list_score_dict,
+)
 from .constants import position_order
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
@@ -124,9 +129,16 @@ def create_entry(request):
 
 @login_required
 def user_home(request):
-    user_entries = Entry.objects.prefetch_related('players__weeklystats_set').filter(user=request.user).order_by('id')
-    entries_dict = get_entry_list_score_dict(user_entries)
-    context = {'entries': entries_dict}
+    all_entries_dict = get_all_entry_score_dicts()
+    user_entries ={
+        entry: {
+            **scoring_dict, 
+            'rank': i
+        } 
+        for i, (entry, scoring_dict) in enumerate(all_entries_dict, start=1) 
+        if entry.user.id == request.user.id
+    }
+    context = {'entries': user_entries}
     return render(request, 'fantasy_football_app/user_home.html', context)
 
 @login_required
@@ -174,14 +186,12 @@ def edit_entry(request, entry_id):
 
 @login_required
 def standings(request):
-    entries = Entry.objects.prefetch_related('players__weeklystats_set').all().order_by('id')
-    all_entries_dict = get_entry_list_score_dict(entries)
-    sorted_entries = sorted(all_entries_dict.items(), key=lambda item: item[1]['total'], reverse=True)
-    return render(request, 'fantasy_football_app/standings.html', {'entries': sorted_entries})
+    all_entries_dict = get_all_entry_score_dicts()
+    return render(request, 'fantasy_football_app/standings.html', {'entries': all_entries_dict})
 
 @login_required
 def view_entry(request, entry_id):
-    entry = get_object_or_404(Entry.objects.prefetch_related('players__weeklystats_set'), id=entry_id)
+    entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set'), id=entry_id)
     if not flag_is_active(request, 'entry_lock') and entry.user.id is not request.user.id:
         messages.error(request, 'You do not have permission to view this entry.')
         return redirect('user_home')

@@ -23,6 +23,7 @@
                 <table class="table table-bordered">
                     <thead>
                     <tr>
+                        <th scope="col">Standings</th>
                         <th scope="col">Entry #</th>
                         <th scope="col">Wild Card</th>
                         <th scope="col">Divisional</th>
@@ -38,6 +39,7 @@
                     <tbody>
                     {% for entry, scoring_dict in entries.items %}
                         <tr>
+                        <td>{{ scoring_dict.rank }}</td>
                         <th scope="row"><a href="{% url 'view_entry' entry.id %}">{{ entry.name }}</a></th>
                         <td>{{ scoring_dict.WC }}</td>
                         <td>{{ scoring_dict.DIV }}</td>

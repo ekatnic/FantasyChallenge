@@ -169,6 +169,13 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_heroku.settings(locals())
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'fantasy_football_cache',
+    }
+}
+
 CSRF_TRUSTED_ORIGINS = [
     'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
     'http://playoff-showdown.com',
