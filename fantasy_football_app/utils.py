@@ -64,4 +64,6 @@ def get_entry_total_dict(entry_score_dict):
     for player, scores in entry_score_dict.items():
         for key in final_dict.keys():
             final_dict[key] += scores[key]
+    for entry, total in final_dict.items():
+        final_dict[entry] = round(total, 2) 
     return final_dict

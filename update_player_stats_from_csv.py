@@ -1,7 +1,8 @@
-from django.core.cache import cache
 import csv
 import django
 import os
+
+from django.core.cache import cache
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fantasy_football_project.settings')
 django.setup()
