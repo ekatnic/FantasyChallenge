@@ -170,7 +170,7 @@ def edit_entry(request, entry_id):
         return redirect('user_home')
     if request.method != 'POST':
         # Get the rostered players
-        rostered_players = RosteredPlayers.objects.filter(entry=entry)
+        rostered_players = RosteredPlayers.objects.filter(entry=entry).order_by('id')
 
         # Create a dictionary to pre-populate the form fields
         initial_data = {field_name: rp.player for field_name, rp in zip(player_fields, rostered_players)}
