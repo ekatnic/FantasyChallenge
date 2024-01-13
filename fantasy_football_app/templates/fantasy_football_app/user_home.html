@@ -58,6 +58,7 @@
                     </tbody>
                 </table>
                 {% flag 'entry_lock' %}
+                    <a href="{% url 'standings' %}" class="btn btn-primary mb-3 create-button">View Full Standings</a>
                 {% else %}
                     <a href="{% url 'create_entry' %}" class="btn btn-primary mb-3 create-button">Create New Entry</a>
                 {% endflag %}
