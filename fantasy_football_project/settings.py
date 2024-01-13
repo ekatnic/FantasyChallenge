@@ -80,17 +80,6 @@ WSGI_APPLICATION = 'fantasy_football_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("DB_NAME", 'fantasy_challenge_db'),
-        'USER': os.environ.get("DB_USER", 'postgres'),
-        'PASSWORD': os.environ.get("DB_PASS", 'pass'),
-        'HOST': os.environ.get("DB_HOST", 'localhost'),
-        'PORT': '5432'
-    }
-}
-
 IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -167,6 +156,8 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_heroku.settings(locals())
+
+DATABASES['default']['CONN_MAX_AGE'] = 0
 
 CSRF_TRUSTED_ORIGINS = [
     'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
