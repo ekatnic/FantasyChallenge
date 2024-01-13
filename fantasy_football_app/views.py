@@ -16,7 +16,7 @@ from .utils import (
     get_all_entry_score_dicts,
     get_entry_list_score_dict,
 )
-from .constants import position_order
+from .constants import POSITION_ORDER
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
@@ -201,7 +201,7 @@ def view_entry(request, entry_id):
         return redirect('user_home')
     player_total_dict = get_entry_score_dict(entry)
     entry_total_dict = get_entry_total_dict(player_total_dict) 
-    zipped_player_list = zip(position_order, player_total_dict.items())
+    zipped_player_list = zip(POSITION_ORDER, player_total_dict.items())
     context = {
         "player_list": zipped_player_list,
         "entry_total": entry_total_dict['total'],

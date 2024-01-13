@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Player, Entry, RosteredPlayers, WeeklyStats
+from .models import CSVUpload, Player, Entry, RosteredPlayers, WeeklyStats
 
 
 class PlayerAdmin(admin.ModelAdmin):
@@ -32,3 +32,7 @@ class WeeklyStatsAdmin(admin.ModelAdmin):
     readonly_fields = ('week_score',)
 
 admin.site.register(WeeklyStats, WeeklyStatsAdmin)
+
+@admin.register(CSVUpload)
+class CSVUploadAdmin(admin.ModelAdmin):
+    pass

@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .model_utils import calculate_weekly_score_for_player
 from computedfields.models import ComputedFieldsModel, computed, compute
+from .constants import WEEK_CHOICES
 
 class Player(models.Model):
     POSITION_CHOICES = [
@@ -50,16 +51,10 @@ class RosteredPlayers(models.Model):
 from django.db import models
 
 class WeeklyStats(ComputedFieldsModel):    
-    POSITION_CHOICES = [
-        ('WC', 'Wild Card'),
-        ('DIV', 'Divisional'),
-        ('CONF', 'Conference'),
-        ('SB', 'Super Bowl'),
-    ]
     class Meta:
         unique_together = (('player', 'week'),)
     player = models.ForeignKey(Player, on_delete=models.CASCADE, null=True, blank=True)
-    week = models.CharField(max_length=12, choices=POSITION_CHOICES, null=True, blank=True)
+    week = models.CharField(max_length=12, choices=WEEK_CHOICES, null=True, blank=True)
     passing_yards = models.IntegerField(default=0)
     passing_tds = models.IntegerField(default=0)
     passing_interceptions = models.IntegerField(default=0)
@@ -88,3 +83,10 @@ class WeeklyStats(ComputedFieldsModel):
     )
     def week_score(self):
         return calculate_weekly_score_for_player(self)
+
+class CSVUpload(models.Model):
+    file = models.FileField(upload_to='csvs/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    week = models.CharField(max_length=12, choices=WEEK_CHOICES, null=True, blank=True)
+    def __str__(self):
+        return self.file.name
