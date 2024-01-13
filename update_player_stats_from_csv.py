@@ -2,6 +2,8 @@ import csv
 import django
 import os
 
+from django.core.cache import cache
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fantasy_football_project.settings')
 django.setup()
 
@@ -13,8 +15,8 @@ def update_player_stats_from_csv(csv_file_path, stats_attribute):
     updated_player_stats = []
     with open(csv_file_path, 'r', encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
+        cache.delete('all_entry_score_dicts')
         for row in reader:
-
             player_name = row[0].split('(')[0].strip()
             try:
                 player = Player.objects.get(name=player_name)

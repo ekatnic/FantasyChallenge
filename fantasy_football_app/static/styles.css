@@ -110,3 +110,8 @@ button:hover {
 .custom-container {
     min-width: 90%;
 }
+
+.highlight {
+    font-weight: bold;
+    background-color: rgba(130, 181, 205, 0.258);  /* Adjust as needed */
+}
