@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login, logout
+from django.core.cache import cache
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
 from .models import Entry, RosteredPlayers
 from .utils import (
@@ -118,6 +119,7 @@ def create_entry(request):
             player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
 
             messages.success(request, 'Entry submitted successfully.')
+            cache.delete('all_entry_score_dicts')
             return redirect('user_home')
         else:
             messages.error(request, 'Error submitting entry. Please check the form.')
@@ -150,6 +152,7 @@ def delete_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id, user=request.user)
     entry.delete()
     messages.success(request, 'Entry deleted successfully.')
+    cache.delete('all_entry_score_dicts')
     return redirect('user_home')
 
 @login_required
@@ -179,6 +182,7 @@ def edit_entry(request, entry_id):
         if form.is_valid():
             RosteredPlayers.objects.filter(entry=entry).delete()
             form.save()
+            cache.delete('all_entry_score_dicts')
             return redirect('user_home')  # Redirect to user_home after successfully submitting the form
 
     context = {'entry': entry, 'form': form}
