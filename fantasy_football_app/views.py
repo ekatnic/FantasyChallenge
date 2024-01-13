@@ -1,4 +1,4 @@
-# fantasy_football_app/views.py
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,13 +9,14 @@ from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login, logout
 from django.core.cache import cache
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
-from .models import Entry, RosteredPlayers
+from .models import CSVUpload, Entry, RosteredPlayers
 from .utils import (
     get_entry_score_dict, 
     get_entry_total_dict, 
     get_all_entry_score_dicts,
     get_entry_list_score_dict,
 )
+from .data_utils import update_player_stats_from_csv
 from .constants import POSITION_ORDER
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
@@ -211,3 +212,14 @@ def view_entry(request, entry_id):
 def sign_out(request):
     logout(request)
     return redirect('index')
+
+@user_passes_test(lambda u: u.is_superuser)
+def csv_upload_view(request):
+    if request.method == 'POST':
+        csv_upload_id = request.POST.get('csv_upload')
+        csv_upload = CSVUpload.objects.get(id=csv_upload_id)
+        update_player_stats_from_csv(csv_upload.file.path, csv_upload.week)
+        # Add a message to indicate success if needed
+
+    csv_uploads = CSVUpload.objects.all()
+    return render(request, 'fantasy_football_app/csv_upload.html', {'csv_uploads': csv_uploads})

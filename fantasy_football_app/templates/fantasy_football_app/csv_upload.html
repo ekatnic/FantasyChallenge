@@ -1,0 +1,24 @@
+{% load waffle_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Entry - Fantasy Football Playoff Challenge</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+{% include 'fantasy_football_app/navbar.html' %}
+{% block content %}
+  <h2>Select a CSV Upload</h2>
+  <form method="post">
+    {% csrf_token %}
+    <select name="csv_upload">
+      {% for csv_upload in csv_uploads %}
+        <option value="{{ csv_upload.id }}">{{ csv_upload.file }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Load Stats</button>
+  </form>
+{% endblock %}
