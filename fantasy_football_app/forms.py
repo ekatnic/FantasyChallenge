@@ -2,7 +2,7 @@
 from django import forms
 from .models import Player, Entry, RosteredPlayers
 from .custom_field_choices import GroupedModelChoiceField, get_custom_grouped_model_choice_field
-from .constants import flex_positions
+from .constants import FLEX_POSITIONS
 
 class EntryForm(forms.ModelForm):
     quarterback = get_custom_grouped_model_choice_field(['QB'])
@@ -16,15 +16,15 @@ class EntryForm(forms.ModelForm):
     captain_wide_receiver2 = forms.BooleanField(required=False)
     tight_end = get_custom_grouped_model_choice_field(['TE'])
     captain_tight_end = forms.BooleanField(required=False)
-    flex1 = get_custom_grouped_model_choice_field(flex_positions)
+    flex1 = get_custom_grouped_model_choice_field(FLEX_POSITIONS)
     captain_flex1 = forms.BooleanField(required=False)
-    flex2 =  get_custom_grouped_model_choice_field(flex_positions)
+    flex2 =  get_custom_grouped_model_choice_field(FLEX_POSITIONS)
     captain_flex2 = forms.BooleanField(required=False)
-    flex3 =  get_custom_grouped_model_choice_field(flex_positions)
+    flex3 =  get_custom_grouped_model_choice_field(FLEX_POSITIONS)
     captain_flex3 = forms.BooleanField(required=False)
-    flex4 =  get_custom_grouped_model_choice_field(flex_positions)
+    flex4 =  get_custom_grouped_model_choice_field(FLEX_POSITIONS)
     captain_flex4 = forms.BooleanField(required=False)
-    scaled_flex =  get_custom_grouped_model_choice_field(flex_positions)
+    scaled_flex =  get_custom_grouped_model_choice_field(FLEX_POSITIONS)
     defense =  get_custom_grouped_model_choice_field(['DEF'])
     captain_defense = forms.BooleanField(required=False)
 

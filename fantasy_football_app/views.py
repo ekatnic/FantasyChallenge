@@ -1,4 +1,4 @@
-# fantasy_football_app/views.py
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,15 +7,21 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login, logout
+from django.core.cache import cache
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
-from .models import Entry, PlayerStats, Standings, RosteredPlayers
-from .utils import create_player_totals_dict_list
+from .models import CSVUpload, Entry, RosteredPlayers
+from .utils import (
+    get_entry_score_dict, 
+    get_entry_total_dict, 
+    get_all_entry_score_dicts,
+    get_entry_list_score_dict,
+)
+from .data_utils import update_player_stats_from_csv
+from .constants import POSITION_ORDER
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from waffle import flag_is_active
-
-
 
 
 class RegistrationForm(UserCreationForm):
@@ -114,6 +120,7 @@ def create_entry(request):
             player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
 
             messages.success(request, 'Entry submitted successfully.')
+            cache.delete('all_entry_score_dicts')
             return redirect('user_home')
         else:
             messages.error(request, 'Error submitting entry. Please check the form.')
@@ -125,8 +132,16 @@ def create_entry(request):
 
 @login_required
 def user_home(request):
-    entries = Entry.objects.filter(user=request.user).order_by('id')  # Replace Entry with your actual model
-    context = {'entries': entries}
+    all_entries_dict = get_all_entry_score_dicts()
+    user_entries ={
+        entry: {
+            **scoring_dict, 
+            'rank': i
+        } 
+        for i, (entry, scoring_dict) in enumerate(all_entries_dict, start=1) 
+        if entry.user.id == request.user.id
+    }
+    context = {'entries': user_entries}
     return render(request, 'fantasy_football_app/user_home.html', context)
 
 @login_required
@@ -138,6 +153,7 @@ def delete_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id, user=request.user)
     entry.delete()
     messages.success(request, 'Entry deleted successfully.')
+    cache.delete('all_entry_score_dicts')
     return redirect('user_home')
 
 @login_required
@@ -167,6 +183,7 @@ def edit_entry(request, entry_id):
         if form.is_valid():
             RosteredPlayers.objects.filter(entry=entry).delete()
             form.save()
+            cache.delete('all_entry_score_dicts')
             return redirect('user_home')  # Redirect to user_home after successfully submitting the form
 
     context = {'entry': entry, 'form': form}
@@ -174,21 +191,35 @@ def edit_entry(request, entry_id):
 
 @login_required
 def standings(request):
-    standings = Standings.objects.all().order_by('standings_place')
-    return render(request, 'fantasy_football_app/standings.html', {'standings': standings})
+    all_entries_dict = get_all_entry_score_dicts()
+    return render(request, 'fantasy_football_app/standings.html', {'entries': all_entries_dict})
 
 @login_required
 def view_entry(request, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
+    entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set'), id=entry_id)
     if not flag_is_active(request, 'entry_lock') and entry.user.id is not request.user.id:
         messages.error(request, 'You do not have permission to view this entry.')
         return redirect('user_home')
+    player_total_dict = get_entry_score_dict(entry)
+    entry_total_dict = get_entry_total_dict(player_total_dict) 
+    zipped_player_list = zip(POSITION_ORDER, player_total_dict.items())
     context = {
-        "player_total_dict": create_player_totals_dict_list(entry),
-        "entry_total": entry.total,
+        "player_list": zipped_player_list,
+        "entry_total": entry_total_dict['total'],
     }
     return render(request, 'fantasy_football_app/view_entry.html', context) 
 
 def sign_out(request):
     logout(request)
     return redirect('index')
+
+@user_passes_test(lambda u: u.is_superuser)
+def csv_upload_view(request):
+    if request.method == 'POST':
+        csv_upload_id = request.POST.get('csv_upload')
+        csv_upload = CSVUpload.objects.get(id=csv_upload_id)
+        update_player_stats_from_csv(csv_upload.file.path, csv_upload.week)
+        # Add a message to indicate success if needed
+
+    csv_uploads = CSVUpload.objects.all()
+    return render(request, 'fantasy_football_app/csv_upload.html', {'csv_uploads': csv_uploads})

@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-b4#eu(@q4j$hfeq3!kepp+qp*yrzo04+ppm72(+nauc7td*ya*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'computedfields',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,8 +86,8 @@ WSGI_APPLICATION = 'fantasy_football_project.wsgi.application'
 IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if not IS_HEROKU_APP:
-    DEBUG = True
+if IS_HEROKU_APP:
+    DEBUG = False
 
 if IS_HEROKU_APP:
     # In production on Heroku the database configuration is derived from the `DATABASE_URL`
@@ -161,6 +162,12 @@ WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_heroku.settings(locals())
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'fantasy_football_cache',
+    }
+}
 DATABASES['default']['CONN_MAX_AGE'] = 0
 
 CSRF_TRUSTED_ORIGINS = [
@@ -169,6 +176,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://playoff-showdown.com',
 ]
 
+COMPUTEDFIELDS_ADMIN = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

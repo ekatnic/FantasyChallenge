@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Player, Entry, RosteredPlayers
+from .models import CSVUpload, Player, Entry, RosteredPlayers, WeeklyStats
 
 
 class PlayerAdmin(admin.ModelAdmin):
@@ -8,7 +8,6 @@ class PlayerAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 admin.site.register(Player, PlayerAdmin)
-
 
 
 class EntryAdmin(admin.ModelAdmin):
@@ -24,3 +23,16 @@ class RosteredPlayersAdmin(admin.ModelAdmin):
     search_fields = ('player__name', 'entry__name') 
 
 admin.site.register(RosteredPlayers, RosteredPlayersAdmin)
+
+
+class WeeklyStatsAdmin(admin.ModelAdmin):
+    list_display = ('player', 'week', 'week_score')
+    list_filter = ('week',)
+    search_fields = ('player__name',)
+    readonly_fields = ('week_score',)
+
+admin.site.register(WeeklyStats, WeeklyStatsAdmin)
+
+@admin.register(CSVUpload)
+class CSVUploadAdmin(admin.ModelAdmin):
+    pass

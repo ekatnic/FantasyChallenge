@@ -1,110 +1,77 @@
 # scoring.py
-from .models import PlayerStats, Entry, Standings, WeeklyStats, Player
+from .models import (
+    Entry, 
+    Player, 
+    RosteredPlayers, 
+    WeeklyStats,
+)
 from django.db.models import F
 
+  
+def get_scaled_flex_multiplier(player):
+    """
+    Calculate and return the scaled flex multiplier for a player based on the percentage of entries they are rostered in.
 
-def calculate_weekly_score_for_player(player_stats, weekly_stats_attr):
-    weekly_stats = getattr(player_stats, weekly_stats_attr)
-    base_score = 0.0
-    if player_stats.position == 'DEF':
-        base_score += weekly_stats.sacks * 1
-        base_score += weekly_stats.interceptions * 2
-        base_score += weekly_stats.blocks * 2
-        base_score += weekly_stats.safeties * 2
-        base_score += weekly_stats.defensive_tds * 6
-        base_score += weekly_stats.return_tds * 6
-        if weekly_stats.points_allowed == 0:
-            base_score += 12
-        elif weekly_stats.points_allowed <= 6:
-            base_score += 8
-        elif weekly_stats.points_allowed <= 10:
-            base_score += 5
-        else:
-            base_score += 0
-    elif player_stats.position == 'TE':
-        base_score += weekly_stats.passing_yards * 0.05
-        base_score += weekly_stats.passing_tds * 6.0
-        base_score += weekly_stats.passing_interceptions * -1.0
-        base_score += weekly_stats.rushing_yards * 0.1
-        base_score += weekly_stats.rushing_tds * 6.0
-        base_score += weekly_stats.receptions * 1.5
-        base_score += weekly_stats.receiving_yards * 0.1
-        base_score += weekly_stats.receiving_tds * 6.0
-        base_score += weekly_stats.fumbles_lost * -1.0
-        base_score += weekly_stats.sacks * 0
-        base_score += weekly_stats.interceptions * 0
-        base_score += weekly_stats.blocks * 0
-        base_score += weekly_stats.safeties * 0
-        base_score += weekly_stats.defensive_tds * 0
-        base_score += weekly_stats.return_tds * 0
-        base_score += weekly_stats.points_allowed * 0
+    Args:
+        player (Player): The player to calculate the multiplier for.
+
+    Returns:
+        float: The scaled flex multiplier.
+    """
+    total_entries = Entry.objects.all().count()
+    rostered_count = RosteredPlayers.objects.filter(player=player).count()
+    rostered_percentage = (rostered_count / total_entries) * 100
+
+    if rostered_percentage >= 50:
+        return 1.0
+    elif 25 <= rostered_percentage < 50:
+        return 1.2
+    elif 12.5 <= rostered_percentage < 25:
+        return 1.3
+    elif 5 <= rostered_percentage < 12.5:
+        return 1.5
     else:
-        base_score += weekly_stats.passing_yards * 0.05
-        base_score += weekly_stats.passing_tds * 6.0
-        base_score += weekly_stats.passing_interceptions * -1.0
-        base_score += weekly_stats.rushing_yards * 0.1
-        base_score += weekly_stats.rushing_tds * 6.0
-        base_score += weekly_stats.receptions * 1.0
-        base_score += weekly_stats.receiving_yards * 0.1
-        base_score += weekly_stats.receiving_tds * 6.0
-        base_score += weekly_stats.fumbles_lost * -1.0
-        base_score += weekly_stats.sacks * 0
-        base_score += weekly_stats.interceptions * 0
-        base_score += weekly_stats.blocks * 0
-        base_score += weekly_stats.safeties * 0
-        base_score += weekly_stats.defensive_tds * 0
-        base_score += weekly_stats.return_tds * 0
-        base_score += weekly_stats.points_allowed * 0
-    weekly_stats.week_score = base_score
-    weekly_stats.save()
+        return 1.75
 
-def calculate_weekly_score_for_entry(entry, week):
-    weekly_score = 0.0
-    for player in entry.players.all():
-        player_stats = PlayerStats.objects.get(player__name=player.name)
-        weekly_stats = getattr(player_stats, f'{week}_stats')
-        if weekly_stats is not None:
-            weekly_score += weekly_stats.week_score
-    setattr(entry, f'{week}_score', weekly_score)
-    entry.save()
+def get_scaled_player_scoring_dict(rostered_player):
+    """
+    Get the scoring dictionary for a player, applying multipliers for captain and scaled flex positions.
 
+    Args:
+        rostered_player (RosteredPlayers): The rostered player to get the scoring dictionary for.
 
-def calculate_total_score_for_player(player_stats):
-    total_score = 0.0
-    total_score += player_stats.wild_card_stats.week_score
-    total_score += player_stats.divisional_stats.week_score
-    total_score += player_stats.conference_stats.week_score
-    total_score += player_stats.super_bowl_stats.week_score
-    player_stats.total = total_score
-    player_stats.save()
-    return total_score
+    Returns:
+        dict: The scoring dictionary.
+    """
+    scoring_dict = get_raw_player_scoring_dict(rostered_player.player)
+    for week, score in scoring_dict.items():
+        if rostered_player.is_captain:
+            scoring_dict[week] = round(score * 1.5, 2)
+        elif rostered_player.is_scaled_flex:
+            scoring_dict[week] = round(score * get_scaled_flex_multiplier(rostered_player.player), 2)
+    return scoring_dict
 
-def calculate_total_score_for_entry(entry):
-    entry.total = entry.wild_card_score + entry.divisional_score + entry.conference_score + entry.super_bowl_score
-    entry.save()
+def get_raw_player_scoring_dict(player):
+    """
+    Get the raw scoring dictionary for a player without applying any multipliers.
 
+    Args:
+        player (Player): The player to get the scoring dictionary for.
 
-def calculate_weekly_score_for_entry(entry, week):
-    weekly_score = 0.0
-    for player in entry.players.all():
-        player_stats = PlayerStats.objects.get(player__name=player.name)
-        weekly_stats = getattr(player_stats, f'{week}_stats')
-        if weekly_stats is not None:
-            weekly_score += weekly_stats.week_score
-    setattr(entry, f'{week}_score', weekly_score)
-    entry.save()
-
-def calculate_standings():
-    # Delete existing standings
-    Standings.objects.all().delete()
-
-    # Get all entries and sort them by total score in descending order
-    entries = Entry.objects.all().order_by('-total')
-
-    # Create a Standings object for each entry
-    for i, entry in enumerate(entries, start=1):
-        Standings.objects.create(
-            entry_name=entry.name,
-            entry_score=entry.total,
-            standings_place=i,
-        )
+    Returns:
+        dict: The raw scoring dictionary.
+    """
+    total = 0.0
+    scoring_dict = {
+        "WC": 0.0,
+        "DIV": 0.0,
+        "CONF": 0.0,
+        "SB": 0.0,
+        "total": 0.0,
+    }
+    weekly_scores = player.weeklystats_set.all()
+    for week_score in weekly_scores:
+        total += week_score.week_score
+        scoring_dict[week_score.week] = week_score.week_score
+    scoring_dict['total'] = total
+    return scoring_dict

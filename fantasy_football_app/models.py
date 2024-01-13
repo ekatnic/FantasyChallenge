@@ -2,7 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from .model_utils import calculate_weekly_score_for_player
+from computedfields.models import ComputedFieldsModel, computed, compute
+from .constants import WEEK_CHOICES
 
 class Player(models.Model):
     POSITION_CHOICES = [
@@ -16,11 +18,10 @@ class Player(models.Model):
     name = models.CharField(max_length=100)
     position = models.CharField(max_length=12, choices=POSITION_CHOICES)
     team = models.CharField(max_length=50)
+    #rostered_percentage = models.FloatField(default=0.0) 
 
     def __str__(self):
         return f'{self.name} ({self.position}) - {self.team}'
-
-
 
 
 class Entry(models.Model):
@@ -31,7 +32,7 @@ class Entry(models.Model):
     divisional_score = models.FloatField(default=0.0)
     conference_score = models.FloatField(default=0.0)
     super_bowl_score = models.FloatField(default=0.0)
-    total = models.FloatField(default=0.0)
+    total = models.FloatField(default=0.0) #a calculated field?
 
     def save(self, *args, **kwargs):
         if not self.name:
@@ -49,41 +50,43 @@ class RosteredPlayers(models.Model):
 
 from django.db import models
 
-class WeeklyStats(models.Model):
-    passing_yards = models.FloatField(default=0)
-    passing_tds = models.FloatField(default=0)
-    passing_interceptions = models.FloatField(default=0)
-    rushing_yards = models.FloatField(default=0)
-    rushing_tds = models.FloatField(default=0)
-    receptions = models.FloatField(default=0)
-    receiving_yards = models.FloatField(default=0)
-    receiving_tds = models.FloatField(default=0)
-    fumbles_lost = models.FloatField(default=0)
-    sacks = models.FloatField(default=0)
-    interceptions = models.FloatField(default=0)
-    blocks = models.FloatField(default=0)
-    safeties = models.FloatField(default=0)
-    defensive_tds = models.FloatField(default=0)
-    return_tds = models.FloatField(default=0)
-    points_allowed = models.FloatField(default=0)
-    week_score = models.FloatField(default=0)
+class WeeklyStats(ComputedFieldsModel):    
+    class Meta:
+        unique_together = (('player', 'week'),)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, null=True, blank=True)
+    week = models.CharField(max_length=12, choices=WEEK_CHOICES, null=True, blank=True)
+    passing_yards = models.IntegerField(default=0)
+    passing_tds = models.IntegerField(default=0)
+    passing_interceptions = models.IntegerField(default=0)
+    rushing_yards = models.IntegerField(default=0)
+    rushing_tds = models.IntegerField(default=0)
+    receptions = models.IntegerField(default=0)
+    receiving_yards = models.IntegerField(default=0)
+    receiving_tds = models.IntegerField(default=0)
+    fumbles_lost = models.IntegerField(default=0)
+    sacks = models.IntegerField(default=0)
+    interceptions = models.IntegerField(default=0)
+    fumbles_recovered = models.IntegerField(default=0)
+    safeties = models.IntegerField(default=0)
+    defensive_tds = models.IntegerField(default=0)
+    return_tds = models.IntegerField(default=0)
+    points_allowed = models.IntegerField(default=0)
+    two_pt_conversions = models.IntegerField(default=0)
+    @computed(models.FloatField(), depends=[
+       ('self', ['passing_yards', 'passing_tds', 'passing_interceptions', 
+        'rushing_yards', 'rushing_tds', 'receptions', 'receiving_yards', 
+        'receiving_tds', 'fumbles_lost', 'sacks', 'interceptions', 
+        'fumbles_recovered', 'safeties', 'defensive_tds', 'return_tds', 
+        'points_allowed', 'two_pt_conversions']),
+        ( 'player', ['position']),
+        ]
+    )
+    def week_score(self):
+        return calculate_weekly_score_for_player(self)
 
-class PlayerStats(models.Model):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    team = models.CharField(max_length=100)
-    position = models.CharField(max_length=100)
-    total = models.FloatField(default=0)
-    wild_card_stats = models.OneToOneField(WeeklyStats, on_delete=models.CASCADE, related_name='wild_card', null = True)
-    divisional_stats = models.OneToOneField(WeeklyStats, on_delete=models.CASCADE, related_name='divisional', null = True)
-    conference_stats = models.OneToOneField(WeeklyStats, on_delete=models.CASCADE, related_name='conference', null = True)
-    super_bowl_stats = models.OneToOneField(WeeklyStats, on_delete=models.CASCADE, related_name='super_bowl', null = True)
-
+class CSVUpload(models.Model):
+    file = models.FileField(upload_to='csvs/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    week = models.CharField(max_length=12, choices=WEEK_CHOICES, null=True, blank=True)
     def __str__(self):
-        return self.name
-    
-class Standings(models.Model):
-    entry_name = models.CharField(max_length=255)
-    entry_score = models.FloatField()
-    standings_place = models.IntegerField()
+        return self.file.name
