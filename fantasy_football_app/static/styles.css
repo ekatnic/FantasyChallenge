@@ -115,3 +115,8 @@ button:hover {
     font-weight: bold;
     background-color: rgba(130, 181, 205, 0.258);  /* Adjust as needed */
 }
+
+.dataTables_filter input {
+    width: 500px;  /* Adjust as needed */
+    margin-left: 15px;
+}
