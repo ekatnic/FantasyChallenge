@@ -30,6 +30,7 @@ from fantasy_football_app.views import (
     standings, 
     view_entry,
     sign_out,
+    players_view,
 )
 
 urlpatterns = [
@@ -47,4 +48,5 @@ urlpatterns = [
     path('reset_password/', auth_views.PasswordChangeView.as_view(template_name='fantasy_football_app/registration/password_change.html'), name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='fantasy_football_app/registration/password_change_done.html'), name='password_change_done'),
     path('load_stats/', csv_upload_view, name='load_stats'),
+    path('players/', players_view, name='players'),
 ]

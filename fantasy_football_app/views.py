@@ -8,8 +8,11 @@ from django.contrib.auth.decorators import login_required
 from django import forms  # Import Django's built-in forms module
 from django.contrib.auth import authenticate, login, logout
 from django.core.cache import cache
+from django.db.models import Count, F, FloatField, Sum, Case, When, IntegerField
+from django.db.models.functions import Round
 from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
-from .models import CSVUpload, Entry, RosteredPlayers
+from .models import CSVUpload, Entry, RosteredPlayers, Player
+from .scoring import get_raw_player_scoring_dict
 from .utils import (
     get_entry_score_dict, 
     get_entry_total_dict, 
@@ -223,3 +226,42 @@ def csv_upload_view(request):
 
     csv_uploads = CSVUpload.objects.all()
     return render(request, 'fantasy_football_app/csv_upload.html', {'csv_uploads': csv_uploads})
+
+
+def players_view(request):
+    players_scoring_dict = cache.get('players_scoring_dict')
+    total_entries = float(Entry.objects.count())
+    if not players_scoring_dict:
+        players_scoring_dict = {}
+
+        # Get a QuerySet of Players, annotated with the count of related RosteredPlayer instances
+        player_counts = Player.objects.annotate(
+            roster_count=Count('rosteredplayers'),
+            roster_percentage=Round(F('roster_count') / total_entries * 100, 2),
+            captain_count=Sum(
+                Case(
+                    When(rosteredplayers__is_captain=True, then=1),
+                    default=0,
+                    output_field=IntegerField()
+                )
+            ),
+            captain_percentage=Round(F('captain_count') / total_entries * 100, 2),
+            scaled_flex_count=Sum(
+                Case(
+                    When(rosteredplayers__is_scaled_flex=True, then=1),
+                    default=0,
+                    output_field=IntegerField()
+                )
+            ),
+            scaled_flex_percentage=Round(F('scaled_flex_count') / total_entries * 100, 2)
+        )
+
+        # Filter the QuerySet to include only Players with one or more RosteredPlayer
+        player_counts = player_counts.filter(roster_count__gt=0.0).order_by('-roster_percentage')
+        for player in player_counts:
+            players_scoring_dict[player] = get_raw_player_scoring_dict(player)
+        cache.set('players_scoring_dict', players_scoring_dict, 60 * 30)  # Cache for 30 minutes
+    context = {
+        'players_scoring_dict': players_scoring_dict,
+    }
+    return render(request, 'fantasy_football_app/players.html', {'players_scoring_dict': players_scoring_dict})
