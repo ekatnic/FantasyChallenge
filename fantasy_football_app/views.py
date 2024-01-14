@@ -231,7 +231,7 @@ def csv_upload_view(request):
 def players_view(request):
     players_scoring_dict = cache.get('players_scoring_dict')
     total_entries = float(Entry.objects.count())
-    if players_scoring_dict:
+    if not players_scoring_dict:
         players_scoring_dict = {}
 
         # Get a QuerySet of Players, annotated with the count of related RosteredPlayer instances
