@@ -16,11 +16,10 @@ def rank_entries(entries_dict):
     sorted_entries = sorted(entries_dict.items(), key=lambda x: x[1]['total'], reverse=True)
 
     user_entries = {}
-    rank = 0
     last_score = None
-    for entry, scoring_dict in sorted_entries:
+    for i, (entry, scoring_dict) in enumerate(sorted_entries, start=1):
         if scoring_dict['total'] != last_score:
-            rank += 1
+            rank = i
         user_entries[entry] = {**scoring_dict, 'rank': rank}
         last_score = scoring_dict['total']
     return user_entries
