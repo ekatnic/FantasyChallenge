@@ -123,7 +123,7 @@ def create_entry(request):
             player_fields = ['quarterback', 'running_back1', 'running_back2', 'wide_receiver1', 'wide_receiver2', 'tight_end', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled_flex', 'defense']
 
             messages.success(request, 'Entry submitted successfully.')
-            cache.delete('all_entry_score_dicts')
+            cache.delete('ranked_entries_dict')
             return redirect('user_home')
         else:
             messages.error(request, 'Error submitting entry. Please check the form.')
@@ -150,7 +150,7 @@ def delete_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id, user=request.user)
     entry.delete()
     messages.success(request, 'Entry deleted successfully.')
-    cache.delete('all_entry_score_dicts')
+    cache.delete('ranked_entries_dict')
     return redirect('user_home')
 
 @login_required
@@ -180,7 +180,7 @@ def edit_entry(request, entry_id):
         if form.is_valid():
             RosteredPlayers.objects.filter(entry=entry).delete()
             form.save()
-            cache.delete('all_entry_score_dicts')
+            cache.delete('ranked_entries_dict')
             return redirect('user_home')  # Redirect to user_home after successfully submitting the form
 
     context = {'entry': entry, 'form': form}
