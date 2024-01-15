@@ -6,6 +6,24 @@ from .constants import INPUT_INDEXES
 from .scoring import get_scaled_player_scoring_dict
 from .models import Entry, Player, WeeklyStats
 
+def rank_entries(entries_dict):
+    """
+    Rank entries in a dictionary of entries and their total scores.
+
+    Args:
+        entries_dict (dict): A dictionary where the keys are entries and the values are dicts of their total scores.
+    """
+    sorted_entries = sorted(entries_dict.items(), key=lambda x: x[1]['total'], reverse=True)
+
+    user_entries = {}
+    last_score = None
+    for i, (entry, scoring_dict) in enumerate(sorted_entries, start=1):
+        if scoring_dict['total'] != last_score:
+            rank = i
+        user_entries[entry] = {**scoring_dict, 'rank': rank}
+        last_score = scoring_dict['total']
+    return user_entries
+
 def get_all_entry_score_dicts():
     """
     Get a dictionary of total scores for each entry in db
@@ -13,16 +31,15 @@ def get_all_entry_score_dicts():
         dict: A dictionary where the keys are entries and the values are dicts of their total scores.
     """
     # Try to get the result from the cache
-    all_entry_score_dict = cache.get('all_entry_score_dicts')
+    ranked_entries_dict = cache.get('ranked_entries_dict')
 
     # If the result was not in the cache, calculate it and store it in the cache
-    if all_entry_score_dict is None:
+    if ranked_entries_dict is None:
         entries = Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set').all().order_by('id')
         all_entry_score_dict = get_entry_list_score_dict(entries)
-        all_entry_score_dict = sorted(all_entry_score_dict.items(), key=lambda item: item[1]['total'], reverse=True)
-        cache.set('all_entry_score_dicts', all_entry_score_dict, 60 * 30)  # Cache results for 30 minutes
-
-    return all_entry_score_dict
+        ranked_entries_dict = rank_entries(all_entry_score_dict)
+        cache.set('ranked_entries_dict', ranked_entries_dict, 60 * 30)  # Cache results for 30 minutes
+    return ranked_entries_dict
 
 def get_entry_list_score_dict(entry_list):
     """
