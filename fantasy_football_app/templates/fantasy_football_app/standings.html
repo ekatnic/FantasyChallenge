@@ -25,9 +25,9 @@
                 </tr>
             </thead>
             <tbody>
-                {% for entry, scoring_dict in entries %}
+                {% for entry, scoring_dict in entries.items %}
                         <tr class="{% if request.user.id == entry.user.id %}highlight{% endif %}">
-                        <td>{{ forloop.counter }}</td>
+                        <td>{{ scoring_dict.rank }}</td>
                         <th scope="row"><a href="{% url 'view_entry' entry.id %}">{{ entry.name }}</a></th>
                         <td>{{ scoring_dict.WC }}</td>
                         <td>{{ scoring_dict.DIV }}</td>

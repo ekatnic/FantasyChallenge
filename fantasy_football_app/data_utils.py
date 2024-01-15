@@ -44,7 +44,7 @@ def update_player_stats_from_csv(csv_file_path, stats_attribute):
     updated_player_stats = []
     with open(csv_file_path, 'r', encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
-        cache.delete('all_entry_score_dicts')
+        cache.delete('ranked_entries_dict')
         cache.delete('players_scoring_dict')
         for row in reader:
             player_name = row[0].split('(')[0].strip()
