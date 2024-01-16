@@ -1,9 +1,25 @@
 import csv
 
-from django.db.models import Prefetch
+from django.db.models import (
+    Count, 
+    F, 
+    FloatField, 
+    Sum, 
+    Case, 
+    Prefetch,
+    When, 
+    IntegerField, 
+    Func
+)
+from django.db.models.functions import Round
 from django.core.cache import cache
 from .constants import INPUT_INDEXES
-from .scoring import get_scaled_player_scoring_dict
+from .scoring import (
+    get_scaled_player_scoring_dict,
+    get_raw_player_scoring_dict,
+    get_roster_percentage_multiplier
+)
+
 from .models import Entry, Player, WeeklyStats
 
 def rank_entries(entries_dict):
@@ -86,3 +102,39 @@ def get_entry_total_dict(entry_score_dict):
     for entry, total in final_dict.items():
         final_dict[entry] = round(total, 2) 
     return final_dict
+
+def get_summarized_players():
+    """
+    Get a dictionary of player data with rostership counts and percentages
+    returns: dictionary of summarized player data {player : scoring/rostership dict}
+    """
+    players_scoring_dict = {}
+    total_entries = float(Entry.objects.count())
+    player_counts = Player.objects.annotate(
+        roster_count=Count('rosteredplayers'),
+        roster_percentage=Round(F('roster_count') / total_entries * 100, 2),
+        captain_count=Sum(
+            Case(
+                When(rosteredplayers__is_captain=True, then=1),
+                default=0,
+                output_field=IntegerField()
+            )
+        ),
+        captain_percentage=Round(F('captain_count') / total_entries * 100, 2),
+        scaled_flex_count=Sum(
+            Case(
+                When(rosteredplayers__is_scaled_flex=True, then=1),
+                default=0,
+                output_field=IntegerField()
+            )
+        ),
+        scaled_flex_percentage=Round(F('scaled_flex_count') / total_entries * 100, 2),
+    )
+
+    # Filter the QuerySet to include only Players with one or more RosteredPlayer
+    player_counts = player_counts.filter(roster_count__gt=0.0).order_by('-roster_percentage')
+    for player in player_counts:
+        player_dict = get_raw_player_scoring_dict(player)
+        player_dict['scaled_flex_multiplier'] = get_roster_percentage_multiplier(player.roster_percentage)
+        players_scoring_dict[player] = player_dict
+    return players_scoring_dict
