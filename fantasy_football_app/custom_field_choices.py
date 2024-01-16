@@ -1,7 +1,10 @@
+from itertools import groupby
+
 from django import forms
 from django.db.models import QuerySet
-from itertools import groupby
+
 from .models import Player
+
 
 class GroupedModelChoiceField(forms.ModelChoiceField):
     def __init__(self, queryset, group_by_field, group_label=None, *args, **kwargs):

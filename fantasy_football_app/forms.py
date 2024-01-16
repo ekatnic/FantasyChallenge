@@ -1,8 +1,11 @@
 # forms.py
 from django import forms
-from .models import Player, Entry, RosteredPlayers
-from .custom_field_choices import GroupedModelChoiceField, get_custom_grouped_model_choice_field
+
 from .constants import FLEX_POSITIONS
+from .custom_field_choices import (GroupedModelChoiceField,
+                                   get_custom_grouped_model_choice_field)
+from .models import Entry, Player, RosteredPlayers
+
 
 class EntryForm(forms.ModelForm):
     quarterback = get_custom_grouped_model_choice_field(['QB'])

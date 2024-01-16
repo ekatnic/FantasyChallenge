@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import CSVUpload, Player, Entry, RosteredPlayers, WeeklyStats
+
+from .models import CSVUpload, Entry, Player, RosteredPlayers, WeeklyStats
 
 
 class PlayerAdmin(admin.ModelAdmin):
