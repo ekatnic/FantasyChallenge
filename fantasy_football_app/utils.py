@@ -13,7 +13,7 @@ from django.db.models import (
 )
 from django.db.models.functions import Round
 from django.core.cache import cache
-from .constants import INPUT_INDEXES
+from .constants import INPUT_INDEXES, FLEX_POSITIONS
 from .scoring import (
     get_scaled_player_scoring_dict,
     get_raw_player_scoring_dict,
@@ -135,6 +135,10 @@ def get_summarized_players():
     player_counts = player_counts.filter(roster_count__gt=0.0).order_by('-roster_percentage')
     for player in player_counts:
         player_dict = get_raw_player_scoring_dict(player)
-        player_dict['scaled_flex_multiplier'] = get_roster_percentage_multiplier(player.roster_percentage)
+        player_dict['scaled_flex_multiplier'] = (
+            str(get_roster_percentage_multiplier(player.roster_percentage)) + 'x'
+            if player.position in FLEX_POSITIONS
+            else ''
+        )
         players_scoring_dict[player] = player_dict
     return players_scoring_dict
