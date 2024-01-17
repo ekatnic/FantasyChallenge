@@ -230,3 +230,6 @@ def players_view(request):
         'players_scoring_dict': players_scoring_dict,
     }
     return render(request, 'fantasy_football_app/players.html', {'players_scoring_dict': players_scoring_dict})
+
+def rules(request):
+    return render(request, 'fantasy_football_app/rules.html')
