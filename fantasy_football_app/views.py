@@ -233,6 +233,10 @@ def players_view(request):
     }
     return render(request, 'fantasy_football_app/players.html', {'players_scoring_dict': players_scoring_dict})
 
+@login_required
+def rules(request):
+    return render(request, 'fantasy_football_app/rules.html')
+  
 def player_stats_view(request, player_id):
     player = get_object_or_404(Player.objects.prefetch_related('weeklystats_set'), id=player_id)
     weekly_stats = player.weeklystats_set.all().order_by('id')
