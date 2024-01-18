@@ -1,11 +1,8 @@
 # scoring.py
-from .models import (
-    Entry, 
-    Player, 
-    RosteredPlayers, 
-    WeeklyStats,
-)
 from django.db.models import F
+
+from .models import Entry, Player, RosteredPlayers, WeeklyStats
+
 
 def get_roster_percentage_multiplier(rostered_percentage):
     """

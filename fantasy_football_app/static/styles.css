@@ -111,6 +111,9 @@ button:hover {
     min-width: 90%;
 }
 
+.player-stat-container {
+    min-width: 70%;
+}
 .highlight {
     font-weight: bold;
     background-color: rgba(130, 181, 205, 0.258);  /* Adjust as needed */
