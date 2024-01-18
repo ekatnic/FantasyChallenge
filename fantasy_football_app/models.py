@@ -1,10 +1,12 @@
-from django.db import models
+from computedfields.models import ComputedFieldsModel, compute, computed
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .model_utils import calculate_weekly_score_for_player
-from computedfields.models import ComputedFieldsModel, computed, compute
+
 from .constants import WEEK_CHOICES
+from .model_utils import calculate_weekly_score_for_player
+
 
 class Player(models.Model):
     POSITION_CHOICES = [
@@ -49,6 +51,7 @@ class RosteredPlayers(models.Model):
     is_scaled_flex = models.BooleanField(default=False)
 
 from django.db import models
+
 
 class WeeklyStats(ComputedFieldsModel):    
     class Meta:

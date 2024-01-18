@@ -32,6 +32,7 @@ from fantasy_football_app.views import (
     sign_out,
     players_view,
     rules,
+    player_stats_view,
 )
 
 urlpatterns = [
@@ -51,4 +52,5 @@ urlpatterns = [
     path('load_stats/', csv_upload_view, name='load_stats'),
     path('players/', players_view, name='players'),
     path('rules/', rules, name='rules'),
+    path('player/<int:player_id>/', player_stats_view, name='player_stats'),
 ]

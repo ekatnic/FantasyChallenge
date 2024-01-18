@@ -25,3 +25,30 @@ WEEK_CHOICES = [
         ('CONF', 'Conference'),
         ('SB', 'Super Bowl'),
     ]
+
+DEFENSE_STATS_NAMES = {
+    'week': 'WEEK',
+    'points_allowed': 'POINTS ALLOWED',
+    'fumbles_recovered': 'FUM REC',
+    'interceptions': 'INTS',
+    'safeties': 'SAFETIES',
+    'sacks': 'SACKS',
+    'defensive_tds': 'DEF TDS',
+    'return_tds': 'ST TDS',
+    'week_score': 'FANTASY PTS',
+}
+
+SKILL_POS_STATS_NAMES = {
+    'week': 'WEEK',
+    'passing_yards': 'PASS YARDS',
+    'passing_tds': 'PASS TDS',
+    'passing_interceptions': 'INT',
+    'rushing_yards': 'RUSH YADS',
+    'rushing_tds': 'RUSH TDS',
+    'receptions': 'REC',
+    'receiving_yards': 'REC YDS',
+    'receiving_tds': 'REC TDS',
+    'two_pt_conversions': '2PC',
+    'fumbles_lost': 'FUM LOST',
+    'week_score': 'FANTASY PTS',
+}
