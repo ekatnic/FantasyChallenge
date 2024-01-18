@@ -1,15 +1,8 @@
 # fantasy_football_app/urls.py
 from django.urls import path
-from .views import (
-    index,
-    register,
-    sign_in,
-    create_entry,
-    user_home,
-    delete_entry,
-    edit_entry,
-    standings,
-)
+
+from .views import (create_entry, delete_entry, edit_entry, index, register,
+                    sign_in, standings, user_home)
 
 urlpatterns = [
     path('', index, name='index'),  # This line maps the root path to the index view

@@ -1,6 +1,7 @@
 import csv
 
 from django.core.cache import cache
+
 from .constants import INPUT_INDEXES
 from .models import Player, WeeklyStats
 

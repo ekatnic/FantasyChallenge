@@ -1,28 +1,31 @@
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
 from django import forms  # Import Django's built-in forms module
-from django.contrib.auth import authenticate, login, logout
-from django.core.cache import cache
-from .forms import EntryForm  # Make sure to import EntryForm at the top of your file
-from .models import CSVUpload, Entry, RosteredPlayers, Player
-from .utils import (
-    get_entry_score_dict, 
-    get_entry_total_dict, 
-    get_all_entry_score_dicts,
-    get_entry_list_score_dict,
-    get_summarized_players,
-)
-from .data_utils import update_player_stats_from_csv
-from .constants import POSITION_ORDER
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.forms.models import model_to_dict
+from django.shortcuts import get_object_or_404, redirect, render
 from waffle import flag_is_active
+
+from .constants import (DEFENSE_STATS_NAMES, POSITION_ORDER,
+                        SKILL_POS_STATS_NAMES)
+from .data_utils import update_player_stats_from_csv
+from .forms import EntryForm  
+from .models import (
+    CSVUpload, 
+    Entry, 
+    Player,
+    RosteredPlayers,
+    WeeklyStats
+)
+from .utils import (
+    get_all_entry_score_dicts, get_entry_list_score_dict,
+    get_entry_score_dict, get_entry_total_dict,
+    get_summarized_players, update_and_return
+)
 
 
 class RegistrationForm(UserCreationForm):
@@ -219,7 +222,6 @@ def csv_upload_view(request):
     csv_uploads = CSVUpload.objects.all()
     return render(request, 'fantasy_football_app/csv_upload.html', {'csv_uploads': csv_uploads})
 
-
 def players_view(request):
     players_scoring_dict = cache.get('players_scoring_dict')
     if not players_scoring_dict:
@@ -234,3 +236,14 @@ def players_view(request):
 @login_required
 def rules(request):
     return render(request, 'fantasy_football_app/rules.html')
+  
+def player_stats_view(request, player_id):
+    player = get_object_or_404(Player.objects.prefetch_related('weeklystats_set'), id=player_id)
+    weekly_stats = player.weeklystats_set.all().order_by('id')
+    weekly_stats_dicts = [update_and_return(model_to_dict(stat), {'week_score': stat.week_score}) for stat in weekly_stats]
+    context = {
+        'player': player,
+        'weekly_stats': weekly_stats_dicts,
+        'field_name_mapping': DEFENSE_STATS_NAMES if player.position == 'DEF' else SKILL_POS_STATS_NAMES,
+    }
+    return render(request, 'fantasy_football_app/player_stats.html', context)

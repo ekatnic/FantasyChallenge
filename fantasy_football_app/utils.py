@@ -1,26 +1,16 @@
 import csv
 
-from django.db.models import (
-    Count, 
-    F, 
-    FloatField, 
-    Sum, 
-    Case, 
-    Prefetch,
-    When, 
-    IntegerField, 
-    Func
-)
-from django.db.models.functions import Round
 from django.core.cache import cache
-from .constants import INPUT_INDEXES, FLEX_POSITIONS
-from .scoring import (
-    get_scaled_player_scoring_dict,
-    get_raw_player_scoring_dict,
-    get_roster_percentage_multiplier
-)
+from django.db.models import (Case, Count, F, FloatField, Func, IntegerField,
+                              Prefetch, Sum, When)
+from django.db.models.functions import Round
 
+from .constants import FLEX_POSITIONS, INPUT_INDEXES
 from .models import Entry, Player, WeeklyStats
+from .scoring import (get_raw_player_scoring_dict,
+                      get_roster_percentage_multiplier,
+                      get_scaled_player_scoring_dict)
+
 
 def rank_entries(entries_dict):
     """
@@ -142,3 +132,7 @@ def get_summarized_players():
         )
         players_scoring_dict[player] = player_dict
     return players_scoring_dict
+
+def update_and_return(dict_obj, update_dict):
+    dict_obj.update(update_dict)
+    return dict_obj
