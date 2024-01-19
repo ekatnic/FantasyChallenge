@@ -16,7 +16,9 @@
     {% csrf_token %}
     <select name="csv_upload">
       {% for csv_upload in csv_uploads %}
-        <option value="{{ csv_upload.id }}">{{ csv_upload.file }}</option>
+        <option value="{{ csv_upload.id }}">
+          {{ csv_upload.name }} - {{ csv_upload.file}}
+        </option>
       {% endfor %}
     </select>
     <button type="submit">Load Stats</button>
