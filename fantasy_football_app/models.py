@@ -88,8 +88,9 @@ class WeeklyStats(ComputedFieldsModel):
         return calculate_weekly_score_for_player(self)
 
 class CSVUpload(models.Model):
+    name = models.CharField(max_length=100, default='')
     file = models.FileField(upload_to='csvs/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    week = models.CharField(max_length=12, choices=WEEK_CHOICES, null=True, blank=True)
+    week = models.CharField(max_length=12, choices=WEEK_CHOICES, default='WC')
     def __str__(self):
         return self.file.name

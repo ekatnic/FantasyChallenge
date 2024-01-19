@@ -36,4 +36,4 @@ admin.site.register(WeeklyStats, WeeklyStatsAdmin)
 
 @admin.register(CSVUpload)
 class CSVUploadAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'file', 'uploaded_at')
