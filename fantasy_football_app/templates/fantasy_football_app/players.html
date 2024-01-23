@@ -39,9 +39,21 @@
             <td><a href="{% url 'player_stats' player.id %}">{{ player.name }}</a></td>
             <td>{{ player.team }}</td>
             <td>{{ player.position }}</td>
-            <td>{{ player.roster_percentage }}</td>
-            <td>{{ player.captain_percentage }}</td>
-            <td>{{ player.scaled_flex_percentage }}</td>
+            <td><a href="{% url 'entry_list'%}?rostered_player={{ player.id }}">{{player.roster_percentage }}</a></td>
+            <td>
+              {% if player.captain_percentage > 0 %}
+                <a href="{% url 'entry_list'%}?captain={{ player.id }}">{{player.captain_percentage }}</a>
+              {% else %}
+                {{player.captain_percentage}}
+              {% endif %}
+            </td>
+            <td>
+              {% if player.scaled_flex_percentage > 0 %}
+                <a href="{% url 'entry_list'%}?scaled_flex={{ player.id }}">{{player.scaled_flex_percentage }}</a>
+              {% else %}
+                {{player.scaled_flex_percentage}}
+              {% endif %}
+            </td>
             <td>{{ scoring.scaled_flex_multiplier }}</td>
             <td>{{ scoring.WC }}</td>
             <td>{{ scoring.DIV }}</td>

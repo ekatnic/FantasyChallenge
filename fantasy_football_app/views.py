@@ -247,3 +247,30 @@ def player_stats_view(request, player_id):
         'field_name_mapping': DEFENSE_STATS_NAMES if player.position == 'DEF' else SKILL_POS_STATS_NAMES,
     }
     return render(request, 'fantasy_football_app/player_stats.html', context)
+
+def entry_list_view(request):
+    rostered_player_id = request.GET.get('rostered_player','')
+    scaled_flex_id = request.GET.get('scaled_flex','')
+    captain_id = request.GET.get('captain','')
+    player_id = rostered_player_id or scaled_flex_id or captain_id
+    player = get_object_or_404(Player, id=player_id)
+    if rostered_player_id:
+        filter_condition={'player_id':rostered_player_id}
+        filter_message=f'Entries where {player.name} is rostered'
+    elif scaled_flex_id:
+        filter_condition={'player_id':scaled_flex_id, 'is_scaled_flex':True}
+        filter_message=f'Entries where {player.name} is scaled flex'
+    elif captain_id:
+        filter_condition={'player_id':captain_id, 'is_captain':True}
+        filter_message=f'Entries where {player.name} is captain'
+    else:
+        return redirect('players')
+    rostered_player_set = RosteredPlayers.objects.filter(**filter_condition)
+    entry_id_list = rostered_player_set.values_list('entry', flat=True)
+    all_entries_dict = get_all_entry_score_dicts()
+    entries_list = {entry: scoring for entry, scoring in all_entries_dict.items() if entry.id in entry_id_list}
+    context = {
+        'entries': entries_list,
+        'filter_message': filter_message,
+        }
+    return render(request, 'fantasy_football_app/entry_list.html', context)
