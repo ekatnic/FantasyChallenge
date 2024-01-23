@@ -56,7 +56,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'fantasy_football_app.middleware.QueryCountMiddleware',
 ]
 
 ROOT_URLCONF = 'fantasy_football_project.urls'
