@@ -94,7 +94,7 @@ def process_defense_weekly_stat(weekly_stats, stats):
     weekly_stats.points_allowed = int(stats.get('ptsAllowed', 0))
     weekly_stats.fumbles_recovered = int(stats.get('fumblesRecovered', 0))
     weekly_stats.interceptions = int(stats.get('defensiveInterceptions', 0))
-    weekly_stats.safeties = int(stats.get('safeties', 0))
+    # weekly_stats.safeties = int(stats.get('safeties', 0))
     weekly_stats.sacks = int(stats.get('sacks', 0))
     weekly_stats.defensive_tds = int(stats.get('defTD', 0))
     # Convert the weekly stats for that week to fantasy points
@@ -115,7 +115,7 @@ def process_offensive_weekly_stat(weekly_stats, stats):
     receiving_stats = stats.get('Receiving', {})
     rushing_stats = stats.get('Rushing', {})
     fumble_stats = stats.get('Defense', {})
-    weekly_stats.passing_yards = int(passing_stats.get('passingYards', 0))
+    weekly_stats.passing_yards = int(passing_stats.get('passYds', 0))
     weekly_stats.passing_tds = int(passing_stats.get('passTD', 0))
     weekly_stats.passing_interceptions = int(passing_stats.get('int', 0))
     weekly_stats.rushing_yards = int(rushing_stats.get('rushYds', 0))
