@@ -1,6 +1,5 @@
 import requests
 from django.conf import settings
-from django.core.cache import cache
 from .helper_classes import DataProcessor
 
 # Define API endpoints as constants
@@ -56,9 +55,8 @@ class TankAPIClient:
 
     # Define a method to process player stats for a specific date
     def process_player_stats_for_date(self, date, week):
-        cache.delete('ranked_entries_dict')
-        cache.delete('players_scoring_dict')
         game_id_list = self.get_games_for_date(date)
         player_stats_dict, defensive_stats_dict = self.get_stats_from_game_id_list(game_id_list)
-        DataProcessor.process_player_stats_dict(player_stats_dict, week)
-        DataProcessor.process_defense_stats_dict(defensive_stats_dict, week)
+        player_set = DataProcessor.process_player_stats_dict(player_stats_dict, week)
+        defense_set = DataProcessor.process_defense_stats_dict(defensive_stats_dict, week)
+        return list(player_set.union(defense_set))

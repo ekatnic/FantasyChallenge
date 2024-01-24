@@ -75,5 +75,5 @@ def get_raw_player_scoring_dict(player):
     for week_score in weekly_scores:
         total += week_score.week_score
         scoring_dict[week_score.week] = week_score.week_score
-    scoring_dict['total'] = total
+    scoring_dict['total'] = round(total, 2)
     return scoring_dict
