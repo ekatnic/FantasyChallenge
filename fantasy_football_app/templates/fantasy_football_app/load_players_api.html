@@ -1,0 +1,32 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Upload - Fantasy Football Playoff Challenge</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+{% include 'fantasy_football_app/navbar.html' %}
+<form method="post">
+    {% csrf_token %}
+    <label for="week">Week:</label>
+    <select id="week" name="week">
+        {% for value, display in week_choices %}
+            <option value="{{ value }}" {% if value == 'CONF' %}selected{% endif %}>{{ display }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="game_date">Game Date:</label>
+    <input type="text" id="game_date" name="game_date" value="{{ default_date }}">
+
+    <div>
+        {% if result %}
+        <p>Stats Added for: {{ result }}</p>
+        {% endif %}
+    </div>
+    <input type="submit" value="Load Stats From API">
+    
+</form>

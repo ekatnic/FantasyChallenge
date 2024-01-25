@@ -8,10 +8,13 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+
 from waffle import flag_is_active
 
+from .tank_api.api_request import TankAPIClient
 from .constants import (DEFENSE_STATS_NAMES, POSITION_ORDER,
-                        SKILL_POS_STATS_NAMES)
+                        SKILL_POS_STATS_NAMES, WEEK_CHOICES)
 from .data_utils import update_player_stats_from_csv
 from .forms import EntryForm  
 from .models import (
@@ -274,3 +277,25 @@ def entry_list_view(request):
         'filter_message': filter_message,
         }
     return render(request, 'fantasy_football_app/entry_list.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def load_players_api_view(request):
+    result = None
+    if request.method == 'POST':
+        week = request.POST.get('week')
+        game_date = request.POST.get('game_date')
+        cache.delete('ranked_entries_dict')
+        cache.delete('players_scoring_dict')
+        client = TankAPIClient()
+        result = client.process_player_stats_for_date(game_date, week)
+        result.sort()
+
+    # Default date to today in 'YYYYMMDD' format
+    default_date = timezone.now().strftime('%Y%m%d')
+
+    context = {
+        'week_choices': WEEK_CHOICES,
+        'default_date': default_date,
+        'result': result,
+    }
+    return render(request, 'fantasy_football_app/load_players_api.html', context)
