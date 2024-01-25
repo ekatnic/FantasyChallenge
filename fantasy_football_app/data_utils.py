@@ -123,10 +123,10 @@ def process_offensive_weekly_stat(weekly_stats, stats):
     weekly_stats.receptions = int(receiving_stats.get('receptions', 0))
     weekly_stats.receiving_yards = int(receiving_stats.get('recYds', 0))
     weekly_stats.receiving_tds = int(receiving_stats.get('recTD', 0))
-    weekly_stats.two_pt_conversions = int(
-        rushing_stats.get('rushingTwoPointConversion', 0) + 
-        receiving_stats.get('receivingTwoPointConversion', 0) + 
-        passing_stats.get('passingTwoPointConversion', 0)
+    weekly_stats.two_pt_conversions = (
+        int(rushing_stats.get('rushingTwoPointConversion', 0)) + 
+        int(receiving_stats.get('receivingTwoPointConversion', 0)) + 
+        int(passing_stats.get('passingTwoPointConversion', 0))
     )
     weekly_stats.fumbles_lost = int(fumble_stats.get('fumblesLost', 0))
 
