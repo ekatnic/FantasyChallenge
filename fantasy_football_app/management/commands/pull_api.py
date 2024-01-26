@@ -1,5 +1,7 @@
 # load_player_stats.py
 import logging
+
+from django.core.cache import cache
 from django.core.management.base import BaseCommand
 from fantasy_football_app.tank_api.api_request import TankAPIClient
 from fantasy_football_app.constants import WEEK_CHOICES
