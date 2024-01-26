@@ -4,6 +4,8 @@ from django.core.management.base import BaseCommand
 from fantasy_football_app.tank_api.api_request import TankAPIClient
 from fantasy_football_app.constants import WEEK_CHOICES
 
+logger = logging.getLogger(__name__)
+
 class Command(BaseCommand):
     help = 'Loads player stats for a given date and week'
 
