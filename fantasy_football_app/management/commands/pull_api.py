@@ -2,7 +2,7 @@
 import logging
 from django.core.management.base import BaseCommand
 from fantasy_football_app.tank_api.api_request import TankAPIClient
-from constants import WEEK_CHOICES
+from fantasy_football_app.constants import WEEK_CHOICES
 
 class Command(BaseCommand):
     help = 'Loads player stats for a given date and week'
