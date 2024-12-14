@@ -35,9 +35,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-mimetypes.add_type("text/javascript", ".js", True)
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -173,7 +170,6 @@ STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'fantasy_football_app/static'),
     os.path.join(BASE_DIR, 'build/static'), 
 ]
 
