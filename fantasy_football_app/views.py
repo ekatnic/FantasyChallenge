@@ -298,7 +298,7 @@ def load_players_api_view(request):
         'default_date': default_date,
         'result': result,
     }
-    return render(request, 'fantasy_football_app/load_players_api.html', context, content_type='application/javascript')
+    return render(request, 'fantasy_football_app/load_players_api.html', context)
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', content_type='application/javascript')
