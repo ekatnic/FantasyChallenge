@@ -171,7 +171,7 @@ STATIC_URL = '/static/'
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'fantasy_football_app/static'),
-    os.path.join(BASE_DIR, 'frontend/build/static'), 
+    os.path.join(BASE_DIR, 'build/static'), 
 ]
 
 # Simplified static file serving.
