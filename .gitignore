@@ -160,3 +160,17 @@ cython_debug/
 #.idea/
 fantasy_football_app/__pycache__/__init__.cpython-38.pyc
 staticfiles/
+
+# Ignore all terraform related files (.tf) files
+*.tfvars
+**/.terraform/
+
+# # Except for main.tf: !main.tf
+# !infra/main.tf
+
+infra/variables.tf
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
+infra/terraform.tfvars
+infra/.terraform.lock.hcl
+infra/tfplan

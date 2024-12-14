@@ -23,6 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
+# TODO: i think we want to implement this 'django-allauth' package and use the Cognito provider
+# TODO: Quickstart docs
+# https://django-allauth.readthedocs.io/en/latest/installation/quickstart.html
+
+# TODO: Cognito specific docs:
+# https://django-allauth.readthedocs.io/en/latest/socialaccount/providers/amazon_cognito.html
+
 # SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv()
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
@@ -105,18 +112,25 @@ if IS_HEROKU_APP:
     DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 else:
-    # When running locally in development or in CI, a sqlite database file will be used instead
-    # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
+    PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'fantasy_challenge_db',
-            'USER': 'postgres',
-            'PASSWORD': 'pass',
-            'HOST': 'localhost',
-            'PORT': '5432'
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(PROJECT_DIR, 'yourdatabasename.db'),
         }
     }
+    # # When running locally in development or in CI, a sqlite database file will be used instead
+    # # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': 'fantasy_challenge_db',
+    #         'USER': 'postgres',
+    #         'PASSWORD': 'pass',
+    #         'HOST': 'localhost',
+    #         'PORT': '5432'
+    #     }
+    # }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
