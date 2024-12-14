@@ -14,6 +14,7 @@ from pathlib import Path
 import django_heroku
 import os
 import dj_database_url
+import mimetypes
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,6 +35,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+mimetypes.add_type("text/javascript", ".js", True)
 
 # Application definition
 
