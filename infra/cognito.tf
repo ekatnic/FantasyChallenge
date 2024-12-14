@@ -53,13 +53,13 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   generate_secret = false
   refresh_token_validity = 60
   prevent_user_existence_errors = "ENABLED"
-  allowed_oauth_flows_user_pool_client = true
-  allowed_oauth_flows = ["code", "implicit"]
-  allowed_oauth_scopes = [
-    "email",
-    "openid",
-    "aws.cognito.signin.user.admin",
-  ]
+  # allowed_oauth_flows_user_pool_client = true
+  # allowed_oauth_flows = ["code", "implicit"]
+  # allowed_oauth_scopes = [
+  #   "email",
+  #   "openid",
+  #   "aws.cognito.signin.user.admin",
+  # ]
 
   explicit_auth_flows = [
     "ALLOW_REFRESH_TOKEN_AUTH", # to enable the authentication tokens to be refreshed.
@@ -71,7 +71,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   # TODO: frontend's callback URL
   # TODO: Need a redirect URL to send the user to after login 
   # TODO: Make sure this subdomain is covered by the ACM cert  
-  callback_urls = [var.callback_subdomain_name] # TODO: frontend's callback URL
+  # callback_urls = [var.callback_subdomain_name] # TODO: frontend's callback URL
 }
 
 # ----------------------------------------------------------------------    

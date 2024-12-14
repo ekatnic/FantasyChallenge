@@ -203,6 +203,98 @@ class CognitoIdentityProvider:
         else:
             return users
 
+    def forgot_password(self, user_name):
+        """
+        Start Forgot password flow for a user. Sends a confirmation_code to the users verification email.
+
+        :param user_name: The username of the user that you want to query or modify. 
+                            The value of this parameter is typically your user’s username,
+                            but it can be any of their alias attributes. If username isn’t an alias attribute 
+                            in your user pool, this value must be the sub of a local user or
+                            the username of a user from a third-party IdP.
+        :return: (The response from Amazon Cognito to a request to reset a password (or Boolean, True if the forgotten password flow was successfully initialized)
+        """
+        try:
+            kwargs = {
+                "ClientId": self.client_id,
+                "Username": user_name,
+            }
+            if self.client_secret is not None:
+                kwargs["SecretHash"] = self._secret_hash(user_name)
+            
+            forgot_resp = self.cognito_idp_client.forgot_password(**kwargs)
+
+            print(f"Forgot password for user resp:\n > '{forgot_resp}'")
+        except ClientError as err:
+            logger.error(
+                "Couldn't confirm forgot password for %s. Here's why: %s: %s",
+                user_name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        else:
+            return forgot_resp 
+
+    def confirm_forgot_password(self, user_name, confirmation_code, password):
+        """
+        Confirms a previously created user claimed they forgot there password. 
+
+        :param user_name: The name of the user to confirm.
+        :param confirmation_code: The confirmation code sent to the user's registered
+                                  email address.
+        :param password: new password user wants to set
+        :return: True when the confirmation succeeds.
+        """
+        try:
+            kwargs = {
+                "ClientId": self.client_id,
+                "Username": user_name,
+                "ConfirmationCode": confirmation_code,
+                "Password" : password,
+            }
+            if self.client_secret is not None:
+                kwargs["SecretHash"] = self._secret_hash(user_name)
+            confirmed_user = self.cognito_idp_client.confirm_forgot_password(**kwargs)
+            print(f"Confirmed user: {confirmed_user}")
+        except ClientError as err:
+            logger.error(
+                "Couldn't confirm forgot password for %s. Here's why: %s: %s",
+                user_name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        else:
+            return True
+        
+    def change_password(self, user_name, old_password, new_password, access_token):
+        """
+        Change the password for a user in the user pool.
+
+        :param user_name: The name of the user to change the password for.
+        :param old_password: The current password for the user.
+        :param new_password: The new password for the user.
+        :param access_token: The access token for the user.
+        """
+        try:
+            kwargs = {
+                "PreviousPassword": old_password,
+                "ProposedPassword": new_password,
+                "AccessToken": access_token,
+            }
+            response = self.cognito_idp_client.change_password(**kwargs)
+        except ClientError as err:
+            logger.error(
+                "Couldn't change password for %s. Here's why: %s: %s",
+                user_name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        else:
+            return response
+
     def start_sign_in(self, user_name, password):
         """
         Starts the sign-in process for a user by using administrator credentials.
@@ -496,22 +588,42 @@ class CognitoIdentityProvider:
         else:
             return auth_tokens
 
-    def sign_out(self, user_name):
-        """
-        Signs out a user from all devices.
+    def admin_sign_out(self, user_name):
+            """
+            Signs out a user from all devices.
 
-        :param user_name: The name of the user to sign out.
+            :param user_name: The name of the user to sign out.
+            """
+            try:
+                kwargs = {
+                    "UserPoolId": self.user_pool_id,
+                    "Username": user_name,
+                }
+                response = self.cognito_idp_client.admin_user_global_sign_out(**kwargs)
+            except ClientError as err:
+                logger.error(
+                    "Couldn't sign out for %s. Here's why: %s: %s",
+                    user_name,
+                    err.response["Error"]["Code"],
+                    err.response["Error"]["Message"],
+                )
+                raise
+            else:
+                return response
+            
+    def sign_out(self, access_token):
+        """
+        Sign out a user using a valid user access token  
+        :param access_token: valid user access_token
         """
         try:
             kwargs = {
-                "UserPoolId": self.user_pool_id,
-                "Username": user_name,
+                "AccessToken": access_token,
             }
-            response = self.cognito_idp_client.admin_user_global_sign_out(**kwargs)
+            response = self.cognito_idp_client.global_sign_out(**kwargs)
         except ClientError as err:
             logger.error(
-                "Couldn't sign out for %s. Here's why: %s: %s",
-                user_name,
+                "Couldn't sign out for user using given access_token. Here's why: %s: %s",
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )

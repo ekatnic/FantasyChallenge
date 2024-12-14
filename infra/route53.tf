@@ -16,11 +16,19 @@
 # Hosted Zone 
 # NOTE: this is an already created hosted zone 
 # --------------------------------------------------------
-
-data "aws_route53_zone" "hosted_zone" {
-    zone_id = var.hosted_zone_id
-    private_zone = false
+resource "aws_route53_zone" "hosted_zone" {
+    name = "${var.root_domain_name}"
+    # name = "playoff-showdown.com."
+    # private_zone = false
+    force_destroy = false 
 }
+
+# TODO: Move the Route53 record to a 'data' block
+# data "aws_route53_zone" "hosted_zone" {
+#     zone_id = var.hosted_zone_id
+#     # comment = "Playoff Showdown Hosted Zone"
+#     private_zone = false
+# }
 
 # --------------------------------------------------------
 # ACM Cert 
