@@ -39,6 +39,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'computedfields',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,12 +48,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fantasy_football_app',
     'django_extensions',
+    'rest_framework',
     "whitenoise.runserver_nostatic",
     'widget_tweaks',
     'waffle'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -104,6 +107,11 @@ if IS_HEROKU_APP:
     }
     DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    CORS_ALLOWED_ORIGINS = [
+        'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
+        'http://playoff-showdown.com',
+        'https://playoff-showdown.com',
+    ]
 else:
     # When running locally in development or in CI, a sqlite database file will be used instead
     # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
@@ -117,6 +125,9 @@ else:
             'PORT': '5432'
         }
     }
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+    ]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

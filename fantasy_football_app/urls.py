@@ -13,5 +13,6 @@ urlpatterns = [
     path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
     path('edit_entry/<int:entry_id>/', edit_entry, name='edit_entry'),
     path('standings/', standings, name='standings'),
-    # Add other app-level URL patterns as needed
+    path('api/entries/', EntryListCreateAPIView.as_view(), name='entry-list-create'),
+    path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
 ]
