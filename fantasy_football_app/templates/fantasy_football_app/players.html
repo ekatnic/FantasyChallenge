@@ -1,80 +1,93 @@
-{% load static %}
-{% load widget_tweaks %}
+{% load static %} {% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>All Players - Fantasy Football Playoff Challenge</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-</head>
+    {% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %} />
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-3.5.1.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"
+    ></script>
+  </head>
 
-<body>
-  {% include 'fantasy_football_app/navbar.html' %}
-      <h1 class="text-center my-4">Player Stats</h1>
-<div class="row justify-content-center">
-  <div class="col-lg-10">
-    <table id="playerTable" class="table table-striped table-hover">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col">Player</th>
-          <th scope="col">Team</th>
-          <th scope="col">Position</th>
-          <th scope="col">Roster %</th>
-          <th scope="col">Captain %</th>
-          <th scope="col">Scaled Flex %</th>
-          <th scope="col">SF Multiplier</th>
-          <th scope="col">Wild Card</th>
-          <th scope="col">Divisional</th>
-          <th scope="col">Conference</th>
-          <th scope="col">Super Bowl</th>
-          <th scope="col">Total Points</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for player, scoring in players_scoring_dict.items %}
-          <tr>
-            <td><a href="{% url 'player_stats' player.id %}">{{ player.name }}</a></td>
-            <td>{{ player.team }}</td>
-            <td>{{ player.position }}</td>
-            <td><a href="{% url 'entry_list'%}?rostered_player={{ player.id }}">{{player.roster_percentage }}</a></td>
-            <td>
-              {% if player.captain_percentage > 0 %}
-                <a href="{% url 'entry_list'%}?captain={{ player.id }}">{{player.captain_percentage }}</a>
-              {% else %}
-                {{player.captain_percentage}}
-              {% endif %}
-            </td>
-            <td>
-              {% if player.scaled_flex_percentage > 0 %}
-                <a href="{% url 'entry_list'%}?scaled_flex={{ player.id }}">{{player.scaled_flex_percentage }}</a>
-              {% else %}
-                {{player.scaled_flex_percentage}}
-              {% endif %}
-            </td>
-            <td>{{ scoring.scaled_flex_multiplier }}</td>
-            <td>{{ scoring.WC }}</td>
-            <td>{{ scoring.DIV }}</td>
-            <td>{{ scoring.CONF }}</td>
-            <td>{{ scoring.SB }}</td>
-            <td>{{ scoring.total }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <script>
-      $(document).ready(function() {
-          $('#playerTable').DataTable({
-              "lengthChange": false,
-              "info": false,
-              "paging": false,
-              "order": [[ 3, "desc" ]]
+  <body>
+    {% include 'fantasy_football_app/navbar.html' %}
+    <h1 class="text-center my-4">Player Stats</h1>
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <table id="playerTable" class="table table-striped table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Player</th>
+              <th scope="col">Team</th>
+              <th scope="col">Position</th>
+              <th scope="col">Roster %</th>
+              <th scope="col">Captain %</th>
+              <th scope="col">Scaled Flex %</th>
+              <th scope="col">SF Multiplier</th>
+              <th scope="col">Wild Card</th>
+              <th scope="col">Divisional</th>
+              <th scope="col">Conference</th>
+              <th scope="col">Super Bowl</th>
+              <th scope="col">Total Points</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for player, scoring in players_scoring_dict.items %}
+            <tr>
+              <td>
+                <a href="{% url 'player_stats' player.id %}"
+                  >{{ player.name }}</a
+                >
+              </td>
+              <td>{{ player.team }}</td>
+              <td>{{ player.position }}</td>
+              <td>
+                <a href="{% url 'entry_list'%}?rostered_player={{ player.id }}"
+                  >{{player.roster_percentage }}</a
+                >
+              </td>
+              <td>
+                {% if player.captain_percentage > 0 %}
+                <a href="{% url 'entry_list'%}?captain={{ player.id }}"
+                  >{{player.captain_percentage }}</a
+                >
+                {% else %} {{player.captain_percentage}} {% endif %}
+              </td>
+              <td>
+                {% if player.scaled_flex_percentage > 0 %}
+                <a href="{% url 'entry_list'%}?scaled_flex={{ player.id }}"
+                  >{{player.scaled_flex_percentage }}</a
+                >
+                {% else %} {{player.scaled_flex_percentage}} {% endif %}
+              </td>
+              <td>{{ scoring.scaled_flex_multiplier }}</td>
+              <td>{{ scoring.WC }}</td>
+              <td>{{ scoring.DIV }}</td>
+              <td>{{ scoring.CONF }}</td>
+              <td>{{ scoring.SB }}</td>
+              <td>{{ scoring.total }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <script>
+          $(document).ready(function () {
+            $("#playerTable").DataTable({
+              lengthChange: false,
+              info: false,
+              paging: false,
+              order: [[3, "desc"]],
+            });
           });
-      });
-      </script>
-  </div>
-</div>
-</body>
+        </script>
+      </div>
+    </div>
+  </body>
+</html>

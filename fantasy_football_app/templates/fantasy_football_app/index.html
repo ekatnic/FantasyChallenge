@@ -1,68 +1,74 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>User Home - Fantasy Football Playoff Challenge</title>
-   <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-   <style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Home - Fantasy Football Playoff Challenge</title>
+    {% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %} />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
       .container {
-          display: flex;
-          justify-content: flex-start;
-          width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
       }
       .textbox-container {
-          width: 85%;
-          display: flex;
-          flex-direction: column; /* Stack the textboxes vertically */
-          justify-content: flex-start;
+        width: 85%;
+        display: flex;
+        flex-direction: column; /* Stack the textboxes vertically */
+        justify-content: flex-start;
       }
       .textbox {
-          width: 100%;
-          border: 1px solid black;
-          padding: 10px;
-          margin: 20px;
+        width: 100%;
+        border: 1px solid black;
+        padding: 10px;
+        margin: 20px;
       }
-   </style>
-</head>
-<body>
-   <header>
+    </style>
+  </head>
+  <body>
+    <header>
       <h1>Welcome to the Fantasy Football Playoff Challenge!</h1>
-   </header>
+    </header>
 
-   <main>
+    <main>
       <div class="container">
-         <div class="textbox-container">
-            <div class="textbox" id="rules">
-               <h2>Challenge Rules</h2>
-               <p>Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup.</p>
-               <p>You can only select one player per team.</p>
-               <p>Points will NOT be doubled in the Super Bowl.</p>
-               <p>You CANNOT combine your captain and scaled FLEX.</p>
-               <p>Full scoring can be seen when you create your team.</p>
-               <hr>
-               <p>$20 per entry</p>
-               <p>$90 for 5 entries</p>
-               <p>$175 for 10 entries</p>
-               <p>Maximum of 10 entries</p>
-            </div>
+        <div class="textbox-container">
+          <div class="textbox" id="rules">
+            <h2>Challenge Rules</h2>
+            <p>
+              Create a lineup of 12 players. Once the playoffs start you will
+              not be able to change your lineup.
+            </p>
+            <p>You can only select one player per team.</p>
+            <p>Points will NOT be doubled in the Super Bowl.</p>
+            <p>You CANNOT combine your captain and scaled FLEX.</p>
+            <p>Full scoring can be seen when you create your team.</p>
+            <hr />
+            <p>$20 per entry</p>
+            <p>$90 for 5 entries</p>
+            <p>$175 for 10 entries</p>
+            <p>Maximum of 10 entries</p>
+          </div>
 
-            <div class="textbox" id="landing">
-               <h2>Get Ready for the Challenge!</h2>
-               <p>Sign up or log in to start building your fantasy team and compete in the playoffs.</p>
-               <div class="cta-buttons">
-                   <a href="{% url 'register' %}">Register</a>
-                   <a href="{% url 'sign_in' %}">Sign In</a>
-               </div>
+          <div class="textbox" id="landing">
+            <h2>Get Ready for the Challenge!</h2>
+            <p>
+              Sign up or log in to start building your fantasy team and compete
+              in the playoffs.
+            </p>
+            <div class="cta-buttons">
+              <a href="{% url 'register' %}">Register</a>
+              <a href="{% url 'sign_in' %}">Sign In</a>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-   </main>
+    </main>
 
-   <footer>
-       <!-- Your footer content will go here -->
-   </footer>
-</body>
+    <footer>
+      <!-- Your footer content will go here -->
+    </footer>
+  </body>
 </html>

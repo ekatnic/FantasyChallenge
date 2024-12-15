@@ -1,43 +1,46 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Standings - Fantasy Football Playoff Challenge</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
-<body>
+    {% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %} />
+  </head>
+  <body>
     {% include 'fantasy_football_app/navbar.html' %}
     <div class="container">
-        <h1 class="text-center my-4">Challenge Standings</h1>
-        <table class="table table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Rank</th>
-                    <th scope="col">Entry</th>
-                    <th scope="col">Wild Card</th>
-                    <th scope="col">Divisional</th>
-                    <th scope="col">Conference</th>
-                    <th scope="col">Super Bowl</th>
-                    <th scope="col">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for entry, scoring_dict in entries.items %}
-                        <tr class="{% if request.user.id == entry.user.id %}highlight{% endif %}">
-                        <td>{{ scoring_dict.rank }}</td>
-                        <th scope="row"><a href="{% url 'view_entry' entry.id %}">{{ entry.name }}</a></th>
-                        <td>{{ scoring_dict.WC }}</td>
-                        <td>{{ scoring_dict.DIV }}</td>
-                        <td>{{ scoring_dict.CONF }}</td>
-                        <td>{{ scoring_dict.SB }}</td>
-                        <td><b>{{ scoring_dict.total }}</b></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      <h1 class="text-center my-4">Challenge Standings</h1>
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Entry</th>
+            <th scope="col">Wild Card</th>
+            <th scope="col">Divisional</th>
+            <th scope="col">Conference</th>
+            <th scope="col">Super Bowl</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry, scoring_dict in entries.items %}
+          <tr
+            class="{% if request.user.id == entry.user.id %}highlight{% endif %}"
+          >
+            <td>{{ scoring_dict.rank }}</td>
+            <th scope="row">
+              <a href="{% url 'view_entry' entry.id %}">{{ entry.name }}</a>
+            </th>
+            <td>{{ scoring_dict.WC }}</td>
+            <td>{{ scoring_dict.DIV }}</td>
+            <td>{{ scoring_dict.CONF }}</td>
+            <td>{{ scoring_dict.SB }}</td>
+            <td><b>{{ scoring_dict.total }}</b></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-</body>
+  </body>
 </html>
