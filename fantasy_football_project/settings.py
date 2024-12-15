@@ -71,7 +71,7 @@ ROOT_URLCONF = 'fantasy_football_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'build')],
+        'DIRS': [os.path.join(BASE_DIR, 'build'), BASE_DIR / 'fantasy_football_app' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,11 +92,8 @@ WSGI_APPLICATION = 'fantasy_football_project.wsgi.application'
 
 IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 
-# SECURITY WARNING: don't run with debug turned on in production!
 if IS_HEROKU_APP:
     DEBUG = False
-
-if IS_HEROKU_APP:
     # In production on Heroku the database configuration is derived from the `DATABASE_URL`
     # environment variable by the dj-database-url package. `DATABASE_URL` will be set
     # automatically by Heroku when a database addon is attached to your Heroku app. See:
@@ -106,12 +103,12 @@ if IS_HEROKU_APP:
         "default": dj_database_url.config(),
     }
     DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     CORS_ALLOWED_ORIGINS = [
         'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
         'http://playoff-showdown.com',
         'https://playoff-showdown.com',
     ]
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 else:
     # When running locally in development or in CI, a sqlite database file will be used instead
     # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
@@ -172,7 +169,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build/static'), 
 ]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
