@@ -108,7 +108,7 @@ if IS_HEROKU_APP:
         'http://playoff-showdown.com',
         'https://playoff-showdown.com',
     ]
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 else:
     # When running locally in development or in CI, a sqlite database file will be used instead
     # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
