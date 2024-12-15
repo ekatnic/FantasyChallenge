@@ -30,8 +30,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 TANK_API_KEY = os.environ.get("TANK_API_KEY")
 TANK_API_ENDPOINT = "tank01-nfl-live-in-game-real-time-statistics-nfl.p.rapidapi.com"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -95,7 +94,6 @@ IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 LOGIN_URL = '/sign_in/'
 
 if IS_HEROKU_APP:
-    DEBUG = False
     # In production on Heroku the database configuration is derived from the `DATABASE_URL`
     # environment variable by the dj-database-url package. `DATABASE_URL` will be set
     # automatically by Heroku when a database addon is attached to your Heroku app. See:
@@ -114,6 +112,7 @@ if IS_HEROKU_APP:
 else:
     # When running locally in development or in CI, a sqlite database file will be used instead
     # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
+    DEBUG = True
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -170,6 +169,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build/static'), 
+    os.path.join(BASE_DIR, 'fantasy_football_app/static'), 
 ]
 
 # Default primary key field type
