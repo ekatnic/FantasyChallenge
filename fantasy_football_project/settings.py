@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'waffle',
     'corsheaders',
     'rest_framework',
+    'bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -91,6 +92,7 @@ WSGI_APPLICATION = 'fantasy_football_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
+LOGIN_URL = '/sign_in/'
 
 if IS_HEROKU_APP:
     DEBUG = False
