@@ -183,3 +183,28 @@ staticfiles/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# terraform folder ignore
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+.terraform.lock.hcl
+.terraform/
+tfplan
+
+# # Ignore all .tf files
+*.tfvars
+**/.terraform/
+
+# # Except for main.tf: !main.tf
+
+# # main.tf *.tf
+# variables.tf
+
+# # infra/main.tf
+infra/variables.tf
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
+infra/terraform.tfvars
+infra/.terraform.lock.hcl
+infra/tfplan
