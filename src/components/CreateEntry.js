@@ -5,7 +5,6 @@
 // TODO: I think a big blob containing all players-position-team mappings sent to each client could be a good simple idea,
 // TODO: Then we just use that on the client, build all the components from that, etc.
 // TODO: Then send back the form data back to the server
-
 // TODO: Logic for this component is definitely not correct, but it's a start
 
 import React, { useState } from "react";
@@ -133,21 +132,19 @@ export function CreateEntry() {
       "Travis Kelce": "Kansas City Chiefs",
       "George Kittle": "San Francisco 49ers",
       "Mark Andrews": "Baltimore Ravens",
-
-      "San Francisco 49ers": "San Francisco 49ers",
+      "San Francisco 49ers": "San Francisco 49ers", // DSTs i guess ???
     };
     return teamMappings[player] || "Unknown";
   };
 
+  // TODO: replace with real form submission to bakcend
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmissionError(null);
 
     if (validateForm()) {
       try {
-        // Simulate API call
         console.log("Submitting Entry:", formData);
-        // Replace with actual API call
         alert("Entry submitted successfully!");
       } catch (error) {
         setSubmissionError("Error submitting entry. Please try again.");
