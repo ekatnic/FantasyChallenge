@@ -7,7 +7,7 @@
 // TODO: Then send back the form data back to the server
 // TODO: Logic for this component is definitely not correct, but it's a start
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -24,6 +24,7 @@ import {
   Container,
   Paper,
 } from "@mui/material";
+import { getPlayers } from "../services/api";
 
 // mock api data
 const playerOptions = {
@@ -54,7 +55,10 @@ export function CreateEntry() {
 
   const [errors, setErrors] = useState({});
   const [submissionError, setSubmissionError] = useState(null);
-
+  const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const validateForm = () => {
     const newErrors = {};
     const usedTeams = new Set();
@@ -119,8 +123,20 @@ export function CreateEntry() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // TODO: Make a call to back end and get player/team/position mappings blob
-  // TODO: Add a useEffect to get this data on component mount
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      try {
+        const data = await getPlayers();
+        setPlayers(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
+    fetchPlayers();
+  }, []);
+
   const getPlayerTeam = (player) => {
     const teamMappings = {
       "Patrick Mahomes": "Kansas City Chiefs",
@@ -183,6 +199,14 @@ export function CreateEntry() {
       )}
     </FormControl>
   );
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <Container maxWidth="lg">

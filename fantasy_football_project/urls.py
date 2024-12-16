@@ -39,7 +39,8 @@ from fantasy_football_app.views import (
 )
 from fantasy_football_app.apis import(
     EntryListCreateAPIView,
-    EntryRetrieveUpdateDestroyAPIView
+    EntryRetrieveUpdateDestroyAPIView,
+    PlayerListAPIView,
 )
 
 urlpatterns = [
@@ -64,5 +65,6 @@ urlpatterns = [
     path('load_players_api/', load_players_api_view, name='load_players_api'),
     path('api/entries/', EntryListCreateAPIView.as_view(), name='entry-list-create'),
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
+    path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
     path('react/', react_view, name='react')
 ]

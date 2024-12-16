@@ -5,7 +5,6 @@ import CreateEntry from "./components/CreateEntry";
 function App() {
   return (
     <div className="App">
-      <EntryList />
       <CreateEntry />
     </div>
   );
