@@ -1,387 +1,374 @@
 <!-- edit-entry.html -->
-{% load static %}
-{% load widget_tweaks %}
+{% load static %} {% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Your Entry - Fantasy Football Playoff Challenge</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'django_styles.css' %}">
+    {% load bootstrap5 %} {% bootstrap_css %} {% bootstrap_javascript %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-    $(document).ready(function(){
-        $('input[type="checkbox"]').on('change', function() {
-            $('input[type="checkbox"]').not(this).prop('checked', false);
+      $(document).ready(function () {
+        $('input[type="checkbox"]').on("change", function () {
+          $('input[type="checkbox"]').not(this).prop("checked", false);
         });
-    });
+      });
     </script>
     <style>
-       html, body {
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            display: flex;
-            flex-direction: column-reverse; /* Stack the elements vertically */
-            align-items: center; /* Center the elements horizontally */
-            width: 100%;
-        }
-        .textbox-container {
-            width: 100%; /* Change this to 100% */
-            display: flex;
-            justify-content: space-between;
-            margin: 0px;
-        }
-        .textbox {
-            width: 50%; /* Change this to 48% to account for the space between */
-            border: 1px solid black;
-            padding: 10px;
-            margin: 5px;
-        }
-        .form-container {
-            width: 70%; /* Change this to 30% */
-        }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        display: flex;
+        flex-direction: column-reverse; /* Stack the elements vertically */
+        align-items: center; /* Center the elements horizontally */
+        width: 100%;
+      }
+      .textbox-container {
+        width: 100%; /* Change this to 100% */
+        display: flex;
+        justify-content: space-between;
+        margin: 0px;
+      }
+      .textbox {
+        width: 50%; /* Change this to 48% to account for the space between */
+        border: 1px solid black;
+        padding: 10px;
+        margin: 5px;
+      }
+      .form-container {
+        width: 70%; /* Change this to 30% */
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        {% include 'fantasy_football_app/navbar.html' %}
-        <h1>Edit Entry</h1>
+      {% include 'fantasy_football_app/navbar.html' %}
+      <h1>Edit Entry</h1>
     </header>
     <main>
-        <section id="edit-entry-form">
-            <div class="container custom-container">
-                <form class="form-container" action="{% url 'edit_entry' entry.id %}" method="post">
-                    {% csrf_token %}
-                    <h2>Select Your Players</h2>
-                    
-                    <div>
-                        {% if form.errors %}
-                            {% for error in form.non_field_errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
+      <section id="edit-entry-form">
+        <div class="container custom-container">
+          <form
+            class="form-container"
+            action="{% url 'edit_entry' entry.id %}"
+            method="post"
+          >
+            {% csrf_token %}
+            <h2>Select Your Players</h2>
 
-                    <!-- Quarterback (QB) -->
-                    {% with field=form.quarterback %}
-                    <div class="field-container">
-                        <div class="field">
-                            <label for="id_quarterback">QB:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}                            
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    <!-- Running Backs (RB) -->
-                    {% with field=form.running_back1 %}
-                    <div class="field-container">
-                        <div class="field">
-                            <label for="id_running_back1">RB 1:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}     
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.running_back1.id_for_label }}">Captain?</label>
-                            {{ form.captain_running_back1 }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    {% with field=form.running_back2 %}
-                    <div class="field-container">
-                        <div class="field">
-                            <label for="id_running_back2">RB 2:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}     
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.running_back2.id_for_label }}">Captain?</label>
-                            {{ form.captain_running_back2 }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    <!-- Wide Receivers (WR) -->
-                    {% with field=form.wide_receiver1 %}
-                    <div class="field-container">
-                        <div class="field">
-                            <label for="id_wide_receiver1">WR 1:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}     
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.wide_receiver1.id_for_label }}">Captain?</label>
-                            {{ form.captain_wide_receiver1 }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    {% with field=form.wide_receiver2 %}
-                    <div class="field-container">
-                        <div class="field">
-                            <label for="id_wide_receiver2">WR 2:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}     
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.wide_receiver2.id_for_label }}">Captain?</label>
-                            {{ form.captain_wide_receiver2 }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    <!-- Tight End (TE) -->
-                    {% with field=form.tight_end %}
-                    <div class="field-container">
-                        <div class="field">
-                            <label for="id_tight_end">TE:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}     
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.tight_end.id_for_label }}">Captain?</label>
-                            {{ form.captain_tight_end }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    <!-- FLEX (RB, WR, TE)-->
-                    {% with field=form.flex1 %}
-                    <div class="field-container{% if field.errors %} is-invalid{% endif %}">
-                        <div class="field">
-                            <label for="id_flex">FLEX 1:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}    
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.flex1.id_for_label }}">Captain?</label>
-                            {{ form.captain_flex1 }}
-                            {% for error in field.errors %}
-                                <p class="help-block">{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    {% with field=form.flex2 %}
-                    <div class="field-container{% if field.errors %} is-invalid{% endif %}">
-                        <div class="field">
-                            <label for="id_flex">FLEX 2:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}    
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.flex2.id_for_label }}">Captain?</label>
-                            {{ form.captain_flex2 }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    {% with field=form.flex3 %}
-                    <div class="field-container{% if field.errors %} is-invalid{% endif %}">
-                        <div class="field">
-                            <label for="id_flex">FLEX 3:</label>
-                            {% if field.errors %}
-                                {{ field|add_class:"form-control is-invalid" }}
-                                {% for error in field.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}    
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.flex3.id_for_label }}">Captain?</label>
-                            {{ form.captain_flex3 }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    {% with field=form.flex4 %}
-                    <div class="field-container{% if field.errors %} is-invalid{% endif %}">
-                        <div class="field">
-                            <label for="id_flex">FLEX 4:</label>
-                            {% if field.errors %}
-                            {{ field|add_class:"form-control is-invalid" }}
-                            {% for error in field.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                        {% else %}
-                            {{ field|add_class:"form-control" }}
-                        {% endif %}    
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.flex4.id_for_label }}">Captain?</label>
-                            {{ form.captain_flex4 }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    {% with field=form.scaled_flex %}
-                    <div class="field-container">
-                        <div class="field">
-                            <label for="id_scaled_flex">SCALED FLEX:</label>
-                            {% if field.errors %}
-                            {{ field|add_class:"form-control is-invalid" }}
-                            {% for error in field.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}    
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    <!-- Defense (DEF)-->
-                    {% with field=form.defense %}
-                    <div class="field-container">
-                        <div class="field">
-                            <label for="id_defense">DEF:</label>
-                            {% if field.errors %}
-                            {{ field|add_class:"form-control is-invalid" }}
-                            {% for error in field.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                                {% endfor %}
-                            {% else %}
-                                {{ field|add_class:"form-control" }}
-                            {% endif %}    
-                        </div>
-                        <div class="captain">
-                            <label for="id_captain_{{ form.defense.id_for_label }}">Captain?</label>
-                            {{ form.captain_defense }}
-                        </div>
-                    </div>
-                    {% endwith %}
-
-                    <button type="submit">Submit Entry</button>
-                </form>
-                <div class="textbox-container">
-                    <div class="textbox" id="textbox1">
-                        <h3>Full Rules:</h3>
-                        <p>Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup.</p>
-                        <p>The catch is that you can only select ONE PLAYER PER TEAM. So if you choose Christian McCaffery you cannot also have Deebo Samuel in your lineup.</p>
-                        <p>Points will NOT be doubled in the Super Bowl</p>
-                        <p>You CANNOT combine your captain and scaled FLEX</p>
-                        <h4>Offense Scoring:</h4>
-                        <p>4 pts for Passing TDs</p>
-                        <p>6 pts for non Passing TDs</p>
-                        <p>1 pt for every 20 Yards Passing</p>
-                        <p>-1 pt for every Interception Thrown</p>
-                        <p>-1 pt for every Fumble Lost</p>
-                        <p>1 pt for every 10 Rushing or Receiving yards</p>
-                        <p>1 pt per Reception by RBs and WRs</p>
-                        <p><strong>1.5 pts</strong> per Reception by TEs</p>
-                        <p>2 pts for every 2 Point Conversion</p>
-                        <h4>Defense Scoring:</h4>
-                        <p>1 pt for every Sack</p>
-                        <p>2 pts for every Interception</p>
-                        <p>2 pts for every Fumble Recovery</p>
-                        <p>5 pts for every Safety</p>
-                        <p>6 pts for every Defensive/ST TD</p>
-                        <p>12 pts for a Shutout</p>
-                        <p>8 pts for allowing 1-6 points</p>
-                        <p>5 pts for allowing 7-10 points</p>
-                    </div>
-                    
-                    <div class="textbox" id="textbox2">
-                        <h3>*New Rules*</h3>
-                        <h4>Captain:</h4>
-                        <p>You will select <strong>1 captain</strong> - this can be any position other than QB. This player will receive <strong>1.5x points</strong> each week.</p>
-                        <h4>Scaled FLEX:</h4>
-                        <p>You will select <strong>1 Scaled FLEX</strong> - this position is based on the ownership % of each player.</p>
-                        <p>You are rewarded with a higher bonus if the player is less selected by others.</p>
-                        <h5>Scaled FLEX Scoring:</h5>
-                        <p>If ownership is <strong>50% or more = No multiplier</strong>, a player that scores 10 points will get you 10 points</p>
-                        <p>If <strong>25-50% = 1.2x</strong> multiplier, a player that scores 10 points will get you 12</p>
-                        <p><strong>12.5-25% = 1.3x</strong>, a player that scores 10 points will get you 13</p>
-                        <p><strong>5-12.5% = 1.5x</strong>, a player that scores 10 points will get you 15</p>
-                        <p><strong>0-5% = 1.75x</strong>, a player that scores 10 points will get you 17.5</p>
-                    </div> 
-                </div>
+            <div>
+              {% if form.errors %} {% for error in form.non_field_errors %}
+              <div class="alert alert-danger" role="alert">{{ error }}</div>
+              {% endfor %} {% endif %}
             </div>
-        </section>
+
+            <!-- Quarterback (QB) -->
+            {% with field=form.quarterback %}
+            <div class="field-container">
+              <div class="field">
+                <label for="id_quarterback">QB:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+            </div>
+            {% endwith %}
+
+            <!-- Running Backs (RB) -->
+            {% with field=form.running_back1 %}
+            <div class="field-container">
+              <div class="field">
+                <label for="id_running_back1">RB 1:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.running_back1.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_running_back1 }}
+              </div>
+            </div>
+            {% endwith %} {% with field=form.running_back2 %}
+            <div class="field-container">
+              <div class="field">
+                <label for="id_running_back2">RB 2:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.running_back2.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_running_back2 }}
+              </div>
+            </div>
+            {% endwith %}
+
+            <!-- Wide Receivers (WR) -->
+            {% with field=form.wide_receiver1 %}
+            <div class="field-container">
+              <div class="field">
+                <label for="id_wide_receiver1">WR 1:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.wide_receiver1.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_wide_receiver1 }}
+              </div>
+            </div>
+            {% endwith %} {% with field=form.wide_receiver2 %}
+            <div class="field-container">
+              <div class="field">
+                <label for="id_wide_receiver2">WR 2:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.wide_receiver2.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_wide_receiver2 }}
+              </div>
+            </div>
+            {% endwith %}
+
+            <!-- Tight End (TE) -->
+            {% with field=form.tight_end %}
+            <div class="field-container">
+              <div class="field">
+                <label for="id_tight_end">TE:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.tight_end.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_tight_end }}
+              </div>
+            </div>
+            {% endwith %}
+
+            <!-- FLEX (RB, WR, TE)-->
+            {% with field=form.flex1 %}
+            <div
+              class="field-container{% if field.errors %} is-invalid{% endif %}"
+            >
+              <div class="field">
+                <label for="id_flex">FLEX 1:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.flex1.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_flex1 }} {% for error in field.errors %}
+                <p class="help-block">{{ error }}</p>
+                {% endfor %}
+              </div>
+            </div>
+            {% endwith %} {% with field=form.flex2 %}
+            <div
+              class="field-container{% if field.errors %} is-invalid{% endif %}"
+            >
+              <div class="field">
+                <label for="id_flex">FLEX 2:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.flex2.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_flex2 }}
+              </div>
+            </div>
+            {% endwith %} {% with field=form.flex3 %}
+            <div
+              class="field-container{% if field.errors %} is-invalid{% endif %}"
+            >
+              <div class="field">
+                <label for="id_flex">FLEX 3:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.flex3.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_flex3 }}
+              </div>
+            </div>
+            {% endwith %} {% with field=form.flex4 %}
+            <div
+              class="field-container{% if field.errors %} is-invalid{% endif %}"
+            >
+              <div class="field">
+                <label for="id_flex">FLEX 4:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.flex4.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_flex4 }}
+              </div>
+            </div>
+            {% endwith %} {% with field=form.scaled_flex %}
+            <div class="field-container">
+              <div class="field">
+                <label for="id_scaled_flex">SCALED FLEX:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+            </div>
+            {% endwith %}
+
+            <!-- Defense (DEF)-->
+            {% with field=form.defense %}
+            <div class="field-container">
+              <div class="field">
+                <label for="id_defense">DEF:</label>
+                {% if field.errors %} {{ field|add_class:"form-control
+                is-invalid" }} {% for error in field.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %} {% else %} {{ field|add_class:"form-control" }} {%
+                endif %}
+              </div>
+              <div class="captain">
+                <label for="id_captain_{{ form.defense.id_for_label }}"
+                  >Captain?</label
+                >
+                {{ form.captain_defense }}
+              </div>
+            </div>
+            {% endwith %}
+
+            <button type="submit">Submit Entry</button>
+          </form>
+          <div class="textbox-container">
+            <div class="textbox" id="textbox1">
+              <h3>Full Rules:</h3>
+              <p>
+                Create a lineup of 12 players. Once the playoffs start you will
+                not be able to change your lineup.
+              </p>
+              <p>
+                The catch is that you can only select ONE PLAYER PER TEAM. So if
+                you choose Christian McCaffery you cannot also have Deebo Samuel
+                in your lineup.
+              </p>
+              <p>Points will NOT be doubled in the Super Bowl</p>
+              <p>You CANNOT combine your captain and scaled FLEX</p>
+              <h4>Offense Scoring:</h4>
+              <p>4 pts for Passing TDs</p>
+              <p>6 pts for non Passing TDs</p>
+              <p>1 pt for every 20 Yards Passing</p>
+              <p>-1 pt for every Interception Thrown</p>
+              <p>-1 pt for every Fumble Lost</p>
+              <p>1 pt for every 10 Rushing or Receiving yards</p>
+              <p>1 pt per Reception by RBs and WRs</p>
+              <p><strong>1.5 pts</strong> per Reception by TEs</p>
+              <p>2 pts for every 2 Point Conversion</p>
+              <h4>Defense Scoring:</h4>
+              <p>1 pt for every Sack</p>
+              <p>2 pts for every Interception</p>
+              <p>2 pts for every Fumble Recovery</p>
+              <p>5 pts for every Safety</p>
+              <p>6 pts for every Defensive/ST TD</p>
+              <p>12 pts for a Shutout</p>
+              <p>8 pts for allowing 1-6 points</p>
+              <p>5 pts for allowing 7-10 points</p>
+            </div>
+
+            <div class="textbox" id="textbox2">
+              <h3>*New Rules*</h3>
+              <h4>Captain:</h4>
+              <p>
+                You will select <strong>1 captain</strong> - this can be any
+                position other than QB. This player will receive
+                <strong>1.5x points</strong> each week.
+              </p>
+              <h4>Scaled FLEX:</h4>
+              <p>
+                You will select <strong>1 Scaled FLEX</strong> - this position
+                is based on the ownership % of each player.
+              </p>
+              <p>
+                You are rewarded with a higher bonus if the player is less
+                selected by others.
+              </p>
+              <h5>Scaled FLEX Scoring:</h5>
+              <p>
+                If ownership is <strong>50% or more = No multiplier</strong>, a
+                player that scores 10 points will get you 10 points
+              </p>
+              <p>
+                If <strong>25-50% = 1.2x</strong> multiplier, a player that
+                scores 10 points will get you 12
+              </p>
+              <p>
+                <strong>12.5-25% = 1.3x</strong>, a player that scores 10 points
+                will get you 13
+              </p>
+              <p>
+                <strong>5-12.5% = 1.5x</strong>, a player that scores 10 points
+                will get you 15
+              </p>
+              <p>
+                <strong>0-5% = 1.75x</strong>, a player that scores 10 points
+                will get you 17.5
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
     <footer>
-        <a href="{% url 'user_home' %}" class="btn btn-primary">Return to Home</a>
+      <a href="{% url 'user_home' %}" class="btn btn-primary">Return to Home</a>
     </footer>
-</body>
+  </body>
 </html>

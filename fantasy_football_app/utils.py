@@ -1,5 +1,3 @@
-import csv
-
 from django.core.cache import cache
 from django.db.models import (Case, Count, F, FloatField, Func, IntegerField,
                               Prefetch, Sum, When)
