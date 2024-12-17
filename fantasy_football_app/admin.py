@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import CSVUpload, Entry, Player, RosteredPlayers, WeeklyStats
+from .models import (
+    Entry, 
+    Player,
+    RosteredPlayers,
+    WeeklyStats
+)
 
 
 class PlayerAdmin(admin.ModelAdmin):
@@ -33,7 +38,3 @@ class WeeklyStatsAdmin(admin.ModelAdmin):
     readonly_fields = ('week_score',)
 
 admin.site.register(WeeklyStats, WeeklyStatsAdmin)
-
-@admin.register(CSVUpload)
-class CSVUploadAdmin(admin.ModelAdmin):
-    list_display = ('name', 'file', 'uploaded_at')
