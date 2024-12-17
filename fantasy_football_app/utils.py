@@ -1,5 +1,3 @@
-import csv
-
 from django.core.cache import cache
 from django.db.models import (Case, Count, F, FloatField, Func, IntegerField,
                               Prefetch, Sum, When)
@@ -122,7 +120,7 @@ def get_summarized_players():
     )
 
     # Filter the QuerySet to include only Players with one or more RosteredPlayer
-    player_counts = player_counts.filter(roster_count__gt=0.0).order_by('-roster_percentage')
+    player_counts = player_counts.order_by('-roster_percentage')
     for player in player_counts:
         player_dict = get_raw_player_scoring_dict(player)
         player_dict['scaled_flex_multiplier'] = (

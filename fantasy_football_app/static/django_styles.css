@@ -98,6 +98,10 @@ button:hover {
     color: white;
 }
 
+.navbar {
+    padding: .5rem 1rem; /* Custom padding */
+}
+
 .page-title {
     text-align: center;
     padding-top: 25px;

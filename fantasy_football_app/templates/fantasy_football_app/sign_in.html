@@ -2,29 +2,31 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign In - Fantasy Football Playoff Challenge</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
-</head>
-<body>
+    <link rel="stylesheet" type="text/css" href="{% static 'django_styles.css' %}">
+    {% load bootstrap5 %} 
+    {% bootstrap_css %} 
+    {% bootstrap_javascript %}
+  </head>
+  <body>
     <header>
-        <h1>Sign In to the Fantasy Football Playoff Challenge</h1>
+      <h1>Sign In to the Fantasy Football Playoff Challenge</h1>
     </header>
     <main>
-        <section id="sign_in-form">
-            <h2>Welcome Back!</h2>
-            <form action="{% url 'sign_in' %}" method="post">
-                {% csrf_token %}
-                {{ form.username.label_tag }} {{ form.username }}
-                {{ form.password.label_tag }} {{ form.password }}
-                <button type="submit">Sign In</button>
-            </form>
-        </section>
+      <section id="sign_in-form">
+        <h2>Welcome Back!</h2>
+        <form action="{% url 'sign_in' %}" method="post">
+          {% csrf_token %} {{ form.username.label_tag }} {{ form.username }} 
+          {{ form.password.label_tag }} {{ form.password }}
+          <button type="submit">Sign In</button>
+        </form>
+      </section>
     </main>
     <footer>
-        <!-- Your footer content will go here -->
+      <!-- Your footer content will go here -->
     </footer>
-</body>
+  </body>
 </html>

@@ -15,10 +15,8 @@ from waffle import flag_is_active
 from .tank_api.api_request import TankAPIClient
 from .constants import (DEFENSE_STATS_NAMES, POSITION_ORDER,
                         SKILL_POS_STATS_NAMES, WEEK_CHOICES)
-from .data_utils import update_player_stats_from_csv
 from .forms import EntryForm  
 from .models import (
-    CSVUpload, 
     Entry, 
     Player,
     RosteredPlayers,
@@ -214,16 +212,6 @@ def sign_out(request):
     logout(request)
     return redirect('index')
 
-@user_passes_test(lambda u: u.is_superuser)
-def csv_upload_view(request):
-    if request.method == 'POST':
-        csv_upload_id = request.POST.get('csv_upload')
-        csv_upload = CSVUpload.objects.get(id=csv_upload_id)
-        update_player_stats_from_csv(csv_upload.file.path, csv_upload.week)
-        # Add a message to indicate success if needed
-
-    csv_uploads = CSVUpload.objects.all()
-    return render(request, 'fantasy_football_app/csv_upload.html', {'csv_uploads': csv_uploads})
 
 def players_view(request):
     players_scoring_dict = cache.get('players_scoring_dict')
@@ -299,3 +287,6 @@ def load_players_api_view(request):
         'result': result,
     }
     return render(request, 'fantasy_football_app/load_players_api.html', context)
+
+def react_view(request):
+    return render(request, 'index.html')

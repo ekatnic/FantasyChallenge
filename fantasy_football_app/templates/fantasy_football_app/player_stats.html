@@ -1,74 +1,80 @@
-{% load dict_helper %}
-{% load static %}
+{% load dict_helper %} {% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Player Stats - Fantasy Football Playoff Challenge</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-</head>
+    <link rel="stylesheet" type="text/css" href="{% static 'django_styles.css' %}">
+    {% load bootstrap5 %} 
+    {% bootstrap_css %} 
+    {% bootstrap_javascript %}
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-3.5.1.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"
+    ></script>
+  </head>
 
-
-<body>
-    {% include 'fantasy_football_app/navbar.html' %}
-    {% block content %}
+  <body>
+    {% include 'fantasy_football_app/navbar.html' %} {% block content %}
     <div class="container player-stat-container">
-    <h1 class="text-center my-4">{{ player.name }}</h1>
-    <br/>
-    <div class="row">
-      <div class="col-lg-8 col-md-12">
-        <table class="table table-bordered">
-          <thead class="thead-dark">
-            <tr>
-              {% for field_name, column_name in field_name_mapping.items %}
+      <h1 class="text-center my-4">{{ player.name }}</h1>
+      <br />
+      <div class="row">
+        <div class="col-lg-8 col-md-12">
+          <table class="table table-bordered">
+            <thead class="thead-dark">
+              <tr>
+                {% for field_name, column_name in field_name_mapping.items %}
                 <th scope="col">{{ column_name }}</th>
-              {% endfor %}
-            </tr>
-          </thead>
-          <tbody>
-            {% for weekly_stat in weekly_stats %}
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for weekly_stat in weekly_stats %}
               <tr>
                 {% for field_name, column_name in field_name_mapping.items %}
                 <td>{{ weekly_stat|get_item:field_name }}</td>
                 {% endfor %}
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="col-lg-3 offset-lg-1 col-md-12 textbox" id="textbox1">
-        {% if player.position == 'DEF' %}
-        <h4>Defense Scoring Rules:</h4>
-        <p>1 pt for every Sack</p>
-        <p>2 pts for every Interception</p>
-        <p>2 pts for every Fumble Recovery</p>
-        <p>5 pts for every Safety</p>
-        <p>6 pts for every Defensive/ST TD</p>
-        <p>12 pts for a Shutout</p>
-        <p>8 pts for allowing 1-6 points</p>
-        <p>5 pts for allowing 7-10 points</p>
-        {% else %}
-        <h4>Offense Scoring Rules:</h4>
-        <p>4 pts for Passing TDs</p>
-        <p>6 pts for non Passing TDs</p>
-        <p>1 pt for every 20 Yards Passing</p>
-        <p>-1 pt for every Interception Thrown</p>
-        <p>-1 pt for every Fumble Lost</p>
-        <p>1 pt for every 10 Rushing or Receiving yards</p>
-        {% if player.position == 'TE' %}
-        <p><strong>1.5 pts</strong> per Reception by TEs</p>
-        {% else %}
-        <p>1 pt per Reception by RBs and WRs</p>
-        {% endif %}
-        <p>2 pts for every 2 Point Conversion</p>
-        {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="col-lg-3 offset-lg-1 col-md-12 textbox" id="textbox1">
+          {% if player.position == 'DEF' %}
+          <h4>Defense Scoring Rules:</h4>
+          <p>1 pt for every Sack</p>
+          <p>2 pts for every Interception</p>
+          <p>2 pts for every Fumble Recovery</p>
+          <p>5 pts for every Safety</p>
+          <p>6 pts for every Defensive/ST TD</p>
+          <p>12 pts for a Shutout</p>
+          <p>8 pts for allowing 1-6 points</p>
+          <p>5 pts for allowing 7-10 points</p>
+          {% else %}
+          <h4>Offense Scoring Rules:</h4>
+          <p>4 pts for Passing TDs</p>
+          <p>6 pts for non Passing TDs</p>
+          <p>1 pt for every 20 Yards Passing</p>
+          <p>-1 pt for every Interception Thrown</p>
+          <p>-1 pt for every Fumble Lost</p>
+          <p>1 pt for every 10 Rushing or Receiving yards</p>
+          {% if player.position == 'TE' %}
+          <p><strong>1.5 pts</strong> per Reception by TEs</p>
+          {% else %}
+          <p>1 pt per Reception by RBs and WRs</p>
+          {% endif %}
+          <p>2 pts for every 2 Point Conversion</p>
+          {% endif %}
+        </div>
       </div>
     </div>
-  </div>
-  {% endblock %}
-</body>
+    {% endblock %}
+  </body>
+</html>
