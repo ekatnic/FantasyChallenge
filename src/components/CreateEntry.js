@@ -129,6 +129,7 @@ export function CreateEntry() {
         const data = await getPlayers();
         setPlayers(data);
         setLoading(false);
+        console.log(data);
       } catch (error) {
         setError(error);
         setLoading(false);

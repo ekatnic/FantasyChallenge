@@ -16,7 +16,7 @@ Including another URLconf
 """
 # fantasy_football_project/urls.py
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.contrib.auth import views as auth_views
 from fantasy_football_app.views import (
     csv_upload_view,
@@ -66,5 +66,5 @@ urlpatterns = [
     path('api/entries/', EntryListCreateAPIView.as_view(), name='entry-list-create'),
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
-    path('react/', react_view, name='react')
+    re_path(r'^.*$', react_view), 
 ]
