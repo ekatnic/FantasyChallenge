@@ -174,3 +174,6 @@ infra/terraform.tfstate.backup
 infra/terraform.tfvars
 infra/.terraform.lock.hcl
 infra/tfplan
+
+node_modules/
+node_modules/*
