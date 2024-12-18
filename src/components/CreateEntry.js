@@ -15,19 +15,15 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Button,
   Alert,
   Container,
   Paper,
 } from "@mui/material";
 import { getPlayers } from "../services/api";
+import PlayerSelect from './PlayerSelect';
 
 export function CreateEntry() {
-  // I presume an object like this is right way to do a form state variable
   const [formData, setFormData] = useState({
     quarterback: "",
     running_back1: "",
@@ -48,83 +44,18 @@ export function CreateEntry() {
   const [submissionError, setSubmissionError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [playerOptions, setPlayerOptions] = useState({
-    quarterbacks: [],
-    runningBacks: [],
-    wideReceivers: [],
-    tightEnds: [],
-    flex: [],
-    defenses: []
-  });
+  const [players, setPlayers] = useState([]);
+  const [allPlayers, setallPlayers] = useState([]);
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
+  const [remainingTeams, setRemainingTeams] = useState([]);
 
-  const validateForm = () => {
-    const newErrors = {};
-    const usedTeams = new Set();
-
-    // TODO: could move to a constants files
-    const requiredFields = [
-      "quarterback",
-      "running_back1",
-      "running_back2",
-      "wide_receiver1",
-      "wide_receiver2",
-      "tight_end",
-      "flex1",
-      "flex2",
-      "flex3",
-      "flex4",
-      "scaled_flex",
-      "defense",
-    ];
-
-    requiredFields.forEach((field) => {
-      if (!formData[field]) {
-        newErrors[field] = "This field is required";
-      }
-    });
-
-    // TODO: Actually correct logic to check you cant have multiple players from the same team
-    const fieldsToCheckTeam = [
-      "running_back1",
-      "running_back2",
-      "wide_receiver1",
-      "wide_receiver2",
-      "tight_end",
-      "flex1",
-      "flex2",
-      "flex3",
-      "flex4",
-      "defense",
-    ];
-
-    // TODO: i know we were planning on dropping this
-    if (!formData.captain) {
-      newErrors.captain = "You must select a captain";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
         const data = await getPlayers();
-        // Filter players by position
-        const quarterbacks = data.filter(player => player.position === 'QB');
-        const runningBacks = data.filter(player => player.position === 'RB');
-        const wideReceivers = data.filter(player => player.position === 'WR');
-        const tightEnds = data.filter(player => player.position === 'TE');
-        const flex = [...runningBacks, ...wideReceivers, ...tightEnds];
-        const defenses = data.filter(player => player.position === 'DEF');
-        setPlayerOptions({
-          quarterbacks,
-          runningBacks,
-          wideReceivers,
-          tightEnds,
-          flex,
-          defenses
-        });
+        setPlayers(data);
+        setallPlayers(data);
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -134,19 +65,23 @@ export function CreateEntry() {
     fetchPlayers();
   }, []);
 
+  useEffect(() => {
+    // Collect unique team names
+    const uniqueTeams = [...new Set(players.map(player => player.team))];
+
+    // Filter out teams of selected players
+    const filteredTeams = uniqueTeams.filter(team => {
+      return !Object.values(formData).some(playerId => {
+        const player = players.find(p => p.id === playerId);
+        return player && player.team === team;
+      });
+    });
+
+    setRemainingTeams(filteredTeams);
+  }, [formData, players]);
+
   // TODO: replace with real form submission to bakcend
   const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmissionError(null);
-
-    if (validateForm()) {
-      try {
-        console.log("Submitting Entry:", formData);
-        alert("Entry submitted successfully!");
-      } catch (error) {
-        setSubmissionError("Error submitting entry. Please try again.");
-      }
-    }
   };
 
   const handleChange = (field, value) => {
@@ -154,40 +89,23 @@ export function CreateEntry() {
       ...prev,
       [field]: value,
     }));
+
+    // Update selected players and teams
+    setSelectedPlayers((prev) => {
+      const newSelectedPlayers = { ...prev };
+      const previousPlayerId = formData[field];
+      if (previousPlayerId) {
+        delete newSelectedPlayers[previousPlayerId];
+      }
+      if (value) {
+        newSelectedPlayers[value] = allPlayers.find(player => player.id === value);
+      }
+      return newSelectedPlayers;
+    });
   };
 
-  const renderSelect = (label, field, options, isCaptain = false) => (
-    <FormControl fullWidth margin="normal" error={!!errors[field]}>
-      <InputLabel>{label}</InputLabel>
-      <Select
-        label={label}
-        value={formData[field] || ''}
-        onChange={(e) => {
-          handleChange(field, e.target.value);
-          if (isCaptain) handleChange("captain", e.target.value);
-        }}
-      >
-        {options.map((option) => (
-          <MenuItem key={option.id} value={option.id}>
-            {option.name} - {option.team}
-          </MenuItem>
-        ))}
-      </Select>
-      {errors[field] && (
-        <Typography color="error" variant="caption" sx={{ ml: 2 }}>
-          {errors[field]}
-        </Typography>
-      )}
-    </FormControl>
-  );
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <Container maxWidth="lg">
@@ -197,7 +115,6 @@ export function CreateEntry() {
             {submissionError}
           </Alert>
         )}
-
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <Card>
@@ -209,84 +126,159 @@ export function CreateEntry() {
                 <form onSubmit={handleSubmit}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
-                      {renderSelect(
-                        "Quarterback",
-                        "quarterback",
-                        playerOptions.quarterbacks
-                      )}
+                      <PlayerSelect
+                        label="Quarterback"
+                        field="quarterback"
+                        position="QB"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect(
-                        "Running Back 1",
-                        "running_back1",
-                        playerOptions.runningBacks,
-                        true
-                      )}
+                      <PlayerSelect
+                        label="Running Back 1"
+                        field="running_back1"
+                        position="RB"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect(
-                        "Running Back 2",
-                        "running_back2",
-                        playerOptions.runningBacks
-                      )}
+                      <PlayerSelect
+                        label="Running Back 2"
+                        field="running_back2"
+                        position="RB"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect(
-                        "Wide Receiver 1",
-                        "wide_receiver1",
-                        playerOptions.runningBacks,
-                        true
-                      )}
+                      <PlayerSelect
+                        label="Wide Receiver 1"
+                        field="wide_receiver1"
+                        position="WR"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect(
-                        "Wide Receiver 2",
-                        "wide_receiver2",
-                        playerOptions.wideReceivers
-                      )}
+                      <PlayerSelect
+                        label="Wide Receiver 2"
+                        field="wide_receiver2"
+                        position="WR"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect(
-                        "Tight End",
-                        "tight_end",
-                        playerOptions.wideReceivers,
-                        true
-                      )}
-                    </Grid>
-
-                    {/* Flex Positions */}
-                    <Grid item xs={12} sm={6}>
-                      {renderSelect("Flex 1", "flex1", playerOptions.flex)}
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      {renderSelect("Flex 2", "flex2", playerOptions.flex)}
+                      <PlayerSelect
+                        label="Tight End"
+                        field="tight_end"
+                        position="TE"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect("Flex 3", "flex3", playerOptions.flex)}
+                      <PlayerSelect
+                        label="Flex 1"
+                        field="flex1"
+                        position="FLEX"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect("Flex 4", "flex4", playerOptions.flex)}
+                      <PlayerSelect
+                        label="Flex 2"
+                        field="flex2"
+                        position="FLEX"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect("Scaled Flex", "scaled_flex", playerOptions.flex)}
+                      <PlayerSelect
+                        label="Flex 3"
+                        field="flex3"
+                        position="FLEX"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect(
-                        "Defense",
-                        "defense",
-                        playerOptions.defenses,
-                        true
-                      )}
+                      <PlayerSelect
+                        label="Flex 4"
+                        field="flex4"
+                        position="FLEX"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Scaled Flex"
+                        field="scaled_flex"
+                        position="FLEX"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Defense"
+                        field="defense"
+                        position="DEF"
+                        players={players}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
                     </Grid>
 
                     <Grid item xs={12}>
@@ -307,6 +299,23 @@ export function CreateEntry() {
 
           <Grid item xs={12} md={4}>
             <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <Card>
+                  <CardHeader
+                    title="Remaining Teams"
+                    titleTypographyProps={{ variant: "h6" }}
+                  />
+                    <CardContent>
+                      <Typography variant="body2">
+                        <ul>
+                          {remainingTeams.map((team, index) => (
+                            <li key={index}>{team}</li>
+                          ))}
+                        </ul>
+                      </Typography>
+                    </CardContent>
+                </Card>
+              </Grid>
               <Grid item xs={12}>
                 <Card>
                   <CardHeader
