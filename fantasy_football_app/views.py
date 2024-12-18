@@ -28,6 +28,25 @@ from .utils import (
     get_summarized_players, update_and_return
 )
 
+# ----------------------------------------------
+# ---- Auth provider views -----
+# ----------------------------------------------
+
+from allauth.socialaccount.providers.amazon_cognito.views import (AmazonCognitoOAuth2Adapter)
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
+from dotenv import load_dotenv
+import os 
+
+load_dotenv()
+REACT_APP_COGNITO_CALLBACK_URL = os.environ.get("REACT_APP_COGNITO_CALLBACK_URL")
+
+class  CognitoLogin(SocialLoginView):
+	adapter_class = AmazonCognitoOAuth2Adapter
+	callback_url =  REACT_APP_COGNITO_CALLBACK_URL
+	client_class = OAuth2Client
+
+# ----------------------------------------------
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)

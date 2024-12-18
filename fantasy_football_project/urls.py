@@ -35,16 +35,31 @@ from fantasy_football_app.views import (
     entry_list_view,
     load_players_api_view,
     react_view,
+    CognitoLogin
 )
+
 from fantasy_football_app.apis import(
     EntryListCreateAPIView,
     EntryRetrieveUpdateDestroyAPIView,
     PlayerListAPIView,
 )
 
+# from allauth.account.decorators import secure_admin_login
+
+# admin.autodiscover()
+# admin.site.login = secure_admin_login(admin.site.login)
+
+# print()
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name='index'),  # This line maps the root path to the index view
+    
+    path('accounts/', include('allauth.urls')),
+    # path('accounts/amazon-cognito/login/callback/', include('allauth.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    # path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+	path("dj-rest-auth/cognito/", CognitoLogin.as_view(), name="cognito_login"),
+
     path('register/', register, name='register'),
     path('sign_in/', sign_in, name='sign_in'),
     path('create_entry/', create_entry, name='create_entry'),

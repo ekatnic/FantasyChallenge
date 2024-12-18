@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
-
+// const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
+const BASE_URL = "http://localhost:8000/";
 export const getEntries = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/api/entries/`);

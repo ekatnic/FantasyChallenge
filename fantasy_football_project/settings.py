@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 import django_heroku
 import os
@@ -37,12 +38,15 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 TANK_API_KEY = os.environ.get("TANK_API_KEY")
 TANK_API_ENDPOINT = "tank01-nfl-live-in-game-real-time-statistics-nfl.p.rapidapi.com"
 
-DEBUG = False
+# DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
-
+ACCOUNT_LOGIN_BY_CODE_ENABLED = True
 # Application definition
 
+# https://django-allauth.readthedocs.io/en/latest/installation/quickstart.html
+# https://dj-rest-auth.readthedocs.io/en/latest/installation.html
 INSTALLED_APPS = [
     'computedfields',
     'django.contrib.admin',
@@ -59,6 +63,15 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'bootstrap5',
+    "rest_framework.authtoken",
+    "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    # "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.amazon_cognito",
+    "dj_rest_auth.registration",
+    # "polls",
 ]
 
 MIDDLEWARE = [
@@ -71,6 +84,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    "allauth.account.middleware.AccountMiddleware", #Allauth middleware 
 ]
 
 ROOT_URLCONF = 'fantasy_football_project.urls'
@@ -117,39 +131,36 @@ if IS_HEROKU_APP:
     ]
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 else:
-<<<<<<< HEAD
-    PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
-=======
+    # PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
     # When running locally in development or in CI, a sqlite database file will be used instead
     # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
     DEBUG = True
->>>>>>> origin/master
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(PROJECT_DIR, 'yourdatabasename.db'),
-        }
-    }
-<<<<<<< HEAD
-    # # When running locally in development or in CI, a sqlite database file will be used instead
-    # # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
     # DATABASES = {
     #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #         'NAME': 'fantasy_challenge_db',
-    #         'USER': 'postgres',
-    #         'PASSWORD': 'pass',
-    #         'HOST': 'localhost',
-    #         'PORT': '5432'
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': os.path.join(PROJECT_DIR, 'yourdatabasename.db'),
     #     }
     # }
-=======
+    # # When running locally in development or in CI, a sqlite database file will be used instead
+    # # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'fantasy_challenge_db',
+            'USER': 'postgres',
+            'PASSWORD': 'pass',
+            'HOST': 'localhost',
+            'PORT': '5432'
+        }
+    }
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
+        "http://127.0.0.1:3000",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+
     ]
->>>>>>> origin/master
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -169,7 +180,47 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = ['fantasy_football_app.views.CaseInsensitiveModelBackend']
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    # 'django.contrib.auth.backends.ModelBackend',
+
+    'fantasy_football_app.views.CaseInsensitiveModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+    ]
+
+# TODO: Put cognito url prefix and AWS region as Environemnt variables
+# https://django-allauth.readthedocs.io/en/latest/socialaccount/providers/amazon_cognito.html
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    'amazon_cognito': {
+        'DOMAIN': 'https://playoff-showdown.auth.us-east-1.amazoncognito.com',
+    }
+}
+
+REST_FRAMEWORK = {
+
+	"DEFAULT_AUTHENTICATION_CLASSES": (
+		# "rest_framework.authentication.SessionAuthentication",
+		"rest_framework.authentication.TokenAuthentication",
+		"dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+		),
+	"DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+	}
+
+  
+SIMPLE_JWT = {
+	"ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+	"REFRESH_TOKEN_LIFETIME": timedelta(minutes=20),
+}
+
+REST_AUTH = {
+	"USE_JWT": True,
+	"JWT_AUTH_COOKIE": "playoff-showdown-auth",
+	"JWT_AUTH_REFRESH_COOKIE": "playoff-showdown-refresh-token",
+	}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -209,10 +260,13 @@ CACHES = {
 DATABASES['default']['CONN_MAX_AGE'] = 0
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://localhost:3000",
     'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
     'http://playoff-showdown.com',
     'https://playoff-showdown.com',
 ]
+CORS_ORIGIN_ALLOW_ALL =  True
 
 COMPUTEDFIELDS_ADMIN = True
 LOGGING = {

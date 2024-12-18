@@ -1,13 +1,32 @@
 # ----------------------------------------------------------------------    
 # Cognito User pool 
 # ----------------------------------------------------------------------    
-
 resource "aws_cognito_user_pool" "cognito_user_pool" {
   name = var.cognito_user_pool_name 
-  
+
+  # alias_attributes = ["email", "phone_number"]
+  # username_attributes = ["email", "phone_number"]
   username_attributes = ["email"]
   auto_verified_attributes = ["email"]
-  
+ 
+  # No MFA
+  mfa_configuration = "OFF"
+
+  # # Uncheck self-service account recovery
+  # admin_create_user_config {
+  #   allow_admin_create_user_only = true # Only admin can create users
+  #   # allow_admin_create_user_only = false # Allow users to sign up themselves
+  # } 
+
+  # # Required attributes: 
+  # 1. Email
+  # schema {
+  #   name                = "email"
+  #   attribute_data_type = "String"
+  #   required            = true
+  #   mutable             = false
+  # }
+
   password_policy {
     minimum_length    = 8
     require_lowercase = true
@@ -50,35 +69,52 @@ resource "aws_cognito_user_pool" "cognito_user_pool" {
 resource "aws_cognito_user_pool_client" "user_pool_client" {
   name         = var.cognito_user_pool_client_name 
   user_pool_id = aws_cognito_user_pool.cognito_user_pool.id
-  generate_secret = false
+  generate_secret = true
   refresh_token_validity = 60
   prevent_user_existence_errors = "ENABLED"
-  # allowed_oauth_flows_user_pool_client = true
-  # allowed_oauth_flows = ["code", "implicit"]
-  # allowed_oauth_scopes = [
-  #   "email",
-  #   "openid",
-  #   "aws.cognito.signin.user.admin",
-  # ]
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_flows = ["code", "implicit"]
+  allowed_oauth_scopes = [
+    "email",
+    "openid",
+    # "phone",
+    "profile",
+    "aws.cognito.signin.user.admin",
+  ]
 
   explicit_auth_flows = [
     "ALLOW_REFRESH_TOKEN_AUTH", # to enable the authentication tokens to be refreshed.
     "ALLOW_USER_PASSWORD_AUTH", # to enable user authentication by username(email?) and password 
-    "ALLOW_ADMIN_USER_PASSWORD_AUTH" # to enable user authentication with credentials created by the admin.
-    # "ALLOW_USER_SRP_AUTH",
+    "ALLOW_ADMIN_USER_PASSWORD_AUTH", # to enable user authentication with credentials created by the admin.
+    "ALLOW_USER_SRP_AUTH",
     ]
     
   # TODO: frontend's callback URL
   # TODO: Need a redirect URL to send the user to after login 
   # TODO: Make sure this subdomain is covered by the ACM cert  
   # callback_urls = [var.callback_subdomain_name] # TODO: frontend's callback URL
+  callback_urls = ["http://localhost:8000/accounts/amazon-cognito/login/callback/",
+                  "https://127.0.0.1:8000/accounts/amazon-cognito/login/callback/"
+                  ]
+  # callback_urls = ["http://localhost:8000/dj-rest-auth/cognito/"] # Update with your frontend's callback oURL
+  # default_redirect_uri = "http://localhost:8000/dj-rest-auth/cognito/" # TODO: Need a redirect URL to send the user to after login
+  supported_identity_providers         = ["COGNITO"]
 }
 
 # ----------------------------------------------------------------------    
 # Cognito Domain / Route 53
 # TODO: Get Cognito Domain setup 
 # ----------------------------------------------------------------------    
+variable "cognito_user_pool_domain_name" {
+  default = "playoff-showdown"
+}
 
+resource "aws_cognito_user_pool_domain" "cognito_user_pool_domain" {
+  domain       = var.cognito_user_pool_domain_name
+  user_pool_id = aws_cognito_user_pool.cognito_user_pool.id
+}
+
+# NOTE: Using ACM cert for custom domain
 # resource "aws_cognito_user_pool_domain" "user_pool_domain" {
 #   domain       = var.login_subdomain_name 
 #   certificate_arn = aws_acm_certificate.cert.arn
