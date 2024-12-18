@@ -26,15 +26,6 @@ import {
 } from "@mui/material";
 import { getPlayers } from "../services/api";
 
-// mock api data
-const playerOptions = {
-  quarterbacks: ["Patrick Mahomes", "Josh Allen", "Lamar Jackson"],
-  runningBacks: ["Christian McCaffrey", "Derrick Henry", "Saquon Barkley"],
-  wideReceivers: ["Justin Jefferson", "Tyreek Hill", "CeeDee Lamb"],
-  tightEnds: ["Travis Kelce", "George Kittle", "Mark Andrews"],
-  defenses: ["San Francisco 49ers", "Baltimore Ravens", "Buffalo Bills"],
-};
-
 export function CreateEntry() {
   // I presume an object like this is right way to do a form state variable
   const [formData, setFormData] = useState({
@@ -55,10 +46,17 @@ export function CreateEntry() {
 
   const [errors, setErrors] = useState({});
   const [submissionError, setSubmissionError] = useState(null);
-  const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+  const [playerOptions, setPlayerOptions] = useState({
+    quarterbacks: [],
+    runningBacks: [],
+    wideReceivers: [],
+    tightEnds: [],
+    flex: [],
+    defenses: []
+  });
+
   const validateForm = () => {
     const newErrors = {};
     const usedTeams = new Set();
@@ -99,21 +97,6 @@ export function CreateEntry() {
       "defense",
     ];
 
-    // TODO: this is stupid and doesnt actually do what we want,
-    // TODO: we need a PROPER PLAYER TO TEAM MAPPING
-    fieldsToCheckTeam.forEach((field) => {
-      const player = formData[field];
-      if (player) {
-        const team = getPlayerTeam(player);
-        if (usedTeams.has(team)) {
-          newErrors[field] =
-            "Cannot select multiple players from the same team";
-        } else {
-          usedTeams.add(team);
-        }
-      }
-    });
-
     // TODO: i know we were planning on dropping this
     if (!formData.captain) {
       newErrors.captain = "You must select a captain";
@@ -127,9 +110,22 @@ export function CreateEntry() {
     const fetchPlayers = async () => {
       try {
         const data = await getPlayers();
-        setPlayers(data);
+        // Filter players by position
+        const quarterbacks = data.filter(player => player.position === 'QB');
+        const runningBacks = data.filter(player => player.position === 'RB');
+        const wideReceivers = data.filter(player => player.position === 'WR');
+        const tightEnds = data.filter(player => player.position === 'TE');
+        const flex = [...runningBacks, ...wideReceivers, ...tightEnds];
+        const defenses = data.filter(player => player.position === 'DEF');
+        setPlayerOptions({
+          quarterbacks,
+          runningBacks,
+          wideReceivers,
+          tightEnds,
+          flex,
+          defenses
+        });
         setLoading(false);
-        console.log(data);
       } catch (error) {
         setError(error);
         setLoading(false);
@@ -137,22 +133,6 @@ export function CreateEntry() {
     };
     fetchPlayers();
   }, []);
-
-  const getPlayerTeam = (player) => {
-    const teamMappings = {
-      "Patrick Mahomes": "Kansas City Chiefs",
-      "Josh Allen": "Buffalo Bills",
-      "Lamar Jackson": "Baltimore Ravens",
-      "Christian McCaffrey": "San Francisco 49ers",
-      "Derrick Henry": "Balitmore Ravens",
-      "Saquon Barkley": "Philadelphia Eagles",
-      "Travis Kelce": "Kansas City Chiefs",
-      "George Kittle": "San Francisco 49ers",
-      "Mark Andrews": "Baltimore Ravens",
-      "San Francisco 49ers": "San Francisco 49ers", // DSTs i guess ???
-    };
-    return teamMappings[player] || "Unknown";
-  };
 
   // TODO: replace with real form submission to bakcend
   const handleSubmit = (e) => {
@@ -181,15 +161,15 @@ export function CreateEntry() {
       <InputLabel>{label}</InputLabel>
       <Select
         label={label}
-        value={formData[field]}
+        value={formData[field] || ''}
         onChange={(e) => {
           handleChange(field, e.target.value);
           if (isCaptain) handleChange("captain", e.target.value);
         }}
       >
         {options.map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
+          <MenuItem key={option.id} value={option.id}>
+            {option.name} - {option.team}
           </MenuItem>
         ))}
       </Select>
@@ -257,7 +237,7 @@ export function CreateEntry() {
                       {renderSelect(
                         "Wide Receiver 1",
                         "wide_receiver1",
-                        playerOptions.wideReceivers,
+                        playerOptions.runningBacks,
                         true
                       )}
                     </Grid>
@@ -274,50 +254,30 @@ export function CreateEntry() {
                       {renderSelect(
                         "Tight End",
                         "tight_end",
-                        playerOptions.tightEnds,
+                        playerOptions.wideReceivers,
                         true
                       )}
                     </Grid>
 
                     {/* Flex Positions */}
                     <Grid item xs={12} sm={6}>
-                      {renderSelect("Flex 1", "flex1", [
-                        ...playerOptions.runningBacks,
-                        ...playerOptions.wideReceivers,
-                        ...playerOptions.tightEnds,
-                      ])}
+                      {renderSelect("Flex 1", "flex1", playerOptions.flex)}
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect("Flex 2", "flex2", [
-                        ...playerOptions.runningBacks,
-                        ...playerOptions.wideReceivers,
-                        ...playerOptions.tightEnds,
-                      ])}
+                      {renderSelect("Flex 2", "flex2", playerOptions.flex)}
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect("Flex 3", "flex3", [
-                        ...playerOptions.runningBacks,
-                        ...playerOptions.wideReceivers,
-                        ...playerOptions.tightEnds,
-                      ])}
+                      {renderSelect("Flex 3", "flex3", playerOptions.flex)}
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect("Flex 4", "flex4", [
-                        ...playerOptions.runningBacks,
-                        ...playerOptions.wideReceivers,
-                        ...playerOptions.tightEnds,
-                      ])}
+                      {renderSelect("Flex 4", "flex4", playerOptions.flex)}
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      {renderSelect("Scaled Flex", "scaled_flex", [
-                        ...playerOptions.runningBacks,
-                        ...playerOptions.wideReceivers,
-                        ...playerOptions.tightEnds,
-                      ])}
+                      {renderSelect("Scaled Flex", "scaled_flex", playerOptions.flex)}
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
