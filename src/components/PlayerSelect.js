@@ -1,13 +1,13 @@
 import React from 'react';
 import { FormControl, InputLabel, Select, MenuItem, Typography } from '@mui/material';
 
-const PlayerSelect = ({ label, field, position, players, formData, handleChange, errors, selectedPlayers }) => {
-  // Filter players by position and exclude already selected players
+const PlayerSelect = ({ label, field, position, players,  remainingTeams, formData, handleChange, errors, selectedPlayers }) => {
   const options = players.filter(player => {
-    if (position === 'FLEX') {
-      return (player.position === 'RB' || player.position === 'WR' || player.position === 'TE') && !selectedPlayers[player.id];
-    }
-    return player.position === position && !selectedPlayers[player.id];
+    const isFlexPosition = position === 'FLEX' && (player.position === 'RB' || player.position === 'WR' || player.position === 'TE');
+    const isCorrectPosition = player.position === position;
+    const isFromValidTeam = remainingTeams.includes(player.team);
+    const isNotSelected = !selectedPlayers[player.id];
+    return (isFlexPosition || isCorrectPosition) && isFromValidTeam && isNotSelected;
   });
 
   // Add the currently selected player to the options list

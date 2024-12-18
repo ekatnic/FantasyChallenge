@@ -18,27 +18,16 @@ import {
   Button,
   Alert,
   Container,
-  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Divider
 } from "@mui/material";
 import { getPlayers } from "../services/api";
 import PlayerSelect from './PlayerSelect';
 
 export function CreateEntry() {
-  const [formData, setFormData] = useState({
-    quarterback: "",
-    running_back1: "",
-    running_back2: "",
-    wide_receiver1: "",
-    wide_receiver2: "",
-    tight_end: "",
-    flex1: "",
-    flex2: "",
-    flex3: "",
-    flex4: "",
-    scaled_flex: "",
-    defense: "",
-    captain: null,
-  });
+  const [formData, setFormData] = useState({});
 
   const [errors, setErrors] = useState({});
   const [submissionError, setSubmissionError] = useState(null);
@@ -107,6 +96,9 @@ export function CreateEntry() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+  // Collect unique team names
+  const uniqueTeams = [...new Set(players.map(player => player.team))];
+
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
@@ -116,206 +108,8 @@ export function CreateEntry() {
           </Alert>
         )}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardHeader
-                title="Create Your Fantasy Football Playoff Entry"
-                titleTypographyProps={{ variant: "h4" }}
-              />
-              <CardContent>
-                <form onSubmit={handleSubmit}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Quarterback"
-                        field="quarterback"
-                        position="QB"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Running Back 1"
-                        field="running_back1"
-                        position="RB"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Running Back 2"
-                        field="running_back2"
-                        position="RB"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Wide Receiver 1"
-                        field="wide_receiver1"
-                        position="WR"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Wide Receiver 2"
-                        field="wide_receiver2"
-                        position="WR"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Tight End"
-                        field="tight_end"
-                        position="TE"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Flex 1"
-                        field="flex1"
-                        position="FLEX"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Flex 2"
-                        field="flex2"
-                        position="FLEX"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Flex 3"
-                        field="flex3"
-                        position="FLEX"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Flex 4"
-                        field="flex4"
-                        position="FLEX"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Scaled Flex"
-                        field="scaled_flex"
-                        position="FLEX"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <PlayerSelect
-                        label="Defense"
-                        field="defense"
-                        position="DEF"
-                        players={players}
-                        formData={formData}
-                        handleChange={handleChange}
-                        errors={errors}
-                        selectedPlayers={selectedPlayers}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                      >
-                        Submit Entry
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </form>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <Card>
-                  <CardHeader
-                    title="Remaining Teams"
-                    titleTypographyProps={{ variant: "h6" }}
-                  />
-                    <CardContent>
-                      <Typography variant="body2">
-                        <ul>
-                          {remainingTeams.map((team, index) => (
-                            <li key={index}>{team}</li>
-                          ))}
-                        </ul>
-                      </Typography>
-                    </CardContent>
-                </Card>
-              </Grid>
               <Grid item xs={12}>
                 <Card>
                   <CardHeader
@@ -359,6 +153,229 @@ export function CreateEntry() {
                 </Card>
               </Grid>
             </Grid>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardHeader
+                title="Create Your Fantasy Football Playoff Entry"
+                titleTypographyProps={{ variant: "h4" }}
+              />
+              <CardContent>
+                <form onSubmit={handleSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Quarterback"
+                        field="quarterback"
+                        position="QB"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Running Back 1"
+                        field="running_back1"
+                        position="RB"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Running Back 2"
+                        field="running_back2"
+                        position="RB"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Wide Receiver 1"
+                        field="wide_receiver1"
+                        position="WR"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Wide Receiver 2"
+                        field="wide_receiver2"
+                        position="WR"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Tight End"
+                        field="tight_end"
+                        position="TE"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Flex 1"
+                        field="flex1"
+                        position="FLEX"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Flex 2"
+                        field="flex2"
+                        position="FLEX"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Flex 3"
+                        field="flex3"
+                        position="FLEX"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Flex 4"
+                        field="flex4"
+                        position="FLEX"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Scaled Flex"
+                        field="scaled_flex"
+                        position="FLEX"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <PlayerSelect
+                        label="Defense"
+                        field="defense"
+                        position="DEF"
+                        players={players}
+                        remainingTeams={remainingTeams}
+                        formData={formData}
+                        handleChange={handleChange}
+                        errors={errors}
+                        selectedPlayers={selectedPlayers}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                      >
+                        Submit Entry
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </form>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardHeader
+                title="Playoff Teams"
+                titleTypographyProps={{ variant: "h6" }}
+              />
+              <CardContent>
+                <List>
+                  {uniqueTeams.map((team, index) => (
+                    <React.Fragment key={index}>
+                      <ListItem>
+                        <ListItemText
+                          primary={team}
+                          slotProps={{
+                            primary: {
+                              style: {
+                                color: remainingTeams.includes(team) ? 'green' : 'red'
+                              }
+                            }
+                          }}
+                        />
+                      </ListItem>
+                      {index < uniqueTeams.length - 1 && <Divider />}
+                    </React.Fragment>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </Box>
