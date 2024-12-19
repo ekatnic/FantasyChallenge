@@ -25,6 +25,13 @@ const PlayerSelect = ({ label, field, position, players,  remainingTeams, formDa
         onChange={(e) => {
           handleChange(field, e.target.value);
         }}
+        MenuProps={{
+          PaperProps: {
+            style: {
+              maxHeight: 200, // Set the maximum height for the menu
+            },
+          },
+        }}
       >
         {options.map((option) => (
           <MenuItem key={option.id} value={option.id}>

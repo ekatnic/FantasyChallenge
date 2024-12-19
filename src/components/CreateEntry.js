@@ -1,12 +1,3 @@
-// This is a basic setup for CreateEntry form submittion
-// NOTE: Added Material UI components for easy styling/strucuter, im happy to not use this (or any component library) but this was fastest
-// NOTE: way for me to get a form setup and looking decent
-
-// TODO: I think a big blob containing all players-position-team mappings sent to each client could be a good simple idea,
-// TODO: Then we just use that on the client, build all the components from that, etc.
-// TODO: Then send back the form data back to the server
-// TODO: Logic for this component is definitely not correct, but it's a start
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -23,7 +14,7 @@ import {
   ListItemText,
   Divider
 } from "@mui/material";
-import { getPlayers } from "../services/api";
+import { getPlayers, postEntry } from "../services/api";
 import PlayerSelect from './PlayerSelect';
 
 export function CreateEntry() {
@@ -69,8 +60,15 @@ export function CreateEntry() {
     setRemainingTeams(filteredTeams);
   }, [formData, players]);
 
-  // TODO: replace with real form submission to bakcend
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+    try {
+      const data = await postEntry(formData);
+      console.log('Entry created successfully:', data);
+      // Handle success (e.g., show a success message, redirect, etc.)
+    } catch (error) {
+      setSubmissionError('Error creating entry. Please try again.');
+    }
   };
 
   const handleChange = (field, value) => {
@@ -122,7 +120,6 @@ export function CreateEntry() {
                         <li>Create a lineup of 12 players</li>
                         <li>Only one player per team allowed</li>
                         <li>Points will NOT be doubled in the Super Bowl</li>
-                        <li>Cannot combine captain and scaled FLEX</li>
                       </ul>
                     </Typography>
                   </CardContent>
@@ -132,14 +129,11 @@ export function CreateEntry() {
               <Grid item xs={12}>
                 <Card>
                   <CardHeader
-                    title="Captain and Scaled FLEX Rules"
+                    title="Scaled FLEX Rules"
                     titleTypographyProps={{ variant: "h6" }}
                   />
                   <CardContent>
                     <Typography variant="body2">
-                      <strong>Captain:</strong> Receives 1.5x points
-                      <br />
-                      <br />
                       <strong>Scaled FLEX Points:</strong>
                       <ul>
                         <li>50%+ ownership: No multiplier</li>
@@ -351,7 +345,7 @@ export function CreateEntry() {
           <Grid item xs={12} md={3}>
             <Card>
               <CardHeader
-                title="Playoff Teams"
+                title="Available Teams"
                 titleTypographyProps={{ variant: "h6" }}
               />
               <CardContent>
