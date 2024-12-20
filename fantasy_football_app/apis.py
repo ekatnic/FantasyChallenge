@@ -1,11 +1,17 @@
 from rest_framework import generics, permissions
+from rest_framework.permissions import IsAuthenticated
 from .models import Entry, Player
 from .serializers import EntrySerializer, PlayerSerializer
 
 class EntryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
     def get_queryset(self):
         # if self.request.user.is_superuser:
