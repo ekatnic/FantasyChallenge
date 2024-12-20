@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormControl, InputLabel, Select, MenuItem, Typography } from '@mui/material';
 
-const PlayerSelect = ({ label, field, position, players,  remainingTeams, formData, handleChange, errors, selectedPlayers }) => {
+const PlayerSelect = ({ label, field, position, players,  remainingTeams, formData, handleChange, selectedPlayers }) => {
   const options = players.filter(player => {
     const isFlexPosition = position === 'FLEX' && (player.position === 'RB' || player.position === 'WR' || player.position === 'TE');
     const isCorrectPosition = player.position === position;
@@ -17,7 +17,7 @@ const PlayerSelect = ({ label, field, position, players,  remainingTeams, formDa
   }
 
   return (
-    <FormControl fullWidth margin="normal" error={!!errors[field]}>
+    <FormControl fullWidth margin="normal">
       <InputLabel>{label}</InputLabel>
       <Select
         label={label}
@@ -39,11 +39,6 @@ const PlayerSelect = ({ label, field, position, players,  remainingTeams, formDa
           </MenuItem>
         ))}
       </Select>
-      {errors[field] && (
-        <Typography color="error" variant="caption" sx={{ ml: 2 }}>
-          {errors[field]}
-        </Typography>
-      )}
     </FormControl>
   );
 };

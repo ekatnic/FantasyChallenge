@@ -16,11 +16,11 @@ import {
 } from "@mui/material";
 import { getPlayers, postEntry } from "../services/api";
 import PlayerSelect from './PlayerSelect';
+import Navbar from './NavBar';
 
 export function CreateEntry() {
   const [formData, setFormData] = useState({});
 
-  const [errors, setErrors] = useState({});
   const [submissionError, setSubmissionError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -99,6 +99,7 @@ export function CreateEntry() {
 
   return (
     <Container maxWidth="lg">
+      <Navbar />
       <Box sx={{ my: 4 }}>
         {submissionError && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -167,7 +168,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -181,7 +181,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -195,7 +194,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -209,7 +207,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -223,7 +220,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -237,7 +233,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -251,7 +246,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -265,7 +259,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -279,7 +272,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -293,7 +285,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -307,7 +298,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
@@ -321,7 +311,6 @@ export function CreateEntry() {
                         remainingTeams={remainingTeams}
                         formData={formData}
                         handleChange={handleChange}
-                        errors={errors}
                         selectedPlayers={selectedPlayers}
                       />
                     </Grid>
