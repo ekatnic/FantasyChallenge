@@ -1,34 +1,43 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { useDrag } from 'react-dnd';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
-const PlayerTable = ({ filteredPlayers, handleAddPlayer, handleSort }) => {
+const PlayerTable = ({ filteredPlayers, handleSort }) => {
+  const ItemTypes = {
+    PLAYER: 'player',
+  };
+
+  const PlayerRow = ({ player }) => {
+    const [{ isDragging }, drag] = useDrag(() => ({
+      type: ItemTypes.PLAYER,
+      item: { player },
+      collect: (monitor) => ({
+        isDragging: !!monitor.isDragging(),
+      }),
+    }));
+
+    return (
+      <TableRow ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
+        <TableCell>{player.name}</TableCell>
+        <TableCell>{player.position}</TableCell>
+        <TableCell>{player.team}</TableCell>
+      </TableRow>
+    );
+  };
+
   return (
-    <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
+    <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell onClick={() => handleSort('name')}>Name</TableCell>
-            <TableCell onClick={() => handleSort('position')}>Position</TableCell>
-            <TableCell onClick={() => handleSort('team')}>Team</TableCell>
-            <TableCell>Add to Roster</TableCell>
+            <TableCell onClick={() => handleSort('name')}><b>Name</b></TableCell>
+            <TableCell onClick={() => handleSort('position')}><b>Position</b></TableCell>
+            <TableCell onClick={() => handleSort('team')}><b>Team</b></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredPlayers.slice(0, 20).map((player) => (
-            <TableRow key={player.id}>
-              <TableCell>{player.name}</TableCell>
-              <TableCell>{player.position}</TableCell>
-              <TableCell>{player.team}</TableCell>
-              <TableCell>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleAddPlayer(player)}
-                >
-                  Add
-                </Button>
-              </TableCell>
-            </TableRow>
+          {filteredPlayers.map((player) => (
+            <PlayerRow key={player.id} player={player} />
           ))}
         </TableBody>
       </Table>

@@ -7,8 +7,12 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  TextField,
+  Button
 } from "@mui/material";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { getPlayers, postEntry } from "../services/api";
 import Navbar from './Navbar';
 import AvailableTeams from './AvailableTeams';
@@ -25,12 +29,24 @@ const CreateEntryTable = () => {
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [filterPosition, setFilterPosition] = useState('All');
   const [filterTeam, setFilterTeam] = useState('All');
-  const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'ascending' });
+  const [sortConfig, setSortConfig] = useState([
+    { key: 'position', direction: 'ascending' },
+    { key: 'name', direction: 'ascending' }
+  ]);
   const [teamError, setTeamError] = useState(null);
+  const [rosterName, setRosterName] = useState('');
 
   const rosterPositions = [
-    'QB', 'RB1', 'RB2', 'WR1', 'WR2', 'TE', 'Flex1', 'Flex2', 'Flex3', 'Flex4', 'Scaled Flex', 'DEF'
+    'QB', 'RB1', 'RB2', 'WR1', 'WR2', 'TE', 'Flex1', 'Flex2', 'Flex3', 'Flex4', 'Scaled Flex', 'DEF', 'K'
   ];
+
+  const positionOrder = {
+    'QB': 1,
+    'RB': 2,
+    'WR': 3,
+    'TE': 4,
+    'DEF': 5
+  };
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -50,7 +66,7 @@ const CreateEntryTable = () => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
     try {
-      const data = await postEntry(formData);
+      const data = await postEntry({ ...formData, rosterName });
       console.log('Entry created successfully:', data);
       // Handle success (e.g., show a success message, redirect, etc.)
     } catch (error) {
@@ -78,7 +94,7 @@ const CreateEntryTable = () => {
     });
   };
 
-  const handleAddPlayer = (player) => {
+  const handleAddPlayer = (player, position) => {
     // Check if the team of the player being added is already in the roster
     const playerTeam = player.team;
     const teamAlreadyInRoster = Object.values(formData).some(playerId => {
@@ -91,25 +107,10 @@ const CreateEntryTable = () => {
       return;
     }
 
-    setFormData((prev) => {
-      const newFormData = { ...prev };
-      if (player.position === 'RB') {
-        if (!newFormData['rb1']) {
-          newFormData['rb1'] = player.id;
-        } else {
-          newFormData['rb2'] = player.id;
-        }
-      } else if (player.position === 'WR') {
-        if (!newFormData['wr1']) {
-          newFormData['wr1'] = player.id;
-        } else {
-          newFormData['wr2'] = player.id;
-        }
-      } else {
-        newFormData[player.position.toLowerCase()] = player.id;
-      }
-      return newFormData;
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [position.toLowerCase()]: player.id,
+    }));
 
     // Clear any previous team error
     setTeamError(null);
@@ -127,19 +128,28 @@ const CreateEntryTable = () => {
   };
 
   const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
+    setSortConfig((prevSortConfig) => {
+      const existingSort = prevSortConfig.find(sort => sort.key === key);
+      if (existingSort) {
+        const newDirection = existingSort.direction === 'ascending' ? 'descending' : 'ascending';
+        return prevSortConfig.map(sort => sort.key === key ? { ...sort, direction: newDirection } : sort);
+      } else {
+        return [...prevSortConfig, { key, direction: 'ascending' }];
+      }
+    });
   };
 
   const sortedPlayers = [...players].sort((a, b) => {
-    if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? -1 : 1;
-    }
-    if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? 1 : -1;
+    for (const { key, direction } of sortConfig) {
+      if (key === 'position') {
+        const orderA = positionOrder[a.position] || 99;
+        const orderB = positionOrder[b.position] || 99;
+        if (orderA < orderB) return direction === 'ascending' ? -1 : 1;
+        if (orderA > orderB) return direction === 'ascending' ? 1 : -1;
+      } else {
+        if (a[key] < b[key]) return direction === 'ascending' ? -1 : 1;
+        if (a[key] > b[key]) return direction === 'ascending' ? 1 : -1;
+      }
     }
     return 0;
   });
@@ -155,66 +165,83 @@ const CreateEntryTable = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <Container maxWidth="lg">
-      <Navbar />
-      <Box sx={{ my: 4 }}>
-        {submissionError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {submissionError}
-          </Alert>
-        )}
-        {teamError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {teamError}
-          </Alert>
-        )}
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={3}>
-            <Box sx={{ mt: 4 }}>
-              <AvailableTeams uniqueTeams={uniqueTeams} formData={formData} allPlayers={allPlayers} />
-            </Box>
+    <DndProvider backend={HTML5Backend}>
+      <Container maxWidth="lg">
+        <Navbar />
+        <Box sx={{ my: 4 }}>
+          {submissionError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {submissionError}
+            </Alert>
+          )}
+          {teamError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {teamError}
+            </Alert>
+          )}
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={3}>
+              <Box sx={{ mt: 4 }}>
+                <AvailableTeams uniqueTeams={uniqueTeams} formData={formData} allPlayers={allPlayers} />
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="filter-position-label">Filter by Position</InputLabel>
+                <Select
+                  labelId="filter-position-label"
+                  value={filterPosition}
+                  onChange={(e) => setFilterPosition(e.target.value)}
+                  label="Filter by Position"
+                >
+                  <MenuItem value="All">All</MenuItem>
+                  <MenuItem value="QB">Quarterback</MenuItem>
+                  <MenuItem value="RB">Running Back</MenuItem>
+                  <MenuItem value="WR">Wide Receiver</MenuItem>
+                  <MenuItem value="TE">Tight End</MenuItem>
+                  <MenuItem value="DEF">Defense</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="filter-team-label">Filter by Team</InputLabel>
+                <Select
+                  labelId="filter-team-label"
+                  value={filterTeam}
+                  onChange={(e) => setFilterTeam(e.target.value)}
+                  label="Filter by Team"
+                >
+                  <MenuItem value="All">All</MenuItem>
+                  {uniqueTeams.map((team) => (
+                    <MenuItem key={team} value={team}>{team}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <PlayerTable filteredPlayers={filteredPlayers} handleAddPlayer={handleAddPlayer} handleSort={handleSort} />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <Box sx={{ mt: 4 }}>
+                <TextField
+                  fullWidth
+                  label="Roster Name"
+                  value={rosterName}
+                  onChange={(e) => setRosterName(e.target.value)}
+                  margin="normal"
+                />
+                <Roster rosterPositions={rosterPositions} formData={formData} allPlayers={allPlayers} handleRemovePlayer={handleRemovePlayer} handleAddPlayer={handleAddPlayer} />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                >
+                  Submit Entry
+                </Button>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="filter-position-label">Filter by Position</InputLabel>
-              <Select
-                labelId="filter-position-label"
-                value={filterPosition}
-                onChange={(e) => setFilterPosition(e.target.value)}
-                label="Filter by Position"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="QB">Quarterback</MenuItem>
-                <MenuItem value="RB">Running Back</MenuItem>
-                <MenuItem value="WR">Wide Receiver</MenuItem>
-                <MenuItem value="TE">Tight End</MenuItem>
-                <MenuItem value="DEF">Defense</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="filter-team-label">Filter by Team</InputLabel>
-              <Select
-                labelId="filter-team-label"
-                value={filterTeam}
-                onChange={(e) => setFilterTeam(e.target.value)}
-                label="Filter by Team"
-              >
-                <MenuItem value="All">All</MenuItem>
-                {uniqueTeams.map((team) => (
-                  <MenuItem key={team} value={team}>{team}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <PlayerTable filteredPlayers={filteredPlayers} handleAddPlayer={handleAddPlayer} handleSort={handleSort} />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box sx={{ mt: 4 }}>
-              <Roster rosterPositions={rosterPositions} formData={formData} allPlayers={allPlayers} handleRemovePlayer={handleRemovePlayer} />
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </DndProvider>
   );
 };
 
