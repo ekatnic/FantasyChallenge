@@ -34,6 +34,7 @@ const CreateEntryTable = () => {
   const [filterTeam, setFilterTeam] = useState('All');
   const [sortConfig, setSortConfig] = useState([
     { key: 'position', direction: 'ascending' },
+    { key: 'team', direction: 'ascending' },
     { key: 'name', direction: 'ascending' }
   ]);
   const [teamError, setTeamError] = useState(null);
