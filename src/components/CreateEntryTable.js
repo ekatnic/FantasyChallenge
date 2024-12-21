@@ -26,7 +26,6 @@ const CreateEntryTable = () => {
   const [error, setError] = useState(null);
   const [players, setPlayers] = useState([]);
   const [allPlayers, setAllPlayers] = useState([]);
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [filterPosition, setFilterPosition] = useState('All');
   const [filterTeam, setFilterTeam] = useState('All');
   const [sortConfig, setSortConfig] = useState([
@@ -62,37 +61,6 @@ const CreateEntryTable = () => {
     };
     fetchPlayers();
   }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    try {
-      const data = await postEntry({ ...formData, rosterName });
-      console.log('Entry created successfully:', data);
-      // Handle success (e.g., show a success message, redirect, etc.)
-    } catch (error) {
-      setSubmissionError('Error creating entry. Please try again.');
-    }
-  };
-
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Update selected players and teams
-    setSelectedPlayers((prev) => {
-      const newSelectedPlayers = { ...prev };
-      const previousPlayerId = formData[field];
-      if (previousPlayerId) {
-        delete newSelectedPlayers[previousPlayerId];
-      }
-      if (value) {
-        newSelectedPlayers[value] = allPlayers.find(player => player.id === value);
-      }
-      return newSelectedPlayers;
-    });
-  };
 
   const handleAddPlayer = (player, position) => {
     // Check if the team of the player being added is already in the roster
