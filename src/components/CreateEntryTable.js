@@ -52,6 +52,10 @@ const CreateEntryTable = () => {
     'DEF': 5
   };
 
+  const rbPositions = ['rb1', 'rb2', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
+  const wrPositions = ['wr1', 'wr2', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
+  const tePositions = ['te', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
+
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
@@ -87,13 +91,10 @@ const CreateEntryTable = () => {
     if (position === 'QB' || position === 'DEF' || position === 'K') {
       positionToAdd = position.toLowerCase();
     } else if (position === 'RB') {
-      const rbPositions = ['rb1', 'rb2', 'flex1', 'flex2', 'flex3', 'flex4'];
       positionToAdd = rbPositions.find(pos => !formData[pos]) || 'scaled flex';
     } else if (position === 'WR') {
-      const wrPositions = ['wr1', 'wr2', 'flex1', 'flex2', 'flex3', 'flex4'];
       positionToAdd = wrPositions.find(pos => !formData[pos]) || 'scaled flex';
     } else if (position === 'TE') {
-      const tePositions = ['te', 'flex1', 'flex2', 'flex3', 'flex4'];
       positionToAdd = tePositions.find(pos => !formData[pos]) || 'scaled flex';
     }
 
@@ -152,12 +153,32 @@ const CreateEntryTable = () => {
       return existingPlayer && existingPlayer.team === player.team;
     });
 
+    let isGrayedOut = teamAlreadyInRoster;
+
+    if (!isGrayedOut) {
+      if (player.position === 'QB' && formData.qb) {
+        isGrayedOut = true;
+      } else if (player.position === 'DEF' && formData.def) {
+        isGrayedOut = true;
+      } else if (player.position === 'K' && formData.k) {
+        isGrayedOut = true;
+      } else if (player.position === 'RB') {
+        isGrayedOut = rbPositions.every(pos => formData[pos]);
+      } else if (player.position === 'WR') {
+        isGrayedOut = wrPositions.every(pos => formData[pos]);
+      } else if (player.position === 'TE') {
+        isGrayedOut = tePositions.every(pos => formData[pos]);
+      }
+    }
+
     return {
       ...player,
-      isGrayedOut: teamAlreadyInRoster
+      isGrayedOut
     };
   }).filter(player => {
-    return (filterPosition === 'All' || player.position === filterPosition) &&
+    return (filterPosition === 'All' || 
+            (filterPosition === 'Flex' && ['RB', 'WR', 'TE'].includes(player.position)) ||
+            player.position === filterPosition) &&
            (filterTeam === 'All' || player.team === filterTeam) &&
            (player.name.toLowerCase().includes(searchTerm.toLowerCase()));
   });
@@ -224,6 +245,7 @@ const CreateEntryTable = () => {
                   <MenuItem value="RB">Running Back</MenuItem>
                   <MenuItem value="WR">Wide Receiver</MenuItem>
                   <MenuItem value="TE">Tight End</MenuItem>
+                  <MenuItem value="Flex">Flex</MenuItem>
                   <MenuItem value="DEF">Defense / Special Teams</MenuItem>
                   <MenuItem value="K">Kicker</MenuItem>
                 </Select>
