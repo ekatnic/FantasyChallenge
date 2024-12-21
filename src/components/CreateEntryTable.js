@@ -14,7 +14,7 @@ import {
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { getPlayers, postEntry } from "../services/api";
-import Navbar from './Navbar';
+import NavBar from './NavBar';
 import AvailableTeams from './AvailableTeams';
 import PlayerTable from './PlayerTable';
 import Roster from './Roster';
@@ -135,7 +135,7 @@ const CreateEntryTable = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <Container maxWidth="lg">
-        <Navbar />
+        <NavBar />
         <Box sx={{ my: 4 }}>
           {submissionError && (
             <Alert severity="error" sx={{ mb: 2 }}>

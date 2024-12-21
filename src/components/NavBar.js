@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
 
-const Navbar = () => {
+const NavBar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
@@ -21,4 +21,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavBar;
