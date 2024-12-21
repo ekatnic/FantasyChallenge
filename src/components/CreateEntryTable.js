@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Alert,
+  Card,
+  CardHeader,
+  CardContent,
+  Typography,
   Container,
   Grid,
   FormControl,
@@ -34,6 +38,7 @@ const CreateEntryTable = () => {
   ]);
   const [teamError, setTeamError] = useState(null);
   const [rosterName, setRosterName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const rosterPositions = [
     'QB', 'RB1', 'RB2', 'WR1', 'WR2', 'TE', 'Flex1', 'Flex2', 'Flex3', 'Flex4', 'Scaled Flex', 'DEF', 'K'
@@ -124,7 +129,8 @@ const CreateEntryTable = () => {
 
   const filteredPlayers = sortedPlayers.filter(player => {
     return (filterPosition === 'All' || player.position === filterPosition) &&
-           (filterTeam === 'All' || player.team === filterTeam);
+           (filterTeam === 'All' || player.team === filterTeam) &&
+           (player.name.toLowerCase().includes(searchTerm.toLowerCase()));
   });
 
   const uniqueTeams = [...new Set(players.map(player => player.team))];
@@ -149,9 +155,29 @@ const CreateEntryTable = () => {
           )}
           <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
-              <Box sx={{ mt: 4 }}>
+              <Box sx={{ mt: 8 }}>
                 <AvailableTeams uniqueTeams={uniqueTeams} formData={formData} allPlayers={allPlayers} />
               </Box>
+              <Grid item xs={12}>
+                <Card>
+                  <CardHeader
+                    title="Scaled FLEX Rules"
+                    titleTypographyProps={{ variant: "h6" }}
+                  />
+                  <CardContent>
+                    <Typography variant="body2">
+                      <strong>Scaled FLEX Points:</strong>
+                      <ul>
+                        <li>50%+ ownership: No multiplier</li>
+                        <li>25-50%: 1.2x multiplier</li>
+                        <li>12.5-25%: 1.3x multiplier</li>
+                        <li>5-12.5%: 1.5x multiplier</li>
+                        <li>0-5%: 1.75x multiplier</li>
+                      </ul>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth margin="normal">
@@ -184,6 +210,13 @@ const CreateEntryTable = () => {
                   ))}
                 </Select>
               </FormControl>
+              <TextField
+                fullWidth
+                label="Search Player by Name"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                margin="normal"
+              />
               <PlayerTable filteredPlayers={filteredPlayers} handleAddPlayer={handleAddPlayer} handleSort={handleSort} />
             </Grid>
             <Grid item xs={12} md={3}>

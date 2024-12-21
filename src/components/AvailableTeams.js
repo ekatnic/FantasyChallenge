@@ -29,7 +29,7 @@ const AvailableTeams = ({ uniqueTeams, formData, allPlayers }) => {
                     }}
                   />
                 </ListItem>
-                {index < uniqueTeams.length - 1 && <Divider />}
+                <Divider />
               </Grid>
             );
           })}
