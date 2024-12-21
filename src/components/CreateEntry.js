@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { getPlayers, postEntry } from "../services/api";
 import PlayerSelect from './PlayerSelect';
-import Navbar from './NavBar';
+import Navbar from './Navbar';
 
 export function CreateEntry() {
   const [formData, setFormData] = useState({});
