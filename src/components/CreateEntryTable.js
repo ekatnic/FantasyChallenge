@@ -67,9 +67,11 @@ const CreateEntryTable = () => {
     fetchPlayers();
   }, []);
 
-  const handleAddPlayer = (player, position) => {
-    // Check if the team of the player being added is already in the roster
+  const handleAddPlayer = (player) => {
+    const position = player.position;
     const playerTeam = player.team;
+
+    // Check if the team of the player being added is already in the roster
     const teamAlreadyInRoster = Object.values(formData).some(playerId => {
       const existingPlayer = allPlayers.find(p => p.id === playerId);
       return existingPlayer && existingPlayer.team === playerTeam;
@@ -80,10 +82,27 @@ const CreateEntryTable = () => {
       return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [position.toLowerCase()]: player.id,
-    }));
+    let positionToAdd = null;
+
+    if (position === 'QB' || position === 'DEF' || position === 'K') {
+      positionToAdd = position.toLowerCase();
+    } else if (position === 'RB') {
+      const rbPositions = ['rb1', 'rb2', 'flex1', 'flex2', 'flex3', 'flex4'];
+      positionToAdd = rbPositions.find(pos => !formData[pos]) || 'scaled flex';
+    } else if (position === 'WR') {
+      const wrPositions = ['wr1', 'wr2', 'flex1', 'flex2', 'flex3', 'flex4'];
+      positionToAdd = wrPositions.find(pos => !formData[pos]) || 'scaled flex';
+    } else if (position === 'TE') {
+      const tePositions = ['te', 'flex1', 'flex2', 'flex3', 'flex4'];
+      positionToAdd = tePositions.find(pos => !formData[pos]) || 'scaled flex';
+    }
+
+    if (positionToAdd) {
+      setFormData((prev) => ({
+        ...prev,
+        [positionToAdd]: player.id,
+      }));
+    }
 
     // Clear any previous team error
     setTeamError(null);
@@ -127,7 +146,17 @@ const CreateEntryTable = () => {
     return 0;
   });
 
-  const filteredPlayers = sortedPlayers.filter(player => {
+  const filteredPlayers = sortedPlayers.map(player => {
+    const teamAlreadyInRoster = Object.values(formData).some(playerId => {
+      const existingPlayer = allPlayers.find(p => p.id === playerId);
+      return existingPlayer && existingPlayer.team === player.team;
+    });
+
+    return {
+      ...player,
+      isGrayedOut: teamAlreadyInRoster
+    };
+  }).filter(player => {
     return (filterPosition === 'All' || player.position === filterPosition) &&
            (filterTeam === 'All' || player.team === filterTeam) &&
            (player.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -135,12 +164,14 @@ const CreateEntryTable = () => {
 
   const uniqueTeams = [...new Set(players.map(player => player.team))];
 
+  const isRosterFull = rosterPositions.every(position => formData[position.toLowerCase()]);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <NavBar />
         <Box sx={{ my: 4 }}>
           {submissionError && (
@@ -155,7 +186,7 @@ const CreateEntryTable = () => {
           )}
           <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
-              <Box sx={{ mt: 8 }}>
+              <Box sx={{ mt: 14 }}>
                 <AvailableTeams uniqueTeams={uniqueTeams} formData={formData} allPlayers={allPlayers} />
               </Box>
               <Grid item xs={12}>
@@ -193,7 +224,8 @@ const CreateEntryTable = () => {
                   <MenuItem value="RB">Running Back</MenuItem>
                   <MenuItem value="WR">Wide Receiver</MenuItem>
                   <MenuItem value="TE">Tight End</MenuItem>
-                  <MenuItem value="DEF">Defense</MenuItem>
+                  <MenuItem value="DEF">Defense / Special Teams</MenuItem>
+                  <MenuItem value="K">Kicker</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth margin="normal">
@@ -234,6 +266,7 @@ const CreateEntryTable = () => {
                   color="primary"
                   fullWidth
                   sx={{ mt: 2 }}
+                  disabled={!isRosterFull}
                 >
                   Submit Entry
                 </Button>

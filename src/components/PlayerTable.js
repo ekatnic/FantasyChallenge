@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 
-const PlayerTable = ({ filteredPlayers, handleSort }) => {
+const PlayerTable = ({ filteredPlayers, handleSort, handleAddPlayer }) => {
   const ItemTypes = {
     PLAYER: 'player',
   };
@@ -16,11 +16,23 @@ const PlayerTable = ({ filteredPlayers, handleSort }) => {
       }),
     }));
 
+    const textStyle = player.isGrayedOut ? { color: '#d3d3d3' } : {};
+
     return (
       <TableRow ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-        <TableCell>{player.name}</TableCell>
-        <TableCell>{player.position}</TableCell>
-        <TableCell>{player.team}</TableCell>
+        <TableCell style={textStyle}>{player.name}</TableCell>
+        <TableCell style={textStyle}>{player.position}</TableCell>
+        <TableCell style={textStyle}>{player.team}</TableCell>
+        <TableCell>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleAddPlayer(player)}
+            disabled={player.isGrayedOut}
+          >
+            Add
+          </Button>
+        </TableCell>
       </TableRow>
     );
   };
@@ -33,6 +45,7 @@ const PlayerTable = ({ filteredPlayers, handleSort }) => {
             <TableCell onClick={() => handleSort('name')}><b>Name</b></TableCell>
             <TableCell onClick={() => handleSort('position')}><b>Position</b></TableCell>
             <TableCell onClick={() => handleSort('team')}><b>Team</b></TableCell>
+            <TableCell><b>Action</b></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

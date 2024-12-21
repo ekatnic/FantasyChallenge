@@ -15,6 +15,8 @@ const Roster = ({ rosterPositions, formData, allPlayers, handleRemovePlayer, han
     if (position.startsWith('WR') && player.position !== 'WR' && !flexPositions.includes(position)) return false;
     if (position === 'TE' && player.position !== 'TE' && !flexPositions.includes(position)) return false;
     if (flexPositions.includes(position) && !['RB', 'WR', 'TE'].includes(player.position)) return false;
+    if (position == 'DEF' && player.position !== 'DEF') return false;
+    if (position == 'K' && player.position !== 'K') return false;
     return true;
   };
 
