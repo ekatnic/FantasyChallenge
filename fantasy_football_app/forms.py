@@ -1,11 +1,50 @@
 # forms.py
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.models import User
 
 from .constants import FLEX_POSITIONS
 from .custom_field_choices import (GroupedModelChoiceField,
                                    get_custom_grouped_model_choice_field)
 from .models import Entry, Player, RosteredPlayers
 
+# -------------------------------------------------------------------------
+# ----- authentication forms -----
+# -------------------------------------------------------------------------
+
+class RegistrationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "username", "email", "password1", "password2")
+
+    def save(self, commit=True):
+        user = super(RegistrationForm, self).save(commit=False)
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        user.email = self.cleaned_data["email"]
+
+        # TODO: Hard setting the username to the email no matter what the user gives..
+        user.username = user.email 
+
+        if commit:
+            user.save()
+        return user
+
+class CustomAuthenticationForm(AuthenticationForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        if username:
+            cleaned_data['username'] = username.lower()
+        return cleaned_data
+
+# -------------------------------------------------------------------------
+# ----- Game / Entry forms -----
+# -------------------------------------------------------------------------
 
 class EntryForm(forms.ModelForm):
     quarterback = get_custom_grouped_model_choice_field(['QB'])
