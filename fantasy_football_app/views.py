@@ -46,25 +46,6 @@ def index(request):
         return redirect('user_home')
     return render(request, 'fantasy_football_app/index.html')
 
-
-
-class CaseInsensitiveModelBackend(ModelBackend):
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        UserModel = get_user_model()
-        try:
-            user = UserModel.objects.get(username__iexact=username)
-            if user.check_password(password):
-                return user
-        except UserModel.DoesNotExist:
-            return None
-
-    def get_user(self, user_id):
-        UserModel = get_user_model()
-        try:
-            return UserModel.objects.get(pk=user_id)
-        except UserModel.DoesNotExist:
-            return None
-
 def sign_in(request):
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)

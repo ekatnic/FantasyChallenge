@@ -176,7 +176,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'fantasy_football_app.views.CaseInsensitiveModelBackend'
+    'fantasy_football_app.backends.CaseInsensitiveModelBackend'
     ]
 
 # Internationalization
