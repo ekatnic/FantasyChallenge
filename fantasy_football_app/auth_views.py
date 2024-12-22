@@ -1,5 +1,10 @@
 # -------------------------------------------------------------------------
-# ----- Django REST endpoints -----
+# ----- Django REST Auth endpoints -----
+# TODO: An idea i have is to just not even bother signing in / out of 
+# TODO: Cognito service. We are NOT using teh Cognito access tokens or anything
+# TODO: We are just using the Django sessions by default and ONLY using 
+# TODO: Cognito to give easy Forgot password email sending so who cares about keeping signed in / out of Cognito
+# TODO: The only problem might be if you are required to be "signed in" to Cognito to do certain actions but I dont think you do... 
 # -------------------------------------------------------------------------
 
 from rest_framework import status, generics
@@ -7,9 +12,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
+from django.contrib.auth import login as django_login
+from django.contrib.auth import logout as django_logout
 from django.contrib.auth import login, logout, authenticate
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 
@@ -125,16 +133,15 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # user = request.user 
         # Get the actual username string from the user object
         username = str(request.user)
-        # django_logout(request)
-        print(f"username: {username}")
 
+        # TODO: Idea: dont even bother signing into/out of Cognito if we are not using the access_tokens from Cognito
+        # TODO: 
         logout_resp = cognito_service.admin_sign_out(user_name=username)
-        print(f"logout_resp: {logout_resp}")
         
         django_logout(request)
+
         return Response({
             'success': True,
             'message': 'Successfully logged out'
