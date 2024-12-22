@@ -42,6 +42,16 @@ from fantasy_football_app.apis import(
     PlayerListAPIView,
 )
 
+from fantasy_football_app.auth_views import (
+    SignupView,
+    LoginView,
+    LogoutView,
+    AuthStatusView,
+    ForgotPasswordView,
+    ConfirmForgotPasswordView,
+    ChangePasswordView,
+)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name='index'),  # This line maps the root path to the index view
@@ -60,6 +70,16 @@ urlpatterns = [
     path('player/<int:player_id>/', player_stats_view, name='player_stats'),
     path('entry_list/', entry_list_view, name='entry_list'),
     path('load_players_api/', load_players_api_view, name='load_players_api'),
+    
+    # TODO: Maybe these should be "api/auth/<route-name>" ? 
+    path('api/signup/', SignupView.as_view(), name='signup'),
+    path('api/login/', LoginView.as_view(), name='login'),
+    path('api/logout/', LogoutView.as_view(), name='logout'),
+    path('api/forgot-password/', ForgotPasswordView.as_view(), name='forgot_password'),
+    path('api/confirm-forgot-password/', ConfirmForgotPasswordView.as_view(), name='confirm_forgot_password'),
+    path('api/change-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('api/auth-status/', AuthStatusView.as_view(), name='auth_status'),
+
     path('api/entries/', EntryListCreateAPIView.as_view(), name='entry-list-create'),
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
