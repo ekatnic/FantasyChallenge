@@ -26,11 +26,37 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv()
+
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 TANK_API_KEY = os.environ.get("TANK_API_KEY")
 TANK_API_ENDPOINT = "tank01-nfl-live-in-game-real-time-statistics-nfl.p.rapidapi.com"
 
 DEBUG = False
+
+# ---------------------------------------------
+# ---- Auth -----
+# ---------------------------------------------
+# Cookie settings
+COOKIE_SECURE = not DEBUG  # True in production, False in development
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
+CORS_ALLOW_CREDENTIALS = True
+# CSRF_COOKIE_SAMESITE = 'Strict'
+# SESSION_COOKIE_SAMESITE = 'Strict'
+# CSRF_COOKIE_HTTPONLY = False  
+SESSION_COOKIE_HTTPONLY = True
+
+# AWS access keys
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+
+# Cognito vars
+AWS_COGNITO_REGION = os.environ.get("AWS_COGNITO_REGION")
+AWS_COGNITO_USER_POOL_ID = os.environ.get("AWS_COGNITO_USER_POOL_ID")
+AWS_COGNITO_CLIENT_ID = os.environ.get("AWS_COGNITO_CLIENT_ID")
+AWS_COGNITO_CLIENT_SECRET = os.environ.get("AWS_COGNITO_CLIENT_SECRET")
+
 
 ALLOWED_HOSTS = []
 
@@ -91,7 +117,8 @@ WSGI_APPLICATION = 'fantasy_football_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
-LOGIN_URL = '/sign_in/'
+
+LOGIN_URL = '/login/'
 
 if IS_HEROKU_APP:
     # In production on Heroku the database configuration is derived from the `DATABASE_URL`
@@ -125,6 +152,7 @@ else:
     }
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
+        "http://127.0.0.1:3000",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
     ]
@@ -147,7 +175,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = ['fantasy_football_app.views.CaseInsensitiveModelBackend']
+AUTHENTICATION_BACKENDS = [
+    'fantasy_football_app.views.CaseInsensitiveModelBackend'
+    ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -187,6 +217,9 @@ CACHES = {
 DATABASES['default']['CONN_MAX_AGE'] = 0
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+
     'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
     'http://playoff-showdown.com',
     'https://playoff-showdown.com',
