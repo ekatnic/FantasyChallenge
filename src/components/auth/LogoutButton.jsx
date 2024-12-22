@@ -15,7 +15,7 @@ export function LogoutButton() {
 
   const handleLogout = async () => {
     try {
-      await logout(); // This will handle everything: API call, user state, and navigation
+      await logout(); // thisll handle everythingm the API call, user state, navigation
     } catch (error) {
       console.error("Logout failed:", error);
     }

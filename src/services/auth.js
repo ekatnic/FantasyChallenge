@@ -57,7 +57,7 @@ export const axiosInstance = axios.create({
 
 export async function signup(userData) {
   const response = await axios.post(
-    `${process.env.REACT_APP_API_BASE_URL}/api/signup/`,
+    `${BASE_URL}/api/signup/`,
     userData,
     axiosConfig
   );
@@ -66,7 +66,7 @@ export async function signup(userData) {
 
 export async function login(credentials) {
   const response = await axios.post(
-    `${process.env.REACT_APP_API_BASE_URL}/api/login/`,
+    `${BASE_URL}/api/login/`,
     credentials,
     axiosConfig
   );
@@ -76,17 +76,13 @@ export async function login(credentials) {
 export async function logout() {
   console.log("LOGOUT function clicked");
   console.log("Logout axios config: ", axiosConfig);
-  const response = await axios.post(
-    `${process.env.REACT_APP_API_BASE_URL}/api/logout/`,
-    {},
-    axiosConfig
-  );
+  const response = await axios.post(`${BASE_URL}/api/logout/`, {}, axiosConfig);
   return response.data;
 }
 
 export async function forgotPassword(email) {
   const response = await axios.post(
-    `${process.env.REACT_APP_API_BASE_URL}/api/forgot-password/`,
+    `${BASE_URL}/api/forgot-password/`,
     { email },
     axiosConfig
   );
@@ -95,7 +91,7 @@ export async function forgotPassword(email) {
 
 export async function confirmForgotPassword(data) {
   const response = await axios.post(
-    `${process.env.REACT_APP_API_BASE_URL}/api/confirm-forgot-password/`,
+    `${BASE_URL}/api/confirm-forgot-password/`,
     data,
     axiosConfig
   );
@@ -104,7 +100,7 @@ export async function confirmForgotPassword(data) {
 
 export async function changePassword(passwords) {
   const response = await axios.post(
-    `${process.env.REACT_APP_API_BASE_URL}/api/change-password/`,
+    `${BASE_URL}/api/change-password/`,
     passwords,
     axiosConfig
   );
@@ -112,9 +108,8 @@ export async function changePassword(passwords) {
 }
 
 export async function checkAuthStatus() {
-  const response = await axios.get(
-    `${process.env.REACT_APP_API_BASE_URL}/api/auth-status/`,
-    { ...axiosConfig }
-  );
+  const response = await axios.get(`${BASE_URL}/api/auth-status/`, {
+    ...axiosConfig,
+  });
   return response.data;
 }
