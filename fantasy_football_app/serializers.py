@@ -6,10 +6,26 @@ from .models import (
 )
 from django.contrib.auth import get_user_model
 
+class PlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = '__all__'
+
+
+class RosteredPlayersSerializer(serializers.ModelSerializer):
+    player_id = serializers.IntegerField(source='player.id')
+
+    class Meta:
+        model = RosteredPlayers
+        fields = ['id', 'player_id', 'is_scaled_flex']
+
+
 class EntrySerializer(serializers.ModelSerializer):
+    rostered_players = RosteredPlayersSerializer(many=True, read_only=True, source='rosteredplayers_set')
+
     class Meta:
         model = Entry
-        fields = ['id','name']
+        fields = ['id','name', 'rostered_players']
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -23,7 +39,3 @@ class EntrySerializer(serializers.ModelSerializer):
                 )
         return entry
 
-class PlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Player
-        fields = '__all__'

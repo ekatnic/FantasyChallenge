@@ -12,6 +12,16 @@ export const getEntries = async () => {
   }
 };
 
+export const getEntry = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/entries/${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching entry:", error);
+    throw error;
+  }
+};
+
 export const getPlayers = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/api/players/`);
@@ -22,22 +32,30 @@ export const getPlayers = async () => {
   }
 };
 
-export const postEntry = async (formData) => {
+export const updateEntry = async (id, formData) => {
   try {
-    const response = await fetch(`${BASE_URL}/api/entries/`, {
-      method: 'POST',
+    const response = await axios.put(`${BASE_URL}/api/entries/${id}/`, formData, {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formData)
     });
 
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
+    return response.data;
+  } catch (error) {
+    console.error('Error updating entry:', error);
+    throw error;
+  }
+};
 
-    const data = await response.json();
-    return data;
+export const postEntry = async (formData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/api/entries/`, formData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
   } catch (error) {
     console.error('Error creating entry:', error);
     throw error;

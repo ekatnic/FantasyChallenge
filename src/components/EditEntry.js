@@ -2,30 +2,25 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Alert,
-  Card,
-  CardHeader,
-  CardContent,
-  Typography,
   Container,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   TextField,
   Button
 } from "@mui/material";
+import { useParams } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { getPlayers, postEntry } from "../services/api";
+import { getPlayers, getEntry, updateEntry } from "../services/api";
 import NavBar from './NavBar';
 import AvailableTeams from './AvailableTeams';
-import PlayerTable from './PlayerTable';
 import Roster from './Roster';
+import ScaledFlexRules from './ScaledFlexRules';
+import PlayerFilterAndTable from './PlayerFilterAndTable';
+import { rosterPositions, positionOrder, rbPositions, wrPositions, tePositions } from '../constants';
 
-const CreateEntryTable = () => {
+const EditEntry = () => {
+  const { id } = useParams();
   const [formData, setFormData] = useState({});
-  const [submissionError, setSubmissionError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [players, setPlayers] = useState([]);
@@ -41,36 +36,22 @@ const CreateEntryTable = () => {
   const [rosterName, setRosterName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const rosterPositions = [
-    'QB', 'RB1', 'RB2', 'WR1', 'WR2', 'TE', 'Flex1', 'Flex2', 'Flex3', 'Flex4', 'Scaled Flex', 'DEF', 'K'
-  ];
-
-  const positionOrder = {
-    'QB': 1,
-    'RB': 2,
-    'WR': 3,
-    'TE': 4,
-    'DEF': 5
-  };
-
-  const rbPositions = ['rb1', 'rb2', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
-  const wrPositions = ['wr1', 'wr2', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
-  const tePositions = ['te', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
-
   useEffect(() => {
-    const fetchPlayers = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getPlayers();
-        setPlayers(data);
-        setAllPlayers(data);
+        const [playersData, entryData] = await Promise.all([getPlayers(), getEntry(id)]);
+        setPlayers(playersData);
+        setAllPlayers(playersData);
+        setFormData(entryData.formData);
+        setRosterName(entryData.name);
         setLoading(false);
       } catch (error) {
         setError(error);
         setLoading(false);
       }
     };
-    fetchPlayers();
-  }, []);
+    fetchData();
+  }, [id]);
 
   const handleAddPlayer = (player) => {
     const position = player.position;
@@ -188,6 +169,15 @@ const CreateEntryTable = () => {
 
   const isRosterFull = rosterPositions.every(position => formData[position.toLowerCase()]);
 
+  const handleSubmit = async () => {
+    try {
+      await updateEntry(id, { formData, rosterName });
+      // Handle successful submission (e.g., redirect or show success message)
+    } catch (error) {
+      //setSubmissionError(error.message);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
@@ -196,11 +186,6 @@ const CreateEntryTable = () => {
       <Container maxWidth="xl">
         <NavBar />
         <Box sx={{ my: 4 }}>
-          {submissionError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {submissionError}
-            </Alert>
-          )}
           {teamError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {teamError}
@@ -212,67 +197,22 @@ const CreateEntryTable = () => {
                 <AvailableTeams uniqueTeams={uniqueTeams} formData={formData} allPlayers={allPlayers} />
               </Box>
               <Grid item xs={12}>
-                <Card>
-                  <CardHeader
-                    title="Scaled FLEX Rules"
-                    titleTypographyProps={{ variant: "h6" }}
-                  />
-                  <CardContent>
-                    <Typography variant="body2">
-                      <strong>Scaled FLEX Points:</strong>
-                      <ul>
-                        <li>50%+ ownership: No multiplier</li>
-                        <li>25-50%: 1.2x multiplier</li>
-                        <li>12.5-25%: 1.3x multiplier</li>
-                        <li>5-12.5%: 1.5x multiplier</li>
-                        <li>0-5%: 1.75x multiplier</li>
-                      </ul>
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <ScaledFlexRules />
               </Grid>
             </Grid>
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel id="filter-position-label">Filter by Position</InputLabel>
-                <Select
-                  labelId="filter-position-label"
-                  value={filterPosition}
-                  onChange={(e) => setFilterPosition(e.target.value)}
-                  label="Filter by Position"
-                >
-                  <MenuItem value="All">All</MenuItem>
-                  <MenuItem value="QB">Quarterback</MenuItem>
-                  <MenuItem value="RB">Running Back</MenuItem>
-                  <MenuItem value="WR">Wide Receiver</MenuItem>
-                  <MenuItem value="TE">Tight End</MenuItem>
-                  <MenuItem value="Flex">Flex</MenuItem>
-                  <MenuItem value="DEF">Defense / Special Teams</MenuItem>
-                  <MenuItem value="K">Kicker</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl fullWidth margin="normal">
-                <InputLabel id="filter-team-label">Filter by Team</InputLabel>
-                <Select
-                  labelId="filter-team-label"
-                  value={filterTeam}
-                  onChange={(e) => setFilterTeam(e.target.value)}
-                  label="Filter by Team"
-                >
-                  <MenuItem value="All">All</MenuItem>
-                  {uniqueTeams.map((team) => (
-                    <MenuItem key={team} value={team}>{team}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                fullWidth
-                label="Search Player by Name"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                margin="normal"
+              <PlayerFilterAndTable
+                filterPosition={filterPosition}
+                setFilterPosition={setFilterPosition}
+                filterTeam={filterTeam}
+                setFilterTeam={setFilterTeam}
+                uniqueTeams={uniqueTeams}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                filteredPlayers={filteredPlayers}
+                handleAddPlayer={handleAddPlayer}
+                handleSort={handleSort}
               />
-              <PlayerTable filteredPlayers={filteredPlayers} handleAddPlayer={handleAddPlayer} handleSort={handleSort} />
             </Grid>
             <Grid item xs={12} md={3}>
               <Box sx={{ mt: 4 }}>
@@ -290,8 +230,9 @@ const CreateEntryTable = () => {
                   fullWidth
                   sx={{ mt: 2 }}
                   disabled={!isRosterFull}
+                  onClick={handleSubmit}
                 >
-                  Submit Entry
+                  Update Entry
                 </Button>
               </Box>
             </Grid>
@@ -302,4 +243,4 @@ const CreateEntryTable = () => {
   );
 };
 
-export default CreateEntryTable;
+export default EditEntry;

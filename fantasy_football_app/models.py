@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .constants import WEEK_CHOICES
+from .constants import WEEK_CHOICES, RosterPositions
 from .model_utils import calculate_weekly_score_for_player
 
 
@@ -44,13 +44,17 @@ class Entry(models.Model):
             self.name = f"{self.user.first_name} {self.user.last_name} #{num_entries + 1}"
         super().save(*args, **kwargs)
 
+
 class RosteredPlayers(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
     is_captain = models.BooleanField(default=False)
     is_scaled_flex = models.BooleanField(default=False)
-
-from django.db import models
+    roster_position = models.CharField(
+        max_length=20,
+        choices=[(tag, tag.value) for tag in RosterPositions],
+        default=RosterPositions.NA
+    )
 
 
 class WeeklyStats(ComputedFieldsModel):    

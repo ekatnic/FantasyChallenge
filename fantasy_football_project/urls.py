@@ -49,7 +49,6 @@ urlpatterns = [
     path('sign_in/', sign_in, name='sign_in'),
     path('user_home/', user_home, name='user_home'),
     path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
-    path('edit_entry/<int:entry_id>/', edit_entry, name='edit_entry'),
     path('standings/', standings, name='standings'),
     path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
     path('sign_out/', sign_out, name='sign_out'),
@@ -64,5 +63,6 @@ urlpatterns = [
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
     path('create-entry/', react_view, name='create_entry'),
+    path('edit-entry/<int:entry_id>', react_view, name='edit_entry'),
     re_path(r'^.*$', react_view),
 ]

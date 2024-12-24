@@ -6,7 +6,7 @@ from .serializers import EntrySerializer, PlayerSerializer
 class EntryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
