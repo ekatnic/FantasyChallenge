@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { Box, Alert, Container, Grid, TextField, Button } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { DndProvider } from "react-dnd";
@@ -17,6 +18,27 @@ import {
   wrPositions,
   tePositions,
 } from "../constants";
+=======
+import {
+  Box,
+  Alert,
+  Container,
+  Grid,
+  TextField,
+  Button
+} from "@mui/material";
+import { useParams } from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { getPlayers, getEntry, updateEntry } from '../services/api';
+import { processEntryData } from '../services/apiUtils';
+import NavBar from './NavBar';
+import AvailableTeams from './AvailableTeams';
+import Roster from './Roster';
+import ScaledFlexRules from './ScaledFlexRules';
+import PlayerFilterAndTable from './PlayerFilterAndTable';
+import { rosterPositions, positionOrder, rbPositions, wrPositions, tePositions } from '../constants';
+>>>>>>> master
 
 const EditEntry = () => {
   const { id } = useParams();
@@ -25,6 +47,7 @@ const EditEntry = () => {
   const [error, setError] = useState(null);
   const [players, setPlayers] = useState([]);
   const [allPlayers, setAllPlayers] = useState([]);
+<<<<<<< HEAD
   const [filterPosition, setFilterPosition] = useState("All");
   const [filterTeam, setFilterTeam] = useState("All");
   const [sortConfig, setSortConfig] = useState([
@@ -35,14 +58,30 @@ const EditEntry = () => {
   const [teamError, setTeamError] = useState(null);
   const [rosterName, setRosterName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+=======
+  const [filterPosition, setFilterPosition] = useState('All');
+  const [filterTeam, setFilterTeam] = useState('All');
+  const [sortConfig, setSortConfig] = useState([
+    { key: 'position', direction: 'ascending' },
+    { key: 'team', direction: 'ascending' },
+    { key: 'name', direction: 'ascending' }
+  ]);
+  const [teamError, setTeamError] = useState(null);
+  const [rosterName, setRosterName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+>>>>>>> master
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+<<<<<<< HEAD
         const [playersData, entryData] = await Promise.all([
           getPlayers(),
           getEntry(id),
         ]);
+=======
+        const [playersData, entryData] = await Promise.all([getPlayers(), getEntry(id)]);
+>>>>>>> master
         setPlayers(playersData);
         setAllPlayers(playersData);
         const { rosterName, roster } = processEntryData(entryData);
@@ -62,6 +101,7 @@ const EditEntry = () => {
     const playerTeam = player.team;
 
     // Check if the team of the player being added is already in the roster
+<<<<<<< HEAD
     const teamAlreadyInRoster =
       roster &&
       Object.values(roster).some((playerId) => {
@@ -73,11 +113,21 @@ const EditEntry = () => {
       setTeamError(
         `You cannot have more than one player from the same team (${playerTeam}) in your roster.`
       );
+=======
+    const teamAlreadyInRoster = roster && Object.values(roster).some(playerId => {
+      const existingPlayer = allPlayers.find(p => p.id === playerId);
+      return existingPlayer && existingPlayer.team === playerTeam;
+    });
+
+    if (teamAlreadyInRoster) {
+      setTeamError(`You cannot have more than one player from the same team (${playerTeam}) in your roster.`);
+>>>>>>> master
       return;
     }
 
     let positionToAdd = null;
 
+<<<<<<< HEAD
     if (position === "QB" || position === "DEF" || position === "K") {
       positionToAdd = position;
     } else if (position === "RB") {
@@ -86,6 +136,16 @@ const EditEntry = () => {
       positionToAdd = wrPositions.find((pos) => !roster[pos]) || "Scaled Flex";
     } else if (position === "TE") {
       positionToAdd = tePositions.find((pos) => !roster[pos]) || "Scaled Flex";
+=======
+    if (position === 'QB' || position === 'DEF' || position === 'K') {
+      positionToAdd = position;
+    } else if (position === 'RB') {
+      positionToAdd = rbPositions.find(pos => !roster[pos]) || 'Scaled Flex';
+    } else if (position === 'WR') {
+      positionToAdd = wrPositions.find(pos => !roster[pos]) || 'Scaled Flex';
+    } else if (position === 'TE') {
+      positionToAdd = tePositions.find(pos => !roster[pos]) || 'Scaled Flex';
+>>>>>>> master
     }
 
     if (positionToAdd) {
@@ -112,6 +172,7 @@ const EditEntry = () => {
 
   const handleSort = (key) => {
     setSortConfig((prevSortConfig) => {
+<<<<<<< HEAD
       const existingSort = prevSortConfig.find((sort) => sort.key === key);
       if (existingSort) {
         const newDirection =
@@ -121,12 +182,21 @@ const EditEntry = () => {
         );
       } else {
         return [...prevSortConfig, { key, direction: "ascending" }];
+=======
+      const existingSort = prevSortConfig.find(sort => sort.key === key);
+      if (existingSort) {
+        const newDirection = existingSort.direction === 'ascending' ? 'descending' : 'ascending';
+        return prevSortConfig.map(sort => sort.key === key ? { ...sort, direction: newDirection } : sort);
+      } else {
+        return [...prevSortConfig, { key, direction: 'ascending' }];
+>>>>>>> master
       }
     });
   };
 
   const sortedPlayers = [...players].sort((a, b) => {
     for (const { key, direction } of sortConfig) {
+<<<<<<< HEAD
       if (key === "position") {
         const orderA = positionOrder[a.position] || 99;
         const orderB = positionOrder[b.position] || 99;
@@ -135,11 +205,22 @@ const EditEntry = () => {
       } else {
         if (a[key] < b[key]) return direction === "ascending" ? -1 : 1;
         if (a[key] > b[key]) return direction === "ascending" ? 1 : -1;
+=======
+      if (key === 'position') {
+        const orderA = positionOrder[a.position] || 99;
+        const orderB = positionOrder[b.position] || 99;
+        if (orderA < orderB) return direction === 'ascending' ? -1 : 1;
+        if (orderA > orderB) return direction === 'ascending' ? 1 : -1;
+      } else {
+        if (a[key] < b[key]) return direction === 'ascending' ? -1 : 1;
+        if (a[key] > b[key]) return direction === 'ascending' ? 1 : -1;
+>>>>>>> master
       }
     }
     return 0;
   });
 
+<<<<<<< HEAD
   const filteredPlayers = sortedPlayers
     .map((player) => {
       const teamAlreadyInRoster =
@@ -186,6 +267,47 @@ const EditEntry = () => {
   const uniqueTeams = [...new Set(players.map((player) => player.team))];
 
   const isRosterFull = rosterPositions.every((position) => roster[position]);
+=======
+  const filteredPlayers = sortedPlayers.map(player => {
+    const teamAlreadyInRoster = roster && Object.values(roster).some(playerId => {
+      const existingPlayer = allPlayers.find(p => p.id === playerId);
+      return existingPlayer && existingPlayer.team === player.team;
+    });
+
+    let isGrayedOut = teamAlreadyInRoster;
+
+    if (!isGrayedOut) {
+      if (player.position === 'QB' && roster.QB) {
+        isGrayedOut = true;
+      } else if (player.position === 'DEF' && roster.DEF) {
+        isGrayedOut = true;
+      } else if (player.position === 'K' && roster.K) {
+        isGrayedOut = true;
+      } else if (player.position === 'RB') {
+        isGrayedOut = rbPositions.every(pos => roster[pos]);
+      } else if (player.position === 'WR') {
+        isGrayedOut = wrPositions.every(pos => roster[pos]);
+      } else if (player.position === 'TE') {
+        isGrayedOut = tePositions.every(pos => roster[pos]);
+      }
+    }
+
+    return {
+      ...player,
+      isGrayedOut
+    };
+  }).filter(player => {
+    return (filterPosition === 'All' || 
+            (filterPosition === 'Flex' && ['RB', 'WR', 'TE'].includes(player.position)) ||
+            player.position === filterPosition) &&
+           (filterTeam === 'All' || player.team === filterTeam) &&
+           (player.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  });
+
+  const uniqueTeams = [...new Set(players.map(player => player.team))];
+
+  const isRosterFull = rosterPositions.every(position => roster[position]);
+>>>>>>> master
 
   const handleSubmit = async () => {
     try {
@@ -212,11 +334,15 @@ const EditEntry = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
               <Box sx={{ mt: 14 }}>
+<<<<<<< HEAD
                 <AvailableTeams
                   uniqueTeams={uniqueTeams}
                   roster={roster}
                   allPlayers={allPlayers}
                 />
+=======
+                <AvailableTeams uniqueTeams={uniqueTeams} roster={roster} allPlayers={allPlayers} />
+>>>>>>> master
               </Box>
               <Grid item xs={12}>
                 <ScaledFlexRules />
@@ -245,6 +371,7 @@ const EditEntry = () => {
                   onChange={(e) => setRosterName(e.target.value)}
                   margin="normal"
                 />
+<<<<<<< HEAD
                 <Roster
                   rosterPositions={rosterPositions}
                   roster={roster}
@@ -252,6 +379,9 @@ const EditEntry = () => {
                   handleRemovePlayer={handleRemovePlayer}
                   handleAddPlayer={handleAddPlayer}
                 />
+=======
+                <Roster rosterPositions={rosterPositions} roster={roster} allPlayers={allPlayers} handleRemovePlayer={handleRemovePlayer} handleAddPlayer={handleAddPlayer} />
+>>>>>>> master
                 <Button
                   variant="contained"
                   color="primary"
@@ -271,4 +401,8 @@ const EditEntry = () => {
   );
 };
 
+<<<<<<< HEAD
 export default EditEntry;
+=======
+export default EditEntry;
+>>>>>>> master
