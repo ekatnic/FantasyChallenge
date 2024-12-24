@@ -87,3 +87,20 @@ TEAM_ABBREV_TO_TEAM_NAME = {
     'TEN': 'Tennessee Titans',
     'WAS': 'Washington Commanders',
 }
+
+
+ROSTER_POSITIONS = [
+    ('QB', 'QB'),
+    ('RB1', 'RB1'),
+    ('RB2', 'RB2'),
+    ('WR1', 'WR1'),
+    ('WR2', 'WR2'),
+    ('TE', 'TE'),
+    ('Flex1', 'Flex1'),
+    ('Flex2', 'Flex2'),
+    ('Flex3', 'Flex3'),
+    ('Flex4', 'Flex4'),
+    ('Scaled Flex', 'Scaled Flex'),
+    ('DEF', 'DEF'),
+    ('K', 'K')
+]

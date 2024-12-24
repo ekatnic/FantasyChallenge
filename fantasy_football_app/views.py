@@ -288,5 +288,5 @@ def load_players_api_view(request):
     }
     return render(request, 'fantasy_football_app/load_players_api.html', context)
 
-def react_view(request):
+def react_view(request, *args, **kwargs):
     return render(request, 'index.html')

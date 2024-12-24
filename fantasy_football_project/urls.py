@@ -47,10 +47,8 @@ urlpatterns = [
     path('', index, name='index'),  # This line maps the root path to the index view
     path('register/', register, name='register'),
     path('sign_in/', sign_in, name='sign_in'),
-    path('create_entry/', create_entry, name='create_entry'),
     path('user_home/', user_home, name='user_home'),
     path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
-    path('edit_entry/<int:entry_id>/', edit_entry, name='edit_entry'),
     path('standings/', standings, name='standings'),
     path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
     path('sign_out/', sign_out, name='sign_out'),
@@ -64,5 +62,7 @@ urlpatterns = [
     path('api/entries/', EntryListCreateAPIView.as_view(), name='entry-list-create'),
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
-    re_path(r'^.*$', react_view), 
+    path('create-entry/', react_view, name='create_entry'),
+    path('edit-entry/<int:entry_id>', react_view, name='edit_entry'),
+    re_path(r'^.*$', react_view),
 ]
