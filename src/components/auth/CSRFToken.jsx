@@ -1,5 +1,6 @@
 import React from "react";
-import { getCookie } from "./auth";
+import { getCookie } from "../../services/auth";
+
 let csrftoken = getCookie("csrftoken");
 
 export function CSRFToken() {

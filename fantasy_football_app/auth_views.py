@@ -17,9 +17,11 @@ from django.contrib.auth import logout as django_logout
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
+from django.middleware.csrf import get_token
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 
 from .serializers import (
     UserSerializer, 
@@ -30,7 +32,7 @@ from .serializers import (
     ChangePasswordSerializer
     )
 
-# NOTE: import cognito service instance
+# NOTE: import instantiaed CognitoIdentityProvider class 
 from .cognito_idp import cognito_service
 
 @method_decorator(ensure_csrf_cookie, name = "post")
@@ -42,13 +44,13 @@ class SignupView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             try:
+
                 # Register with Cognito
                 cognito_service.sign_up_user(
                     user_name=serializer.validated_data['email'],
                     password=serializer.validated_data['password1'],
                     user_email=serializer.validated_data['email']
                 )
-                
                 # Confirm the user in Cognito
                 cognito_service.admin_confirm_user_sign_up(
                     user_name=serializer.validated_data['email']
@@ -90,20 +92,21 @@ class LoginView(APIView):
             username = serializer.validated_data['username']
             password = serializer.validated_data['password']
             
-            print(f"Authing {username} w/ pass: {password}")
             user = authenticate(request, username=username, password=password)
             
             if user:
                 try:
+
+                    # TODO: Can we just NOT use Cognito sign in/out and only for sign up / forgot / change password
                     # Authenticate with Cognito
-                    response = cognito_service.start_sign_in(username, password)
-                    print(f"Response from cognito: {response}")
-                    if response.get("ChallengeName") == "NEW_PASSWORD_REQUIRED":
-                        return Response({
-                            'success': False,
-                            'requiresPasswordReset': True,
-                            'message': 'Password reset required'
-                        }, status=status.HTTP_401_UNAUTHORIZED)
+                    # response = cognito_service.start_sign_in(username, password)
+                    # print(f"Response from cognito: {response}")
+                    # if response.get("ChallengeName") == "NEW_PASSWORD_REQUIRED":
+                    #     return Response({
+                    #         'success': False,
+                    #         'requiresPasswordReset': True,
+                    #         'message': 'Password reset required'
+                    #     }, status=status.HTTP_401_UNAUTHORIZED)
                     
                     django_login(request, user)
                     
@@ -128,7 +131,6 @@ class LoginView(APIView):
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
 
-@method_decorator(ensure_csrf_cookie, name = "post")
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -138,7 +140,7 @@ class LogoutView(APIView):
 
         # TODO: Idea: dont even bother signing into/out of Cognito if we are not using the access_tokens from Cognito
         # TODO: 
-        logout_resp = cognito_service.admin_sign_out(user_name=username)
+        # logout_resp = cognito_service.admin_sign_out(user_name=username)
         
         django_logout(request)
 
@@ -292,4 +294,12 @@ class AuthStatusView(APIView):
                 'user': UserSerializer(request.user).data
             })
         return Response({'isAuthenticated': False})
+    
+class CSRFTokenView(APIView):
+    # permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        response = JsonResponse({'detail': 'CSRF cookie set'})
+        response['X-CSRFToken'] = get_token(request)
+        return response
     

@@ -50,25 +50,63 @@ from fantasy_football_app.auth_views import (
     ForgotPasswordView,
     ConfirmForgotPasswordView,
     ChangePasswordView,
+    CSRFTokenView
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name='index'),  # This line maps the root path to the index view
-    path('register/', register, name='register'),
-    path('sign_in/', sign_in, name='sign_in'),
-    path('user_home/', user_home, name='user_home'),
-    path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
-    path('edit_entry/<int:entry_id>/', edit_entry, name='edit_entry'),
-    path('standings/', standings, name='standings'),
-    path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
-    path('sign_out/', sign_out, name='sign_out'),
-    path('reset_password/', auth_views.PasswordChangeView.as_view(template_name='fantasy_football_app/registration/password_change.html'), name='password_change'),
-    path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='fantasy_football_app/registration/password_change_done.html'), name='password_change_done'),
-    path('players/', players_view, name='players'),
-    path('rules/', rules, name='rules'),
-    path('player/<int:player_id>/', player_stats_view, name='player_stats'),
-    path('entry_list/', entry_list_view, name='entry_list'),
+    # path('', index, name='index'),  # This line maps the root path to the index view
+    # path('register/', register, name='register'),
+    # path('sign_in/', sign_in, name='sign_in'),
+    # path('user_home/', user_home, name='user_home'),
+    # path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
+    # path('edit_entry/<int:entry_id>/', edit_entry, name='edit_entry'),
+    # path('standings/', standings, name='standings'),
+    # path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
+    # path('sign_out/', sign_out, name='sign_out'),
+    # path('reset_password/', auth_views.PasswordChangeView.as_view(template_name='fantasy_football_app/registration/password_change.html'), name='password_change'),
+    # path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='fantasy_football_app/registration/password_change_done.html'), name='password_change_done'),
+    # path('players/', players_view, name='players'),
+    # path('rules/', rules, name='rules'),
+    # path('player/<int:player_id>/', player_stats_view, name='player_stats'),
+    # path('entry_list/', entry_list_view, name='entry_list'),
+    # path('load_players_api/', load_players_api_view, name='load_players_api'),
+    
+    # TODO: Maybe these should be "api/auth/<route-name>" ? 
+    path('api/signup/', SignupView.as_view(), name='signup'),
+    path('api/login/', LoginView.as_view(), name='login'),
+    path('api/logout/', LogoutView.as_view(), name='logout'),
+    path('api/forgot-password/', ForgotPasswordView.as_view(), name='forgot_password'),
+    path('api/confirm-forgot-password/', ConfirmForgotPasswordView.as_view(), name='confirm_forgot_password'),
+    path('api/change-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('api/auth-status/', AuthStatusView.as_view(), name='auth_status'),
+    path('api/csrf-token/', CSRFTokenView.as_view(), name='csrf-token'),
+
+    path('api/entries/', EntryListCreateAPIView.as_view(), name='entry-list-create'),
+    path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
+    path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
+    path('create-entry/', react_view, name='create_entry'),
+    re_path(r'^.*$', react_view),
+]
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+
+    # path('', index, name='index'),  # This line maps the root path to the index view
+    # path('register/', register, name='register'),
+    # path('sign_in/', sign_in, name='sign_in'),
+    # path('user_home/', user_home, name='user_home'),
+    # path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
+    # path('standings/', standings, name='standings'),
+    # path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
+    # path('sign_out/', sign_out, name='sign_out'),
+    # path('reset_password/', auth_views.PasswordChangeView.as_view(template_name='fantasy_football_app/registration/password_change.html'), name='password_change'),
+    # path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='fantasy_football_app/registration/password_change_done.html'), name='password_change_done'),
+    
+    # path('players/', players_view, name='players'),
+    # path('rules/', rules, name='rules'),
+    # path('player/<int:player_id>/', player_stats_view, name='player_stats'),
+    # path('entry_list/', entry_list_view, name='entry_list'),
     path('load_players_api/', load_players_api_view, name='load_players_api'),
     
     # TODO: Maybe these should be "api/auth/<route-name>" ? 
@@ -79,10 +117,12 @@ urlpatterns = [
     path('api/confirm-forgot-password/', ConfirmForgotPasswordView.as_view(), name='confirm_forgot_password'),
     path('api/change-password/', ChangePasswordView.as_view(), name='change_password'),
     path('api/auth-status/', AuthStatusView.as_view(), name='auth_status'),
+    path('api/csrf-token/', CSRFTokenView.as_view(), name='csrf-token'),
 
     path('api/entries/', EntryListCreateAPIView.as_view(), name='entry-list-create'),
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
     path('create-entry/', react_view, name='create_entry'),
+    path('edit-entry/<int:entry_id>', react_view, name='edit_entry'),
     re_path(r'^.*$', react_view),
 ]

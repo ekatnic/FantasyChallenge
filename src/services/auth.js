@@ -1,6 +1,11 @@
+// Config for Axios requests
 import axios from "axios";
+axios.defaults.withCredentials = true;
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
+// const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
+const BASE_URL = "";
 
 // ------------------------------------------
 // ---- CSRF cookies ----
@@ -22,23 +27,26 @@ export function getCookie(name) {
   return cookieValue;
 }
 
-// Config for Axios requests
-axios.defaults.withCredentials = true;
 const csrftoken = getCookie("csrftoken");
 
 const axiosConfig = {
+  withCredentials: true,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
     "X-CSRFToken": csrftoken,
   },
-  withCredentials: true,
   mode: "same-origin",
 };
 
-export const axiosInstance = axios.create({
-  withCredentials: true,
-});
+// export const axiosInstance = axios.create({
+//   withCredentials: true,
+// });
+
+// const axiosInstance = axios.create({
+//   baseURL: 'http://localhost:8000/api/', // Update to match your backend base URL
+//   withCredentials: true, // Include credentials (cookies) in requests
+// });
 
 // TODO: look into this idea more,
 // // gets afresh CSRF token before any request
@@ -74,8 +82,6 @@ export async function login(credentials) {
 }
 
 export async function logout() {
-  console.log("LOGOUT function clicked");
-  console.log("Logout axios config: ", axiosConfig);
   const response = await axios.post(`${BASE_URL}/api/logout/`, {}, axiosConfig);
   return response.data;
 }

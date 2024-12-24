@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import get_user_model
 
 from .models import (
     Entry,
@@ -8,12 +9,26 @@ from .models import (
     RosteredPlayers,
 )
 
-from django.contrib.auth import get_user_model
+class PlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = '__all__'
+
+
+class RosteredPlayersSerializer(serializers.ModelSerializer):
+    player_id = serializers.IntegerField(source='player.id')
+
+    class Meta:
+        model = RosteredPlayers
+        fields = ['id', 'player_id', 'is_scaled_flex', 'roster_position']
+
 
 class EntrySerializer(serializers.ModelSerializer):
+    rostered_players = RosteredPlayersSerializer(many=True, read_only=True, source='rosteredplayers_set')
+
     class Meta:
         model = Entry
-        fields = ['id','name']
+        fields = ['id','name', 'rostered_players']
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -26,11 +41,6 @@ class EntrySerializer(serializers.ModelSerializer):
                     is_scaled_flex=field_name == 'scaled_flex'
                 )
         return entry
-
-class PlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Player
-        fields = '__all__'
         
 # ---------------------------------------------------------------
 # ---- Auth serializers ----

@@ -35,17 +35,40 @@ DEBUG = False
 
 # ---------------------------------------------
 # ---- Auth -----
+# - CORS + CSRF + Cookies settings
+# TODO: this works in local dev right now
+# TODO: need to nail down how itll work in Prod
 # ---------------------------------------------
-# Cookie settings
-COOKIE_SECURE = not DEBUG  # True in production, False in development
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
+CORS_ORIGIN_ALLOW_ALL  = True 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True  # Allow cookies to be sent with requests
 
-CORS_ALLOW_CREDENTIALS = True
-# CSRF_COOKIE_SAMESITE = 'Strict'
-# SESSION_COOKIE_SAMESITE = 'Strict'
-# CSRF_COOKIE_HTTPONLY = False  
-SESSION_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+
+    'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
+    'http://playoff-showdown.com',
+    'https://playoff-showdown.com',
+]
+
+CSRF_COOKIE_SAMESITE    = None 
+SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_HTTPONLY    = False  # False since we will grab it via universal-cookies
+SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE   = False
+SESSION_COOKIE_SAMESITE = None
+
+COOKIE_SECURE           = False # True in production, False in development (not DEBUG ? )
+CSRF_COOKIE_SECURE      = False 
+
+# # TODO: PROD ONLY
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# ---------------------------------------------
 
 # AWS access keys
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
@@ -151,10 +174,15 @@ else:
         }
     }
     CORS_ALLOWED_ORIGINS = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+
+        'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
+        'http://playoff-showdown.com',
+        'https://playoff-showdown.com',
     ]
 
 # Password validation
@@ -178,6 +206,12 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = [
     'fantasy_football_app.backends.CaseInsensitiveModelBackend'
     ]
+
+# # REST Auth settings...
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.SessionAuthentication',],
+#     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated',],
+#     }
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -216,14 +250,14 @@ CACHES = {
 }
 DATABASES['default']['CONN_MAX_AGE'] = 0
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
 
-    'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
-    'http://playoff-showdown.com',
-    'https://playoff-showdown.com',
-]
+#     'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
+#     'http://playoff-showdown.com',
+#     'https://playoff-showdown.com',
+# ]
 
 COMPUTEDFIELDS_ADMIN = True
 LOGGING = {

@@ -1,10 +1,14 @@
-// TODO: this is still a work in progress,
+import axios from "axios";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as authAPI from "../services/auth";
 
 // Create context
 const AuthContext = createContext(null);
+
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
+axios.defaults.withCredentials = true;
 
 // Provider
 export const AuthProvider = ({ children }) => {
@@ -39,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       setError(null);
       // Redirect to starting page
-      const from = location.state?.from?.pathname || "/create-entry";
+      const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, { replace: true });
       return data;
     } catch (err) {
@@ -54,9 +58,12 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await authAPI.signup(userData);
-      setUser(data.user);
+
+      // TODO: Set null user and redirects to the login instead of an authed page
+      // setUser(data.user);
+      setUser(null);
       setError(null);
-      navigate("/dashboard");
+      navigate("/login");
       return data;
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");
@@ -109,8 +116,7 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Hook for using auth context
-// export const useAuth = () => {
+// useAuth hook for using auth context
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

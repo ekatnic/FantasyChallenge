@@ -1,23 +1,32 @@
-// import React from "react";
-// import { Button } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
-// import { logout } from "../../services/auth";
-// import { useAuth } from "../../contexts/AuthContext";
-// import CSRFToken from "../../services/csrftoken";
-
 import React from "react";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { useAuth } from "../../contexts/AuthContext";
-import CSRFToken from "../../services/csrftoken";
+import CSRFToken from "./CSRFToken";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-export function LogoutButton() {
+axios.defaults.withCredentials = true;
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
+
+const LogoutButton = ({
+  variant = "contained",
+  color = "primary",
+  size = "medium",
+}) => {
+  const [isLoading, setIsLoading] = React.useState(false);
   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout(); // thisll handle everythingm the API call, user state, navigation
+      setIsLoading(true);
+      await logout();
+      navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -25,13 +34,17 @@ export function LogoutButton() {
     <>
       <CSRFToken />
       <Button
-        color="secondary"
-        variant="outlined"
+        variant={variant}
+        color={color}
+        size={size}
         onClick={handleLogout}
-        sx={{ marginLeft: "auto" }}
+        disabled={isLoading}
+        startIcon={isLoading && <CircularProgress size={20} />}
       >
-        Logout
+        {isLoading ? "Logging out..." : "Logout"}
       </Button>
     </>
   );
-}
+};
+
+export default LogoutButton;

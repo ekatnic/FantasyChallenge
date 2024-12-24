@@ -62,7 +62,7 @@ class CognitoIdentityProvider:
         secret_hash = base64.b64encode(
             hmac.new(key, msg, digestmod=hashlib.sha256).digest()
         ).decode()
-        logger.info("Made secret hash for %s: %s.", user_name, secret_hash)
+        # logger.info("Made secret hash for %s: %s.", user_name, secret_hash)
         return secret_hash
 
     def sign_up_user(self, 
@@ -113,8 +113,10 @@ class CognitoIdentityProvider:
 
             if self.client_secret is not None:
                 kwargs["SecretHash"] = self._secret_hash(user_name)
+            
             response = self.cognito_idp_client.sign_up(**kwargs)
             confirmed = response["UserConfirmed"]
+
         except ClientError as err:
             if err.response["Error"]["Code"] == "UsernameExistsException":
                 response = self.cognito_idp_client.admin_get_user(
@@ -177,7 +179,8 @@ class CognitoIdentityProvider:
             if self.client_secret is not None:
                 kwargs["SecretHash"] = self._secret_hash(user_name)
             confirmed_user = self.cognito_idp_client.confirm_sign_up(**kwargs)
-            print(f"Confirmed user: {confirmed_user}")
+            # print(f"Confirmed user: {confirmed_user}")
+            
         except ClientError as err:
             logger.error(
                 "Couldn't confirm sign up for %s. Here's why: %s: %s",
