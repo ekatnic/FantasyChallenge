@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, Grid, ListItem, ListItemText, Divider } from '@mui/material';
 
-const AvailableTeams = ({ uniqueTeams, formData, allPlayers }) => {
+const AvailableTeams = ({ uniqueTeams, roster, allPlayers }) => {
   return (
     <Card>
       <CardHeader
@@ -11,7 +11,7 @@ const AvailableTeams = ({ uniqueTeams, formData, allPlayers }) => {
       <CardContent>
         <Grid container spacing={2}>
           {uniqueTeams.map((team, index) => {
-            const teamInRoster = Object.values(formData).some(playerId => {
+            const teamInRoster = Object.values(roster).some(playerId => {
               const player = allPlayers.find(p => p.id === playerId);
               return player && player.team === team;
             });

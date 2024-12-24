@@ -3,7 +3,7 @@ import { useDrop } from 'react-dnd';
 import { Card, CardContent, CardHeader, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const Roster = ({ rosterPositions, formData, allPlayers, handleRemovePlayer, handleAddPlayer }) => {
+const Roster = ({ rosterPositions, roster, allPlayers, handleRemovePlayer, handleAddPlayer }) => {
   const ItemTypes = {
     PLAYER: 'player',
   };
@@ -15,13 +15,13 @@ const Roster = ({ rosterPositions, formData, allPlayers, handleRemovePlayer, han
     if (position.startsWith('WR') && player.position !== 'WR' && !flexPositions.includes(position)) return false;
     if (position === 'TE' && player.position !== 'TE' && !flexPositions.includes(position)) return false;
     if (flexPositions.includes(position) && !['RB', 'WR', 'TE'].includes(player.position)) return false;
-    if (position == 'DEF' && player.position !== 'DEF') return false;
-    if (position == 'K' && player.position !== 'K') return false;
+    if (position === 'DEF' && player.position !== 'DEF') return false;
+    if (position === 'K' && player.position !== 'K') return false;
     return true;
   };
 
   const isTeamAlreadyInRoster = (player) => {
-    return Object.values(formData).some(playerId => {
+    return Object.values(roster).some(playerId => {
       const existingPlayer = allPlayers.find(p => p.id === playerId);
       return existingPlayer && existingPlayer.team === player.team;
     });
@@ -42,7 +42,7 @@ const Roster = ({ rosterPositions, formData, allPlayers, handleRemovePlayer, han
       }),
     }));
 
-    const playerId = formData[position.toLowerCase()];
+    const playerId = roster[position];
     const player = allPlayers.find(p => p.id === playerId);
 
     const getBackgroundColor = () => {

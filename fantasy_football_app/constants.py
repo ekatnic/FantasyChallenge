@@ -1,5 +1,3 @@
-from enum import Enum
-
 FLEX_POSITIONS = ['RB', 'WR', 'TE']
 POSITION_ORDER = ['QB', 'RB 1', 'RB 2', 'WR 1', 'WR 2', 'TE', 'FLEX 1', 'FLEX 2', 'FLEX 3', 'FLEX 4', 'SCALED FLEX', 'DEF']
 INPUT_INDEXES = {
@@ -90,18 +88,19 @@ TEAM_ABBREV_TO_TEAM_NAME = {
     'WAS': 'Washington Commanders',
 }
 
-class RosterPositions(Enum):
-    QB = 'QB'
-    RB1 = 'RB1'
-    RB2 = 'RB2'
-    WR1 = 'WR1'
-    WR2 = 'WR2'
-    TE = 'TE'
-    Flex1 = 'Flex1'
-    Flex2 = 'Flex2'
-    Flex3 = 'Flex3'
-    Flex4 = 'Flex4'
-    ScaledFlex = 'Scaled Flex'
-    DEF = 'DEF'
-    K = 'K'
-    NA = ''
+
+ROSTER_POSITIONS = [
+    ('QB', 'QB'),
+    ('RB1', 'RB1'),
+    ('RB2', 'RB2'),
+    ('WR1', 'WR1'),
+    ('WR2', 'WR2'),
+    ('TE', 'TE'),
+    ('Flex1', 'Flex1'),
+    ('Flex2', 'Flex2'),
+    ('Flex3', 'Flex3'),
+    ('Flex4', 'Flex4'),
+    ('Scaled Flex', 'Scaled Flex'),
+    ('DEF', 'DEF'),
+    ('K', 'K')
+]

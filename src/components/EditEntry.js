@@ -10,7 +10,8 @@ import {
 import { useParams } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { getPlayers, getEntry, updateEntry } from "../services/api";
+import { getPlayers, getEntry, updateEntry } from '../services/api';
+import { processEntryData } from '../services/apiUtils';
 import NavBar from './NavBar';
 import AvailableTeams from './AvailableTeams';
 import Roster from './Roster';
@@ -20,7 +21,7 @@ import { rosterPositions, positionOrder, rbPositions, wrPositions, tePositions }
 
 const EditEntry = () => {
   const { id } = useParams();
-  const [formData, setFormData] = useState({});
+  const [roster, setRoster] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [players, setPlayers] = useState([]);
@@ -42,8 +43,9 @@ const EditEntry = () => {
         const [playersData, entryData] = await Promise.all([getPlayers(), getEntry(id)]);
         setPlayers(playersData);
         setAllPlayers(playersData);
-        setFormData(entryData.formData);
-        setRosterName(entryData.name);
+        const { rosterName, roster } = processEntryData(entryData);
+        setRoster(roster);
+        setRosterName(rosterName);
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -58,7 +60,7 @@ const EditEntry = () => {
     const playerTeam = player.team;
 
     // Check if the team of the player being added is already in the roster
-    const teamAlreadyInRoster = Object.values(formData).some(playerId => {
+    const teamAlreadyInRoster = roster && Object.values(roster).some(playerId => {
       const existingPlayer = allPlayers.find(p => p.id === playerId);
       return existingPlayer && existingPlayer.team === playerTeam;
     });
@@ -71,17 +73,17 @@ const EditEntry = () => {
     let positionToAdd = null;
 
     if (position === 'QB' || position === 'DEF' || position === 'K') {
-      positionToAdd = position.toLowerCase();
+      positionToAdd = position;
     } else if (position === 'RB') {
-      positionToAdd = rbPositions.find(pos => !formData[pos]) || 'scaled flex';
+      positionToAdd = rbPositions.find(pos => !roster[pos]) || 'Scaled Flex';
     } else if (position === 'WR') {
-      positionToAdd = wrPositions.find(pos => !formData[pos]) || 'scaled flex';
+      positionToAdd = wrPositions.find(pos => !roster[pos]) || 'Scaled Flex';
     } else if (position === 'TE') {
-      positionToAdd = tePositions.find(pos => !formData[pos]) || 'scaled flex';
+      positionToAdd = tePositions.find(pos => !roster[pos]) || 'Scaled Flex';
     }
 
     if (positionToAdd) {
-      setFormData((prev) => ({
+      setRoster((prev) => ({
         ...prev,
         [positionToAdd]: player.id,
       }));
@@ -92,10 +94,10 @@ const EditEntry = () => {
   };
 
   const handleRemovePlayer = (position) => {
-    setFormData((prev) => {
-      const newFormData = { ...prev };
-      delete newFormData[position.toLowerCase()];
-      return newFormData;
+    setRoster((prev) => {
+      const newRoster = { ...prev };
+      delete newRoster[position];
+      return newRoster;
     });
 
     // Clear any previous team error
@@ -130,26 +132,26 @@ const EditEntry = () => {
   });
 
   const filteredPlayers = sortedPlayers.map(player => {
-    const teamAlreadyInRoster = Object.values(formData).some(playerId => {
+    const teamAlreadyInRoster = roster && Object.values(roster).some(playerId => {
       const existingPlayer = allPlayers.find(p => p.id === playerId);
       return existingPlayer && existingPlayer.team === player.team;
     });
 
     let isGrayedOut = teamAlreadyInRoster;
-
+    console.log(roster);
     if (!isGrayedOut) {
-      if (player.position === 'QB' && formData.qb) {
+      if (player.position === 'QB' && roster.QB) {
         isGrayedOut = true;
-      } else if (player.position === 'DEF' && formData.def) {
+      } else if (player.position === 'DEF' && roster.DEF) {
         isGrayedOut = true;
-      } else if (player.position === 'K' && formData.k) {
+      } else if (player.position === 'K' && roster.K) {
         isGrayedOut = true;
       } else if (player.position === 'RB') {
-        isGrayedOut = rbPositions.every(pos => formData[pos]);
+        isGrayedOut = rbPositions.every(pos => roster[pos]);
       } else if (player.position === 'WR') {
-        isGrayedOut = wrPositions.every(pos => formData[pos]);
+        isGrayedOut = wrPositions.every(pos => roster[pos]);
       } else if (player.position === 'TE') {
-        isGrayedOut = tePositions.every(pos => formData[pos]);
+        isGrayedOut = tePositions.every(pos => roster[pos]);
       }
     }
 
@@ -167,11 +169,11 @@ const EditEntry = () => {
 
   const uniqueTeams = [...new Set(players.map(player => player.team))];
 
-  const isRosterFull = rosterPositions.every(position => formData[position.toLowerCase()]);
+  const isRosterFull = rosterPositions.every(position => roster[position]);
 
   const handleSubmit = async () => {
     try {
-      await updateEntry(id, { formData, rosterName });
+      await updateEntry(id, { roster, rosterName });
       // Handle successful submission (e.g., redirect or show success message)
     } catch (error) {
       //setSubmissionError(error.message);
@@ -194,7 +196,7 @@ const EditEntry = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
               <Box sx={{ mt: 14 }}>
-                <AvailableTeams uniqueTeams={uniqueTeams} formData={formData} allPlayers={allPlayers} />
+                <AvailableTeams uniqueTeams={uniqueTeams} roster={roster} allPlayers={allPlayers} />
               </Box>
               <Grid item xs={12}>
                 <ScaledFlexRules />
@@ -223,7 +225,7 @@ const EditEntry = () => {
                   onChange={(e) => setRosterName(e.target.value)}
                   margin="normal"
                 />
-                <Roster rosterPositions={rosterPositions} formData={formData} allPlayers={allPlayers} handleRemovePlayer={handleRemovePlayer} handleAddPlayer={handleAddPlayer} />
+                <Roster rosterPositions={rosterPositions} roster={roster} allPlayers={allPlayers} handleRemovePlayer={handleRemovePlayer} handleAddPlayer={handleAddPlayer} />
                 <Button
                   variant="contained"
                   color="primary"

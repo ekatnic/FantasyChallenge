@@ -10,6 +10,6 @@
     'DEF': 5
   };
 
-  export const rbPositions = ['rb1', 'rb2', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
-  export const wrPositions = ['wr1', 'wr2', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
-  export const tePositions = ['te', 'flex1', 'flex2', 'flex3', 'flex4', 'scaled flex'];
+  export const rbPositions = ['RB1', 'RB2', 'Flex1', 'Flex2', 'Flex3', 'Flex4', 'Scaled Flex'];
+  export const wrPositions = ['WR1', 'WR2', 'Flex1', 'Flex2', 'Flex3', 'Flex4', 'Scaled Flex'];
+  export const tePositions = ['TE', 'Flex1', 'Flex2', 'Flex3', 'Flex4', 'Scaled Flex'];

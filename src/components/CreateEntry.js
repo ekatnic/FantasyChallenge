@@ -18,7 +18,7 @@ import PlayerFilterAndTable from './PlayerFilterAndTable';
 import {rosterPositions, positionOrder, rbPositions, wrPositions, tePositions} from '../constants'
 
 const CreateEntry = () => {
-  const [formData, setFormData] = useState({});
+  const [roster, setRoster] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [players, setPlayers] = useState([]);
@@ -54,7 +54,7 @@ const CreateEntry = () => {
     const playerTeam = player.team;
 
     // Check if the team of the player being added is already in the roster
-    const teamAlreadyInRoster = Object.values(formData).some(playerId => {
+    const teamAlreadyInRoster = Object.values(roster).some(playerId => {
       const existingPlayer = allPlayers.find(p => p.id === playerId);
       return existingPlayer && existingPlayer.team === playerTeam;
     });
@@ -69,15 +69,15 @@ const CreateEntry = () => {
     if (position === 'QB' || position === 'DEF' || position === 'K') {
       positionToAdd = position.toLowerCase();
     } else if (position === 'RB') {
-      positionToAdd = rbPositions.find(pos => !formData[pos]) || 'scaled flex';
+      positionToAdd = rbPositions.find(pos => !roster[pos]) || 'scaled flex';
     } else if (position === 'WR') {
-      positionToAdd = wrPositions.find(pos => !formData[pos]) || 'scaled flex';
+      positionToAdd = wrPositions.find(pos => !roster[pos]) || 'scaled flex';
     } else if (position === 'TE') {
-      positionToAdd = tePositions.find(pos => !formData[pos]) || 'scaled flex';
+      positionToAdd = tePositions.find(pos => !roster[pos]) || 'scaled flex';
     }
 
     if (positionToAdd) {
-      setFormData((prev) => ({
+      setRoster((prev) => ({
         ...prev,
         [positionToAdd]: player.id,
       }));
@@ -88,10 +88,10 @@ const CreateEntry = () => {
   };
 
   const handleRemovePlayer = (position) => {
-    setFormData((prev) => {
-      const newFormData = { ...prev };
-      delete newFormData[position.toLowerCase()];
-      return newFormData;
+    setRoster((prev) => {
+      const newRoster = { ...prev };
+      delete newRoster[position.toLowerCase()];
+      return newRoster;
     });
 
     // Clear any previous team error
@@ -126,7 +126,7 @@ const CreateEntry = () => {
   });
 
   const filteredPlayers = sortedPlayers.map(player => {
-    const teamAlreadyInRoster = Object.values(formData).some(playerId => {
+    const teamAlreadyInRoster = Object.values(roster).some(playerId => {
       const existingPlayer = allPlayers.find(p => p.id === playerId);
       return existingPlayer && existingPlayer.team === player.team;
     });
@@ -134,18 +134,18 @@ const CreateEntry = () => {
     let isGrayedOut = teamAlreadyInRoster;
 
     if (!isGrayedOut) {
-      if (player.position === 'QB' && formData.qb) {
+      if (player.position === 'QB' && roster.qb) {
         isGrayedOut = true;
-      } else if (player.position === 'DEF' && formData.def) {
+      } else if (player.position === 'DEF' && roster.def) {
         isGrayedOut = true;
-      } else if (player.position === 'K' && formData.k) {
+      } else if (player.position === 'K' && roster.k) {
         isGrayedOut = true;
       } else if (player.position === 'RB') {
-        isGrayedOut = rbPositions.every(pos => formData[pos]);
+        isGrayedOut = rbPositions.every(pos => roster[pos]);
       } else if (player.position === 'WR') {
-        isGrayedOut = wrPositions.every(pos => formData[pos]);
+        isGrayedOut = wrPositions.every(pos => roster[pos]);
       } else if (player.position === 'TE') {
-        isGrayedOut = tePositions.every(pos => formData[pos]);
+        isGrayedOut = tePositions.every(pos => roster[pos]);
       }
     }
 
@@ -163,7 +163,16 @@ const CreateEntry = () => {
 
   const uniqueTeams = [...new Set(players.map(player => player.team))];
 
-  const isRosterFull = rosterPositions.every(position => formData[position.toLowerCase()]);
+  const isRosterFull = rosterPositions.every(position => roster[position.toLowerCase()]);
+
+  const handleSubmit = async () => {
+    try {
+      await postEntry({roster, rosterName});
+      // Handle successful submission (e.g., redirect or show success message)
+    } catch (error) {
+      // Handle error
+    }
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -181,7 +190,7 @@ const CreateEntry = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
               <Box sx={{ mt: 14 }}>
-                <AvailableTeams uniqueTeams={uniqueTeams} formData={formData} allPlayers={allPlayers} />
+                <AvailableTeams uniqueTeams={uniqueTeams} roster={roster} allPlayers={allPlayers} />
               </Box>
               <Grid item xs={12}>
                 <ScaledFlexRules />
@@ -210,13 +219,14 @@ const CreateEntry = () => {
                   onChange={(e) => setRosterName(e.target.value)}
                   margin="normal"
                 />
-                <Roster rosterPositions={rosterPositions} formData={formData} allPlayers={allPlayers} handleRemovePlayer={handleRemovePlayer} handleAddPlayer={handleAddPlayer} />
+                <Roster rosterPositions={rosterPositions} roster={roster} allPlayers={allPlayers} handleRemovePlayer={handleRemovePlayer} handleAddPlayer={handleAddPlayer} />
                 <Button
                   variant="contained"
                   color="primary"
                   fullWidth
                   sx={{ mt: 2 }}
                   disabled={!isRosterFull}
+                  onClick={handleSubmit}
                 >
                   Submit Entry
                 </Button>

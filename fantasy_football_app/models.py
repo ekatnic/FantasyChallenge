@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .constants import WEEK_CHOICES, RosterPositions
+from .constants import WEEK_CHOICES, ROSTER_POSITIONS
 from .model_utils import calculate_weekly_score_for_player
 
 
@@ -52,8 +52,8 @@ class RosteredPlayers(models.Model):
     is_scaled_flex = models.BooleanField(default=False)
     roster_position = models.CharField(
         max_length=20,
-        choices=[(tag, tag.value) for tag in RosterPositions],
-        default=RosterPositions.NA
+        choices=ROSTER_POSITIONS,
+        default=''
     )
 
 

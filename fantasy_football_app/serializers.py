@@ -17,7 +17,7 @@ class RosteredPlayersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RosteredPlayers
-        fields = ['id', 'player_id', 'is_scaled_flex']
+        fields = ['id', 'player_id', 'is_scaled_flex', 'roster_position']
 
 
 class EntrySerializer(serializers.ModelSerializer):
