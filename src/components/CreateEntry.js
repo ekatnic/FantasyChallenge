@@ -3,16 +3,6 @@ import { Box, Alert, Container, Grid, TextField, Button } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getPlayers, postEntry } from "../services/api";
-import NavBar from "./NavBar";
-import AvailableTeams from "./AvailableTeams";
-import Roster from "./Roster";
-import ScaledFlexRules from "./ScaledFlexRules";
-import PlayerFilterAndTable from "./PlayerFilterAndTable";
-import { Box, Alert, Container, Grid, TextField, Button } from "@mui/material";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { getPlayers, postEntry } from "../services/api";
-import NavBar from "./NavBar";
 import AvailableTeams from "./AvailableTeams";
 import Roster from "./Roster";
 import ScaledFlexRules from "./ScaledFlexRules";
@@ -198,7 +188,6 @@ const CreateEntry = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <Container maxWidth="xl">
-        <NavBar />
         <Box sx={{ my: 4 }}>
           {teamError && (
             <Alert severity="error" sx={{ mb: 2 }}>
