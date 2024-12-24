@@ -15,7 +15,7 @@ import AvailableTeams from './AvailableTeams';
 import Roster from './Roster';
 import ScaledFlexRules from './ScaledFlexRules';
 import PlayerFilterAndTable from './PlayerFilterAndTable';
-import {rosterPositions, positionOrder, rbPositions, wrPositions, tePositions} from '../constants'
+import { rosterPositions, positionOrder, rbPositions, wrPositions, tePositions } from '../constants';
 
 const CreateEntry = () => {
   const [roster, setRoster] = useState({});
@@ -67,13 +67,13 @@ const CreateEntry = () => {
     let positionToAdd = null;
 
     if (position === 'QB' || position === 'DEF' || position === 'K') {
-      positionToAdd = position.toLowerCase();
+      positionToAdd = position;
     } else if (position === 'RB') {
-      positionToAdd = rbPositions.find(pos => !roster[pos]) || 'scaled flex';
+      positionToAdd = rbPositions.find(pos => !roster[pos]) || 'Scaled Flex';
     } else if (position === 'WR') {
-      positionToAdd = wrPositions.find(pos => !roster[pos]) || 'scaled flex';
+      positionToAdd = wrPositions.find(pos => !roster[pos]) || 'Scaled Flex';
     } else if (position === 'TE') {
-      positionToAdd = tePositions.find(pos => !roster[pos]) || 'scaled flex';
+      positionToAdd = tePositions.find(pos => !roster[pos]) || 'Scaled Flex';
     }
 
     if (positionToAdd) {
@@ -90,7 +90,7 @@ const CreateEntry = () => {
   const handleRemovePlayer = (position) => {
     setRoster((prev) => {
       const newRoster = { ...prev };
-      delete newRoster[position.toLowerCase()];
+      delete newRoster[position];
       return newRoster;
     });
 
@@ -134,11 +134,11 @@ const CreateEntry = () => {
     let isGrayedOut = teamAlreadyInRoster;
 
     if (!isGrayedOut) {
-      if (player.position === 'QB' && roster.qb) {
+      if (player.position === 'QB' && roster.QB) {
         isGrayedOut = true;
-      } else if (player.position === 'DEF' && roster.def) {
+      } else if (player.position === 'DEF' && roster.DEF) {
         isGrayedOut = true;
-      } else if (player.position === 'K' && roster.k) {
+      } else if (player.position === 'K' && roster.K) {
         isGrayedOut = true;
       } else if (player.position === 'RB') {
         isGrayedOut = rbPositions.every(pos => roster[pos]);
@@ -163,11 +163,11 @@ const CreateEntry = () => {
 
   const uniqueTeams = [...new Set(players.map(player => player.team))];
 
-  const isRosterFull = rosterPositions.every(position => roster[position.toLowerCase()]);
+  const isRosterFull = rosterPositions.every(position => roster[position]);
 
   const handleSubmit = async () => {
     try {
-      await postEntry({roster, rosterName});
+      await postEntry({ roster, rosterName });
       // Handle successful submission (e.g., redirect or show success message)
     } catch (error) {
       // Handle error

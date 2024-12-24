@@ -138,7 +138,7 @@ const EditEntry = () => {
     });
 
     let isGrayedOut = teamAlreadyInRoster;
-    console.log(roster);
+
     if (!isGrayedOut) {
       if (player.position === 'QB' && roster.QB) {
         isGrayedOut = true;
