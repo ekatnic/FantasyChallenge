@@ -244,15 +244,6 @@ CACHES = {
 }
 DATABASES['default']['CONN_MAX_AGE'] = 0
 
-# CSRF_TRUSTED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://127.0.0.1:3000",
-
-#     'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
-#     'http://playoff-showdown.com',
-#     'https://playoff-showdown.com',
-# ]
-
 COMPUTEDFIELDS_ADMIN = True
 LOGGING = {
     'version': 1,
