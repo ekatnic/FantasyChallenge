@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   Container,
@@ -12,16 +12,22 @@ import {
   Alert,
 } from "@mui/material";
 
-export function ForgotPasswordForm() {
+export default function ForgotPasswordForm() {
   const { forgotPassword, error } = useAuth();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await forgotPassword(email);
       setSubmitted(true);
+      navigate("/confirm-forgot-password", {
+        state: {
+          email: email,
+        },
+      });
     } catch (err) {
       console.error("Password reset request failed:", err);
     }

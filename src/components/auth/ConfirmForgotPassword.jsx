@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { confirmForgotPassword } from "../../services/auth";
 
-export function ConfirmForgotPassowrd() {
+export default function ConfirmForgotPassowrd() {
   const location = useLocation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({

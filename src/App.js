@@ -12,6 +12,8 @@ import { CssBaseline, Container } from "@mui/material";
 // Components
 import LayoutWrapper from "./components/layouts/LayoutWrapper";
 import LoginForm from "./components/auth/LoginForm";
+import ForgotPasswordForm from "./components/auth/ForgotPasswordForm";
+import ConfirmForgotPassword from "./components/auth/ConfirmForgotPassword";
 import Signup from "./components/auth/Signup";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Home from "./components/Home";
@@ -33,6 +35,11 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+            <Route
+              path="/confirm-forgot-password"
+              element={<ConfirmForgotPassword />}
+            />
             <Route path="/rules" element={<Rules />} />
 
             {/* Protected Routes */}
