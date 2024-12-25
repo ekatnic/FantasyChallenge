@@ -33,43 +33,6 @@ TANK_API_ENDPOINT = "tank01-nfl-live-in-game-real-time-statistics-nfl.p.rapidapi
 
 DEBUG = False
 
-# ---------------------------------------------
-# ---- Auth -----
-# - CORS + CSRF + Cookies settings
-# TODO: this works in local dev right now
-# TODO: need to nail down how itll work in Prod
-# ---------------------------------------------
-CORS_ORIGIN_ALLOW_ALL  = True 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True  # Allow cookies to be sent with requests
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-
-    'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
-    'http://playoff-showdown.com',
-    'https://playoff-showdown.com',
-]
-
-CSRF_COOKIE_SAMESITE    = None 
-SESSION_COOKIE_SAMESITE = None
-CSRF_COOKIE_HTTPONLY    = False  # False since we will grab it via universal-cookies
-SESSION_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SECURE   = False
-SESSION_COOKIE_SAMESITE = None
-
-COOKIE_SECURE           = False # True in production, False in development (not DEBUG ? )
-CSRF_COOKIE_SECURE      = False 
-
-# # TODO: PROD ONLY
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
-# ---------------------------------------------
-
 # AWS access keys
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
@@ -184,6 +147,43 @@ else:
         'http://playoff-showdown.com',
         'https://playoff-showdown.com',
     ]
+    
+    # ---------------------------------------------
+    # ---- Auth -----
+    # - CORS + CSRF + Cookies settings
+    # TODO: this works in local dev right now
+    # TODO: need to nail down how itll work in Prod
+    # ---------------------------------------------
+    CORS_ORIGIN_ALLOW_ALL  = True 
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True  # Allow cookies to be sent with requests
+
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+
+        'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
+        'http://playoff-showdown.com',
+        'https://playoff-showdown.com',
+    ]
+
+    CSRF_COOKIE_SAMESITE    = None 
+    SESSION_COOKIE_SAMESITE = None
+    CSRF_COOKIE_HTTPONLY    = False  # False since we will grab it via universal-cookies
+    SESSION_COOKIE_HTTPONLY = False
+    SESSION_COOKIE_SECURE   = False
+    SESSION_COOKIE_SAMESITE = None
+
+    COOKIE_SECURE           = False # True in production, False in development (not DEBUG ? )
+    CSRF_COOKIE_SECURE      = False 
+
+    # # TODO: PROD ONLY
+    # CSRF_COOKIE_SECURE = True
+    # SESSION_COOKIE_SECURE = True
+    # ---------------------------------------------
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
