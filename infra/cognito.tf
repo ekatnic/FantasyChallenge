@@ -6,7 +6,11 @@ resource "aws_cognito_user_pool" "cognito_user_pool" {
 
   username_attributes = ["email"]
   auto_verified_attributes = ["email"]
- 
+
+  user_attribute_update_settings {
+    attributes_require_verification_before_update  = ["email"]
+  }
+
   # No MFA
   mfa_configuration = "OFF"
 
@@ -49,6 +53,7 @@ resource "aws_cognito_user_pool" "cognito_user_pool" {
     }
 
   }
+
 }
 
 # ----------------------------------------------------------------------    
