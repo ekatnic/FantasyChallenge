@@ -84,19 +84,6 @@ class SignupSerializer(serializers.ModelSerializer):
 
         return user
 
-
-class ConfirmSignupSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
-    confirmation_code = serializers.CharField(max_length=6, required=True)
-
-    def validate_confirmation_code(self, value):
-        """Validate that the confirmation code is numeric and has the correct length."""
-        if not value.isdigit():
-            raise serializers.ValidationError("The confirmation code must be numeric.")
-        if len(value) != 6:
-            raise serializers.ValidationError("The confirmation code must be exactly 6 digits.")
-        return value
-
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
