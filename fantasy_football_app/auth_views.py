@@ -26,6 +26,7 @@ from django.http import JsonResponse
 from .serializers import (
     UserSerializer, 
     SignupSerializer, 
+    ConfirmSignupSerializer,
     LoginSerializer, 
     ForgotPasswordSerializer, 
     ConfirmForgotPasswordSerializer,
@@ -80,6 +81,52 @@ class SignupView(generics.CreateAPIView):
             'success': False,
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+class ConfirmSignupView(APIView):
+    """
+    Confirms a users recieved a valid confirmation code from Cognito after calling SignupView
+    """
+    permission_classes = [AllowAny]  
+
+    def post(self, request, *args, **kwargs):
+        serializer = ConfirmSignupSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {"success": False, "errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        email = serializer.validated_data['email']
+        confirmation_code = serializer.validated_data['confirmation_code']
+
+
+        try:
+            # Send email and confirmation code to Cognito to confirm signup
+            cognito_service.confirm_user_sign_up(user_name=email, confirmation_code=confirmation_code)
+            return Response(
+                {"success": True, "message": "Signup confirmation successful."},
+                status=status.HTTP_200_OK,
+            )
+        except cognito_service.cognito_idp_client.exceptions.CodeMismatchException:
+            return Response(
+                {"success": False, "errors": {"confirmation_code": ["Invalid confirmation code."]}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except cognito_service.cognito_idp_client.exceptions.ExpiredCodeException:
+            return Response(
+                {"success": False, "errors": {"confirmation_code": ["Confirmation code has expired."]}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except cognito_service.cognito_idp_client.exceptions.UserNotFoundException:
+            return Response(
+                {"success": False, "errors": {"email": ["User not found."]}},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return Response(
+                {"success": False, "errors": {"server": [str(e)]}},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 @method_decorator(ensure_csrf_cookie, name = "post")
 class LoginView(APIView):
