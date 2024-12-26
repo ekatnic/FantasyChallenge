@@ -66,7 +66,7 @@ class CognitoIdentityProvider:
         return secret_hash
 
     def sign_up_user(self, 
-                    user_name :str , 
+                    user_name :str, 
                     password : str, 
                     user_email : str,       
                     birthdate: Optional[str] = None, 
@@ -179,7 +179,6 @@ class CognitoIdentityProvider:
             if self.client_secret is not None:
                 kwargs["SecretHash"] = self._secret_hash(user_name)
             confirmed_user = self.cognito_idp_client.confirm_sign_up(**kwargs)
-            # print(f"Confirmed user: {confirmed_user}")
             
         except ClientError as err:
             logger.error(
@@ -348,25 +347,29 @@ class CognitoIdentityProvider:
         else:
             return response
 
-    def list_users(self):
+    def admin_update_user_attributes(self, user_name, user_attributes):
         """
-        Returns a list of the users in the current user pool.
-
-        :return: The list of users.
+        Admin update a users attributes
+        :param user_name: The name of the user to change the password for.
+        :param user_attributes: An array of name-value pairs representing user attributes. For custom attributes, you must prepend the custom: prefix to the attribute name.
         """
         try:
-            response = self.cognito_idp_client.list_users(UserPoolId=self.user_pool_id)
-            users = response["Users"]
+            kwargs = {
+                "UserPoolId": self.user_pool_id,
+                "Username": user_name,
+                "UserAttributes": user_attributes
+            }
+            response = self.cognito_idp_client.admin_update_user_attributes(**kwargs)
         except ClientError as err:
             logger.error(
-                "Couldn't list users for %s. Here's why: %s: %s",
-                self.user_pool_id,
+                "Couldn't change password for %s. Here's why: %s: %s",
+                user_name,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
             raise
         else:
-            return users
+            return response
 
     def start_sign_in(self, user_name, password):
         """

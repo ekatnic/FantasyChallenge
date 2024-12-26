@@ -52,11 +52,21 @@ class SignupView(generics.CreateAPIView):
                     password=serializer.validated_data['password1'],
                     user_email=serializer.validated_data['email']
                 )
+
                 # Confirm the user in Cognito
                 cognito_service.admin_confirm_user_sign_up(
                     user_name=serializer.validated_data['email']
                 )
-                
+
+                # Update the users email to be marked as True 
+                # The alternative is to send an email with a Confirm code that the user needs to provide to verify email
+                update_user_attrs_resp = cognito_service.admin_update_user_attributes(
+                    user_name=serializer.validated_data['email'],
+                    user_attributes=[ 
+                        {"Name" : "email_verified", "Value" : "true"}
+                        ] 
+                ) 
+
                 # Create Django user
                 user = serializer.save()
                 
@@ -98,7 +108,6 @@ class ConfirmSignupView(APIView):
 
         email = serializer.validated_data['email']
         confirmation_code = serializer.validated_data['confirmation_code']
-
 
         try:
             # Send email and confirmation code to Cognito to confirm signup
