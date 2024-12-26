@@ -26,6 +26,7 @@ from django.http import JsonResponse
 from .serializers import (
     UserSerializer, 
     SignupSerializer, 
+    ConfirmSignupSerializer,
     LoginSerializer, 
     ForgotPasswordSerializer, 
     ConfirmForgotPasswordSerializer,
@@ -41,38 +42,39 @@ class SignupView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             try:
-
                 # Register with Cognito
-                cognito_service.sign_up_user(
+                signup_resp = cognito_service.sign_up_user(
                     user_name=serializer.validated_data['email'],
                     password=serializer.validated_data['password1'],
                     user_email=serializer.validated_data['email']
                 )
 
-                # Confirm the user in Cognito
-                cognito_service.admin_confirm_user_sign_up(
-                    user_name=serializer.validated_data['email']
-                )
+                # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
+                # # Confirm the user in Cognito
+                # cognito_service.admin_confirm_user_sign_up(
+                #     user_name=serializer.validated_data['email']
+                # )
 
+                # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
                 # Update the users email to be marked as True 
                 # The alternative is to send an email with a Confirm code that the user needs to provide to verify email
-                update_user_attrs_resp = cognito_service.admin_update_user_attributes(
-                    user_name=serializer.validated_data['email'],
-                    user_attributes=[ 
-                        {"Name" : "email_verified", "Value" : "true"}
-                        ] 
-                ) 
+                # update_user_attrs_resp = cognito_service.admin_update_user_attributes(
+                #     user_name=serializer.validated_data['email'],
+                #     user_attributes=[ 
+                #         {"Name" : "email_verified", "Value" : "true"}
+                #         ] 
+                #         ) 
 
-                # Create Django user
-                user = serializer.save()
+                # # Create Django user
+                # user = serializer.save()
                 
                 return Response({
                     'success': True,
-                    'message': 'Account created successfully',
-                    'user': UserSerializer(user).data
+                    'message': 'Account created in pending state. Awaiting email verification confirmation.',
                 }, status=status.HTTP_201_CREATED)
                 
             except cognito_service.cognito_idp_client.exceptions.UsernameExistsException:
@@ -90,6 +92,68 @@ class SignupView(generics.CreateAPIView):
             'success': False,
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+@method_decorator(ensure_csrf_cookie, name = "post")
+class ConfirmSignupView(APIView):
+    """
+    Confirms a user's received confirmation code from Cognito after calling SignupView
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = ConfirmSignupSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                {"success": False, "errors": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        validated_data = serializer.validated_data
+        email = validated_data['email']
+        confirmation_code = validated_data['confirmation_code']
+
+        try:
+            # Confirm user signup in Cognito
+            confirm_signup_resp = cognito_service.confirm_user_sign_up(user_name=email, confirmation_code=confirmation_code)
+
+            # Create Django user
+            user = User.objects.create(
+                username=email.lower(),
+                email=email,
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name']
+            )
+            user.set_password(validated_data['password1'])
+            user.save()
+
+            return Response(
+                {"success": True, 
+                 "message": "Signup confirmation successful.",
+                'user': UserSerializer(user).data
+                         },
+                status=status.HTTP_201_CREATED,
+            )
+        except cognito_service.cognito_idp_client.exceptions.CodeMismatchException:
+            return Response(
+                {"success": False, "errors": {"confirmation_code": ["Invalid confirmation code."]}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except cognito_service.cognito_idp_client.exceptions.ExpiredCodeException:
+            return Response(
+                {"success": False, "errors": {"confirmation_code": ["Confirmation code has expired."]}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except cognito_service.cognito_idp_client.exceptions.UserNotFoundException:
+            return Response(
+                {"success": False, "errors": {"email": ["User not found."]}},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return Response(
+                {"success": False, "errors": {"server": [str(e)]}},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 @method_decorator(ensure_csrf_cookie, name = "post")
 class LoginView(APIView):

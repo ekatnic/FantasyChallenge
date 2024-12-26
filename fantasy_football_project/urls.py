@@ -44,6 +44,7 @@ from fantasy_football_app.apis import(
 
 from fantasy_football_app.auth_views import (
     SignupView,
+    ConfirmSignupView,
     LoginView,
     LogoutView,
     AuthStatusView,
@@ -60,6 +61,7 @@ urlpatterns = [
     
     # TODO: Maybe these should be "api/auth/<route-name>" ? 
     path('api/signup/', SignupView.as_view(), name='signup'),
+    path('api/confirm-signup/', ConfirmSignupView.as_view(), name='confirm_signup'),
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/logout/', LogoutView.as_view(), name='logout'),
     path('api/forgot-password/', ForgotPasswordView.as_view(), name='forgot_password'),

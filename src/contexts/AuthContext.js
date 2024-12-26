@@ -59,14 +59,34 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const data = await authAPI.signup(userData);
 
-      // TODO: Set null user and redirects to the login instead of an authed page
-      // setUser(data.user);
+      // TODO: Set null user and redirects to the confirm-signup page
       setUser(null);
+      setError(null);
+      // Go to confirm-signup route and pass email as state so user can just give confirmation code from email
+      navigate("/confirm-signup", {
+        state: { userData },
+      });
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup failed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add to ./contexts/AuthContext.js inside the AuthProvider component
+  const confirmSignup = async (confirmationData) => {
+    try {
+      setLoading(true);
+      const data = await authAPI.confirmSignup(confirmationData);
+
+      setUser(null); // NOTE: Setting user to null means the user needs to login again after signing up
       setError(null);
       navigate("/login");
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
+      setError(err.response?.data?.message || "Signup confirmation failed");
       throw err;
     } finally {
       setLoading(false);
@@ -108,9 +128,11 @@ export const AuthProvider = ({ children }) => {
     error,
     login,
     signup,
+    confirmSignup,
     logout,
     forgotPassword,
     isAuthenticated: !!user,
+    checkAuth,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

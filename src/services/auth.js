@@ -6,7 +6,7 @@ axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 // const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
 const BASE_URL = "";
-
+console.log("BASE_URL", BASE_URL);
 // ------------------------------------------
 // ---- CSRF cookies ----
 // ------------------------------------------
@@ -39,26 +39,6 @@ const axiosConfig = {
   mode: "same-origin",
 };
 
-// export const axiosInstance = axios.create({
-//   withCredentials: true,
-// });
-
-// const axiosInstance = axios.create({
-//   baseURL: 'http://localhost:8000/api/', // Update to match your backend base URL
-//   withCredentials: true, // Include credentials (cookies) in requests
-// });
-
-// TODO: look into this idea more,
-// // gets afresh CSRF token before any request
-// axiosInstance.interceptors.request.use((config) => {
-//   const token = getCookie("csrftoken");
-//   config.headers["X-CSRFToken"] = token;
-//   config.headers["Accept"] = "application/json";
-//   config.headers["Content-Type"] = "application/json";
-//   config.mode = "same-origin";
-//   return config;
-// });
-
 // ------------------------------------------
 // ---- Auth requests ----
 // ------------------------------------------
@@ -67,6 +47,15 @@ export async function signup(userData) {
   const response = await axios.post(
     `${BASE_URL}/api/signup/`,
     userData,
+    axiosConfig
+  );
+  return response.data;
+}
+
+export async function confirmSignup(data) {
+  const response = await axios.post(
+    `${BASE_URL}/api/confirm-signup/`,
+    data,
     axiosConfig
   );
   return response.data;

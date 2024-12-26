@@ -65,7 +65,6 @@ class SignupSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password1'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
-        
 
         # Force username to be email
         attrs['username'] = attrs['email'].lower()
@@ -84,6 +83,23 @@ class SignupSerializer(serializers.ModelSerializer):
 
         return user
 
+
+class ConfirmSignupSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    confirmation_code = serializers.CharField(max_length=6, required=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    password1 = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
+    
+    def validate(self, attrs):
+        if attrs['password1'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+
+        # Force username to be email
+        attrs['username'] = attrs['email'].lower()
+        return attrs
+    
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)

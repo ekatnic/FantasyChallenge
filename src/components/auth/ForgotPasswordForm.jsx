@@ -100,7 +100,7 @@ export default function ForgotPasswordForm() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Send Reset Link
+              Send Reset Code
             </Button>
             <Box sx={{ textAlign: "center" }}>
               <Link component={RouterLink} to="/login" variant="body2">

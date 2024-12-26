@@ -210,3 +210,5 @@ infra/.terraform.lock.hcl
 infra/tfplan
 
 data/All_Players_Test.csv
+
+src/components/auth/CheckAuthButton.jsx
