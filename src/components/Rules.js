@@ -65,31 +65,6 @@ export default function Rules() {
     },
   ];
 
-  // Scaled FLEX Scoring stored in a variable
-  const scaledFlexScoring = [
-    {
-      ownership: "50% or more",
-      multiplier: "No multiplier",
-      score: "10 points = 10 points",
-    },
-    { ownership: "25-50%", multiplier: "1.2x", score: "10 points = 12 points" },
-    {
-      ownership: "12.5-25%",
-      multiplier: "1.3x",
-      score: "10 points = 13 points",
-    },
-    {
-      ownership: "5-12.5%",
-      multiplier: "1.5x",
-      score: "10 points = 15 points",
-    },
-    {
-      ownership: "0-5%",
-      multiplier: "1.75x",
-      score: "10 points = 17.5 points",
-    },
-  ];
-
   return (
     <Container sx={{ marginTop: 4, marginBottom: 4 }}>
       <Typography variant="h4" gutterBottom align="center">

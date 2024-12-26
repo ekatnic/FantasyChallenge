@@ -1,13 +1,6 @@
 import React from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  Outlet,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { CssBaseline, Container } from "@mui/material";
 
 // Components
 import LayoutWrapper from "./components/layouts/LayoutWrapper";
