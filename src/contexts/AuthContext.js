@@ -75,12 +75,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Add to ./contexts/AuthContext.js inside the AuthProvider component
   const confirmSignup = async (confirmationData) => {
     try {
       setLoading(true);
       const data = await authAPI.confirmSignup(confirmationData);
-
       setUser(null); // NOTE: Setting user to null means the user needs to login again after signing up
       setError(null);
       navigate("/login");
