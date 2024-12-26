@@ -79,7 +79,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   explicit_auth_flows = [
     "ALLOW_REFRESH_TOKEN_AUTH", # to enable the authentication tokens to be refreshed.
     "ALLOW_USER_PASSWORD_AUTH", # to enable user authentication by username(email?) and password 
-    "ALLOW_ADMIN_USER_PASSWORD_AUTH",` # to enable user authentication with credentials created by the admin.
+    "ALLOW_ADMIN_USER_PASSWORD_AUTH", # to enable user authentication with credentials created by the admin.
     "ALLOW_USER_SRP_AUTH",
     ]
     
