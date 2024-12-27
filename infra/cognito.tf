@@ -63,7 +63,9 @@ resource "aws_cognito_user_pool" "cognito_user_pool" {
 resource "aws_cognito_user_pool_client" "user_pool_client" {
   name         = var.cognito_user_pool_client_name 
   user_pool_id = aws_cognito_user_pool.cognito_user_pool.id
-  generate_secret = false
+  # TODO: Ultimately set generate_secret to false 
+  # generate_secret = false
+  generate_secret = true 
   refresh_token_validity = 60
   prevent_user_existence_errors = "ENABLED"
   allowed_oauth_flows_user_pool_client = true
@@ -75,7 +77,11 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
     "profile",
     "aws.cognito.signin.user.admin",
   ]
-
+  token_validity_units {
+            access_token  = "minutes" 
+            id_token      = "minutes" 
+            refresh_token = "days" 
+          }
   explicit_auth_flows = [
     "ALLOW_REFRESH_TOKEN_AUTH", # to enable the authentication tokens to be refreshed.
     "ALLOW_USER_PASSWORD_AUTH", # to enable user authentication by username(email?) and password 

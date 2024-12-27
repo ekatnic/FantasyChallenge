@@ -211,3 +211,4 @@ infra/tfplan
 
 data/
 data/All_Players_Test.csv
+src/components/auth/CheckAuthButton.jsx
