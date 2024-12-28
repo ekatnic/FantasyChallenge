@@ -1,6 +1,12 @@
-import React from 'react';
-import { FormControl, InputLabel, Select, MenuItem, TextField } from "@mui/material";
-import PlayerTable from './PlayerTable';
+import React from "react";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+} from "@mui/material";
+import PlayerTable from "./PlayerTable";
 
 const PlayerFilterAndTable = ({
   filterPosition,
@@ -12,7 +18,7 @@ const PlayerFilterAndTable = ({
   setSearchTerm,
   filteredPlayers,
   handleAddPlayer,
-  handleSort
+  handleSort,
 }) => {
   return (
     <>
@@ -44,7 +50,9 @@ const PlayerFilterAndTable = ({
         >
           <MenuItem value="All">All</MenuItem>
           {uniqueTeams.map((team) => (
-            <MenuItem key={team} value={team}>{team}</MenuItem>
+            <MenuItem key={team} value={team}>
+              {team}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
@@ -55,7 +63,11 @@ const PlayerFilterAndTable = ({
         onChange={(e) => setSearchTerm(e.target.value)}
         margin="normal"
       />
-      <PlayerTable filteredPlayers={filteredPlayers} handleAddPlayer={handleAddPlayer} handleSort={handleSort} />
+      <PlayerTable
+        filteredPlayers={filteredPlayers}
+        handleAddPlayer={handleAddPlayer}
+        handleSort={handleSort}
+      />
     </>
   );
 };

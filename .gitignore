@@ -208,3 +208,7 @@ infra/terraform.tfstate.backup
 infra/terraform.tfvars
 infra/.terraform.lock.hcl
 infra/tfplan
+
+data/All_Players_Test.csv
+
+src/components/auth/CheckAuthButton.jsx

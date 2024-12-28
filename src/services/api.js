@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
 
 export const getEntries = async () => {
   try {
@@ -34,15 +34,19 @@ export const getPlayers = async () => {
 
 export const updateEntry = async (id, formData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/api/entries/${id}/`, formData, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.put(
+      `${BASE_URL}/api/entries/${id}/`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
-    console.error('Error updating entry:', error);
+    console.error("Error updating entry:", error);
     throw error;
   }
 };
@@ -51,13 +55,13 @@ export const postEntry = async (formData) => {
   try {
     const response = await axios.post(`${BASE_URL}/api/entries/`, formData, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error('Error creating entry:', error);
+    console.error("Error creating entry:", error);
     throw error;
   }
 };

@@ -15,7 +15,7 @@ from waffle import flag_is_active
 from .tank_api.api_request import TankAPIClient
 from .constants import (DEFENSE_STATS_NAMES, POSITION_ORDER,
                         SKILL_POS_STATS_NAMES, WEEK_CHOICES)
-from .forms import EntryForm  
+from .forms import EntryForm, RegistrationForm, CustomAuthenticationForm  
 from .models import (
     Entry, 
     Player,
@@ -27,25 +27,6 @@ from .utils import (
     get_entry_score_dict, get_entry_total_dict,
     get_summarized_players, update_and_return
 )
-
-
-class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
-
-    class Meta:
-        model = User
-        fields = ("first_name", "last_name", "username", "email", "password1", "password2")
-
-    def save(self, commit=True):
-        user = super(RegistrationForm, self).save(commit=False)
-        user.first_name = self.cleaned_data["first_name"]
-        user.last_name = self.cleaned_data["last_name"]
-        user.email = self.cleaned_data["email"]
-        if commit:
-            user.save()
-        return user
 
 def register(request):
     if request.method == 'POST':
@@ -64,33 +45,6 @@ def index(request):
     if request.user.is_authenticated:
         return redirect('user_home')
     return render(request, 'fantasy_football_app/index.html')
-
-
-
-class CaseInsensitiveModelBackend(ModelBackend):
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        UserModel = get_user_model()
-        try:
-            user = UserModel.objects.get(username__iexact=username)
-            if user.check_password(password):
-                return user
-        except UserModel.DoesNotExist:
-            return None
-
-    def get_user(self, user_id):
-        UserModel = get_user_model()
-        try:
-            return UserModel.objects.get(pk=user_id)
-        except UserModel.DoesNotExist:
-            return None
-
-class CustomAuthenticationForm(AuthenticationForm):
-    def clean(self):
-        cleaned_data = super().clean()
-        username = cleaned_data.get('username')
-        if username:
-            cleaned_data['username'] = username.lower()
-        return cleaned_data
 
 def sign_in(request):
     if request.method == 'POST':

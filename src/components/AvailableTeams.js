@@ -1,5 +1,13 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, Grid, ListItem, ListItemText, Divider } from '@mui/material';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  ListItem,
+  ListItemText,
+  Divider,
+} from "@mui/material";
 
 const AvailableTeams = ({ uniqueTeams, roster, allPlayers }) => {
   return (
@@ -11,8 +19,8 @@ const AvailableTeams = ({ uniqueTeams, roster, allPlayers }) => {
       <CardContent>
         <Grid container spacing={2}>
           {uniqueTeams.map((team, index) => {
-            const teamInRoster = Object.values(roster).some(playerId => {
-              const player = allPlayers.find(p => p.id === playerId);
+            const teamInRoster = Object.values(roster).some((playerId) => {
+              const player = allPlayers.find((p) => p.id === playerId);
               return player && player.team === team;
             });
             return (
@@ -23,9 +31,9 @@ const AvailableTeams = ({ uniqueTeams, roster, allPlayers }) => {
                     slotProps={{
                       primary: {
                         style: {
-                          color: teamInRoster ? 'red' : 'green'
-                        }
-                      }
+                          color: teamInRoster ? "red" : "green",
+                        },
+                      },
                     }}
                   />
                 </ListItem>
