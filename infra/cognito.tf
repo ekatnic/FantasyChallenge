@@ -21,7 +21,7 @@ resource "aws_cognito_user_pool" "cognito_user_pool" {
   # } 
 
   password_policy {
-    minimum_length    = 8
+    minimum_length    = 9
     require_lowercase = true
     require_numbers   = true
     require_symbols   = true
@@ -39,8 +39,8 @@ resource "aws_cognito_user_pool" "cognito_user_pool" {
   # Verification message templates
   verification_message_template {
     default_email_option = "CONFIRM_WITH_CODE"
-    email_subject = "Fantasy Playoff Showdown Account Confirmation"
-    email_message = "Welcome to the 2025 Fantasy Playoff Showdown! Verify your registration with the confirmation code {####}"
+    email_subject = "Fantasy Playoff Showdown Account Management"
+    email_message = "Welcome to the 2025 Fantasy Playoff Showdown! Here is your verification / forgot password code {####}"
     # default_email_option = "CONFIRM_WITH_LINK"
     # email_subject_by_link = "Verify Your Account"
     # email_message_by_link = "Click the link below to verify your email address. {##Click Here##}"
@@ -66,7 +66,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   # TODO: Ultimately set generate_secret to false 
   # generate_secret = false
   generate_secret = true 
-  refresh_token_validity = 60
+  # refresh_token_validity = 60
   prevent_user_existence_errors = "ENABLED"
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows = ["code", "implicit"]
@@ -77,11 +77,53 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
     "profile",
     "aws.cognito.signin.user.admin",
   ]
-  token_validity_units {
-            access_token  = "minutes" 
-            id_token      = "minutes" 
-            refresh_token = "days" 
-          }
+  # token_validity_units {
+  #           access_token  = "minutes" 
+  #           id_token      = "minutes" 
+  #           refresh_token = "days" 
+  #         }
+  explicit_auth_flows = [
+    "ALLOW_REFRESH_TOKEN_AUTH", # to enable the authentication tokens to be refreshed.
+    "ALLOW_USER_PASSWORD_AUTH", # to enable user authentication by username(email?) and password 
+    "ALLOW_ADMIN_USER_PASSWORD_AUTH", # to enable user authentication with credentials created by the admin.
+    "ALLOW_USER_SRP_AUTH",
+    ]
+    
+  # TODO: frontend's callback URL
+  # TODO: Need a redirect URL to send the user to after login 
+  # TODO: Make sure this subdomain is covered by the ACM cert  
+  # callback_urls = [var.callback_subdomain_name] # TODO: frontend's callback URL
+  callback_urls = ["http://localhost:8000/callback/"] # Update with your frontend's callback oURL
+  supported_identity_providers         = ["COGNITO"]
+}
+
+# ----------------------------------------------------------------------    
+# Cognito User pool client
+# ----------------------------------------------------------------------    
+
+resource "aws_cognito_user_pool_client" "user_pool_client_dev" {
+  name = "${var.cognito_user_pool_client_name}-dev"
+  # name         = var.cognito_user_pool_client_name 
+  user_pool_id = aws_cognito_user_pool.cognito_user_pool.id
+  # TODO: Ultimately set generate_secret to false 
+  # generate_secret = false
+  generate_secret = true 
+  # refresh_token_validity = 60
+  prevent_user_existence_errors = "ENABLED"
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_flows = ["code", "implicit"]
+  allowed_oauth_scopes = [
+    "email",
+    "openid",
+    # "phone",
+    "profile",
+    "aws.cognito.signin.user.admin",
+  ]
+  # token_validity_units {
+  #           access_token  = "minutes" 
+  #           id_token      = "minutes" 
+  #           refresh_token = "days" 
+  #         }
   explicit_auth_flows = [
     "ALLOW_REFRESH_TOKEN_AUTH", # to enable the authentication tokens to be refreshed.
     "ALLOW_USER_PASSWORD_AUTH", # to enable user authentication by username(email?) and password 
