@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemText,
   IconButton,
+  Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -91,7 +92,11 @@ const Roster = ({
     return (
       <ListItem ref={drop} style={{ backgroundColor: getBackgroundColor() }}>
         <ListItemText
-          primary={`${position}: ${player ? player.name : "---"}`}
+          primary={
+            <Typography variant="body1" component="span">
+              <strong>{position}</strong>: {player ? player.name : "---"}
+            </Typography>
+          }
         />
         {player && (
           <IconButton

@@ -8,7 +8,7 @@ export default function LayoutWrapper() {
     <>
       <CssBaseline />
       <NavBar />
-      <Container component="main" maxWidth="md" sx={{ mt: 4 }}>
+      <Container component="main" maxWidth="xl" sx={{ mt: 4 }}>
         <Outlet />
       </Container>
     </>

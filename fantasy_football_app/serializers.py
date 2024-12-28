@@ -19,27 +19,52 @@ class RosteredPlayersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RosteredPlayers
-        fields = ['id', 'player_id', 'is_scaled_flex', 'roster_position']
-
+        fields = ['id', 'player_id', 'roster_position']
 
 class EntrySerializer(serializers.ModelSerializer):
     rostered_players = RosteredPlayersSerializer(many=True, read_only=True, source='rosteredplayers_set')
 
     class Meta:
         model = Entry
-        fields = ['id','name', 'rostered_players']
+        fields = ['id', 'name', 'rostered_players']
 
     def create(self, validated_data):
         request = self.context.get('request')
-        entry = Entry.objects.create(user=request.user, name="test2")
-        for field_name, player in validated_data.items():
-            if player is not None and field_name != 'user':
+        user = request.user
+        data = request.data
+        user_entry_count = Entry.objects.filter(user=user).count()
+        roster_name = data.get("rosterName") or f"{request.user.first_name} {request.user.last_name}'s Entry #{user_entry_count + 1}"
+        entry = Entry.objects.create(user=request.user, name=roster_name)
+        for position, player_id in data.get("roster").items():
+            if player_id is not None:
                 RosteredPlayers.objects.create(
                     entry=entry, 
-                    player=player, 
-                    is_scaled_flex=field_name == 'scaled_flex'
+                    player=Player.objects.get(id=player_id), 
+                    roster_position=position,
                 )
         return entry
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        data = request.data
+        roster_name = data.get("rosterName") or instance.name
+        
+        # Update the entry name
+        instance.name = roster_name
+        instance.save()
+
+        # Clear existing rostered players
+        RosteredPlayers.objects.filter(entry=instance).delete()
+
+        # Add new rostered players
+        for position, player_id in data.get("roster").items():
+            if player_id is not None:
+                RosteredPlayers.objects.create(
+                    entry=instance, 
+                    player=Player.objects.get(id=player_id), 
+                    roster_position=position,
+                )
+        return instance
 
 # ---------------------------------------------------------------
 # ---- Auth serializers ----

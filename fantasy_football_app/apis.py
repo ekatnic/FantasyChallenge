@@ -19,7 +19,7 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
         # return Entry.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save()
 
 class EntryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Entry.objects.all()
