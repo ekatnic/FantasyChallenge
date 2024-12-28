@@ -17,8 +17,8 @@ const NavBar = () => {
 
   const privateNavItems = [
     { path: `${BASE_URL}/user_home/`, label: "Home" },
-    { path: `${BASE_URL}/players/`, label: "Standings" },
-    { path: `${BASE_URL}/standings/`, label: "Players" },
+    { path: `${BASE_URL}/standings/`, label: "Standings" },
+    { path: `${BASE_URL}/players/`, label: "Players" },
     { path: "/create-entry", label: "Create Entry" },
     { path: "/rules", label: "Rules" },
   ];
