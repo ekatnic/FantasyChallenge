@@ -181,7 +181,7 @@ const CreateEntry = () => {
   const handleSubmit = async () => {
     try {
       await postEntry({ roster, rosterName });
-      navigate(`${BASE_URL}/user-home/`);
+      navigate(`${BASE_URL}/user_home/`);
     } catch (error) {
       // Handle error
     }

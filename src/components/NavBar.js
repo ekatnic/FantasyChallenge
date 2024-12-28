@@ -4,7 +4,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import LogoutButton from "./auth/LogoutButton";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
 
 const NavBar = () => {
   const { isAuthenticated } = useAuth();
