@@ -65,7 +65,7 @@ export default function LoginForm() {
               required
               fullWidth
               name="username"
-              label="Username"
+              label="Email"
               autoComplete="username"
               autoFocus
               value={credentials.username}

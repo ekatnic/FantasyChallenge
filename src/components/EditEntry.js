@@ -5,7 +5,6 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getPlayers, getEntry, updateEntry } from "../services/api";
 import { processEntryData } from "../services/apiUtils";
-import NavBar from "./NavBar";
 import AvailableTeams from "./AvailableTeams";
 import Roster from "./Roster";
 import ScaledFlexRules from "./ScaledFlexRules";
@@ -201,8 +200,7 @@ const EditEntry = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Container maxWidth="xl">
-        <NavBar />
+      <Container>
         <Box sx={{ my: 4 }}>
           {teamError && (
             <Alert severity="error" sx={{ mb: 2 }}>
@@ -211,7 +209,7 @@ const EditEntry = () => {
           )}
           <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
-              <Box sx={{ mt: 14 }}>
+              <Box>
                 <AvailableTeams
                   uniqueTeams={uniqueTeams}
                   roster={roster}

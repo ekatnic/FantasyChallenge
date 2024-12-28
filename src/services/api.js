@@ -1,11 +1,6 @@
 import axios from "axios";
 
-// NOTE: Setting no BASE_URL to NOTHING as to not change the formatted strings
-// NOTE: And this is working because the React app is being servered from Django on the same port i beleive
-// NOTE: This may just be a problem with my local setup.. not sure at this point
-
-// const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
-const BASE_URL = "";
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
 
 export const getEntries = async () => {
   try {

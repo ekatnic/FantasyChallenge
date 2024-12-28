@@ -57,6 +57,17 @@ from fantasy_football_app.auth_views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    path('register/', register, name='register'),
+    path('sign_in/', sign_in, name='sign_in'),
+    path('user_home/', user_home, name='user_home'),
+    path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
+    path('standings/', standings, name='standings'),
+    path('view_entry/<int:entry_id>/', view_entry, name='view_entry'),
+    path('sign_out/', sign_out, name='sign_out'),
+    path('players/', players_view, name='players'),
+    path('rules/', rules, name='rules'),
+    path('player/<int:player_id>/', player_stats_view, name='player_stats'),
+    path('entry_list/', entry_list_view, name='entry_list'),
     path('load_players_api/', load_players_api_view, name='load_players_api'),
     
     # TODO: Maybe these should be "api/auth/<route-name>" ? 

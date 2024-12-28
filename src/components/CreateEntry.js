@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Alert, Container, Grid, TextField, Button } from "@mui/material";
+import { Box, Grid, TextField, Button } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getPlayers, postEntry } from "../services/api";
@@ -14,6 +14,9 @@ import {
   wrPositions,
   tePositions,
 } from "../constants";
+import { useNavigate } from "react-router-dom";
+
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || ""; // can remove when we replace home
 
 const CreateEntry = () => {
   const [roster, setRoster] = useState({});
@@ -31,6 +34,8 @@ const CreateEntry = () => {
   const [teamError, setTeamError] = useState(null);
   const [rosterName, setRosterName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -176,7 +181,7 @@ const CreateEntry = () => {
   const handleSubmit = async () => {
     try {
       await postEntry({ roster, rosterName });
-      // Handle successful submission (e.g., redirect or show success message)
+      navigate(`${BASE_URL}/user-home/`);
     } catch (error) {
       // Handle error
     }
@@ -187,71 +192,62 @@ const CreateEntry = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Container maxWidth="xl">
-        <Box sx={{ my: 4 }}>
-          {teamError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {teamError}
-            </Alert>
-          )}
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={3}>
-              <Box sx={{ mt: 14 }}>
-                <AvailableTeams
-                  uniqueTeams={uniqueTeams}
-                  roster={roster}
-                  allPlayers={allPlayers}
-                />
-              </Box>
-              <Grid item xs={12}>
-                <ScaledFlexRules />
-              </Grid>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <PlayerFilterAndTable
-                filterPosition={filterPosition}
-                setFilterPosition={setFilterPosition}
-                filterTeam={filterTeam}
-                setFilterTeam={setFilterTeam}
+        <Grid container spacing={3} >
+          <Grid item xs={12} md={3}>
+            <Box>
+              <AvailableTeams
                 uniqueTeams={uniqueTeams}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filteredPlayers={filteredPlayers}
-                handleAddPlayer={handleAddPlayer}
-                handleSort={handleSort}
+                roster={roster}
+                allPlayers={allPlayers}
               />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Box sx={{ mt: 4 }}>
-                <TextField
-                  fullWidth
-                  label="Roster Name"
-                  value={rosterName}
-                  onChange={(e) => setRosterName(e.target.value)}
-                  margin="normal"
-                />
-                <Roster
-                  rosterPositions={rosterPositions}
-                  roster={roster}
-                  allPlayers={allPlayers}
-                  handleRemovePlayer={handleRemovePlayer}
-                  handleAddPlayer={handleAddPlayer}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{ mt: 2 }}
-                  disabled={!isRosterFull}
-                  onClick={handleSubmit}
-                >
-                  Submit Entry
-                </Button>
-              </Box>
+            </Box>
+            <Grid item xs={12}>
+              <ScaledFlexRules />
             </Grid>
           </Grid>
-        </Box>
-      </Container>
+          <Grid item xs={12} md={6}>
+            <PlayerFilterAndTable
+              filterPosition={filterPosition}
+              setFilterPosition={setFilterPosition}
+              filterTeam={filterTeam}
+              setFilterTeam={setFilterTeam}
+              uniqueTeams={uniqueTeams}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filteredPlayers={filteredPlayers}
+              handleAddPlayer={handleAddPlayer}
+              handleSort={handleSort}
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Box sx={{ mt: 4 }}>
+              <TextField
+                fullWidth
+                label="Roster Name"
+                value={rosterName}
+                onChange={(e) => setRosterName(e.target.value)}
+                margin="normal"
+              />
+              <Roster
+                rosterPositions={rosterPositions}
+                roster={roster}
+                allPlayers={allPlayers}
+                handleRemovePlayer={handleRemovePlayer}
+                handleAddPlayer={handleAddPlayer}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ mt: 2 }}
+                disabled={!isRosterFull}
+                onClick={handleSubmit}
+              >
+                Submit Entry
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
     </DndProvider>
   );
 };

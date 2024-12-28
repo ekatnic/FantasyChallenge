@@ -1,15 +1,14 @@
 import React from "react";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import LogoutButton from "./auth/LogoutButton";
 
-// const BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 
 const NavBar = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const publicNavItems = [
     { path: "/", label: "Home" },
@@ -17,9 +16,9 @@ const NavBar = () => {
   ];
 
   const privateNavItems = [
-    { path: "/dashboard", label: "Dashboard" },
-    { path: "/standings", label: "Standings" },
-    { path: "/players", label: "Players" },
+    { path: `${BASE_URL}/user_home/`, label: "Home" },
+    { path: `${BASE_URL}/players/`, label: "Standings" },
+    { path: `${BASE_URL}/standings/`, label: "Players" },
     { path: "/create-entry", label: "Create Entry" },
     { path: "/rules", label: "Rules" },
   ];
@@ -50,8 +49,12 @@ const NavBar = () => {
                 <Button
                   key={item.path}
                   color="inherit"
-                  component={RouterLink}
-                  to={item.path}
+                  /* Temporary, change to the following once other pages are done:
+                      component={RouterLink}
+                      to={item.path}
+                  */
+                  component="a"
+                  href={item.path}
                   sx={{
                     backgroundColor: isActiveRoute(item.path)
                       ? "rgba(255, 255, 255, 0.1)"

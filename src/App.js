@@ -39,11 +39,13 @@ const App = () => {
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<ProtectedHome />} />
-              <Route path="/user-home" element={<ProtectedHome />} />
-              <Route path="/standings" element={<Standings />} />
-              <Route path="/players" element={<Players />} />
+              {/* <Route path="/dashboard" element={<ProtectedHome />} />
+              <Route path="/user-home" element={<ProtectedHome />} /> */}
+              {/* <Route path="/standings" element={<Standings />} />
+              <Route path="/players" element={<Players />} /> */}
               <Route path="/create-entry" element={<CreateEntry />} />
+              <Route path="/edit-entry/:id" element={<EditEntry />} />
+              <Route path="/view-entry" element={<EntryList />} />
             </Route>
 
             {/* Catch all route */}
