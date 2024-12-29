@@ -18,7 +18,8 @@ import Rules from "./components/Rules";
 import EntryList from "./components/EntryList";
 import CreateEntry from "./components/CreateEntry";
 import EditEntry from "./components/EditEntry";
-import UserHome from "./components/UserHome";
+import MyEntries from "./components/MyEntries";
+import ViewEntry from "./components/ViewEntry";
 
 const App = () => {
   return (
@@ -40,12 +41,13 @@ const App = () => {
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<UserHome />} />
-              <Route path="/user-home" element={<UserHome />} /> 
+            <Route path="/dashboard" element={<ProtectedHome />} />
+              <Route path="/my-entries" element={<MyEntries />} /> 
               {/* <Route path="/standings" element={<Standings />} />
               <Route path="/players" element={<Players />} /> */}
               <Route path="/create-entry" element={<CreateEntry />} />
               <Route path="/edit-entry/:id" element={<EditEntry />} />
+              <Route path="/view-entry/:id" element={<ViewEntry />} />
               <Route path="/view-entry" element={<EntryList />} />
             </Route>
 

@@ -91,7 +91,7 @@ const EditEntry = () => {
   const handleSubmit = async () => {
     try {
       await updateEntry(id, { roster, rosterName });
-      window.location.href = `${BASE_URL}/user-home/`;
+      window.location.href = `${BASE_URL}/my-entries/`;
     } catch (error) {
       //setSubmissionError(error.message);
     }

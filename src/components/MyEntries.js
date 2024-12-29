@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const UserHome = () => {
+const MyEntries = () => {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,13 +58,13 @@ const UserHome = () => {
     <Box>
       <Paper sx={{ p: 4, mt: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          User Entries
+          My Entries
         </Typography>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
-              <TableCell><strong>Entry Name</strong></TableCell>
+                <TableCell><strong>Entry Name</strong></TableCell>
                 <TableCell><strong>Wild Card Score</strong></TableCell>
                 <TableCell><strong>Divisional Score</strong></TableCell>
                 <TableCell><strong>Conference Score</strong></TableCell>
@@ -76,7 +76,14 @@ const UserHome = () => {
             <TableBody>
               {entries.map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell>{entry.name}</TableCell>
+                  <TableCell>
+                  <Button
+                      onClick={() => navigate(`/view-entry/${entry.id}`)}
+                      sx={{ textTransform: "none" }}
+                    >
+                      {entry.name}
+                    </Button>
+                  </TableCell>
                   <TableCell>{entry.wild_card_score}</TableCell>
                   <TableCell>{entry.divisional_score}</TableCell>
                   <TableCell>{entry.conference_score}</TableCell>
@@ -122,4 +129,4 @@ const UserHome = () => {
   );
 };
 
-export default UserHome;
+export default MyEntries;

@@ -90,14 +90,6 @@ def create_entry(request):
     return render(request, 'fantasy_football_app/create_entry.html', context)
 
 @login_required
-def user_home(request):
-    all_entries_dict = get_all_entry_score_dicts()
-    # filter for only entries by that user
-    user_entries_dict = {entry: scoring_dict for entry, scoring_dict in all_entries_dict.items() if entry.user.id == request.user.id}
-    context = {'entries': user_entries_dict}
-    return render(request, 'fantasy_football_app/user_home.html', context)
-
-@login_required
 def delete_entry(request, entry_id):
     if flag_is_active(request, 'entry_lock'):
         messages.error(request, "Entry Deleting is Locked")

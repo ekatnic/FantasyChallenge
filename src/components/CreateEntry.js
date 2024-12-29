@@ -82,7 +82,7 @@ const CreateEntry = () => {
   const handleSubmit = async () => {
     try {
       await postEntry({ roster, rosterName });
-      window.location.href = `${BASE_URL}/user-home/`;
+      window.location.href = `${BASE_URL}/my-entries/`;
     } catch (error) {
       // Handle error
     }

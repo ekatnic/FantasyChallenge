@@ -171,7 +171,7 @@ export default function Rules() {
         </Paper>
       </Box>
       <Box sx={{ marginTop: 4 }}>
-        <Link href="/user-home" underline="none">
+        <Link href="/my-entries" underline="none">
           Return to Home
         </Link>
       </Box>
