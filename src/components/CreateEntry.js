@@ -3,7 +3,7 @@ import { Box, Grid, TextField, Button, Alert } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getPlayers, postEntry } from "../services/api";
-import { handleSort, sortPlayers, filterPlayers, handleAddPlayer } from "../componentUtils";
+import { handleSort, sortPlayers, filterPlayers, handleAddPlayer, handleDropPlayer } from "../componentUtils";
 import AvailableTeams from "./AvailableTeams";
 import Roster from "./Roster";
 import ScaledFlexRules from "./ScaledFlexRules";
@@ -145,18 +145,9 @@ const CreateEntry = () => {
               roster={roster}
               allPlayers={allPlayers}
               handleRemovePlayer={handleRemovePlayer}
-              handleAddPlayer={(player) =>
-                handleAddPlayer(
-                  player,
-                  roster,
-                  setRoster,
-                  allPlayers,
-                  rbPositions,
-                  wrPositions,
-                  tePositions,
-                  setTeamError
-                )
-              }
+              handleDropPlayer={handleDropPlayer}
+              setRoster={setRoster}
+              setTeamError={setTeamError}
             />
             <Button
               variant="contained"
