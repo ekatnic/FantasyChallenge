@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticated
 from .models import Entry, Player
 from .serializers import EntrySerializer, PlayerSerializer
+from django.core.cache import cache
 
 class EntryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Entry.objects.all()
@@ -19,7 +20,8 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
         # return Entry.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save()
+        cache.clear("ranked_entries_dict")
 
 class EntryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Entry.objects.all()

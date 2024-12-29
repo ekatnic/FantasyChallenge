@@ -35,8 +35,7 @@ def get_all_entry_score_dicts():
         dict: A dictionary where the keys are entries and the values are dicts of their total scores.
     """
     # Try to get the result from the cache
-    # ranked_entries_dict = cache.get('ranked_entries_dict') # Uncomment to re-enable cache
-    ranked_entries_dict = None 
+    ranked_entries_dict = cache.get('ranked_entries_dict') 
 
     # If the result was not in the cache, calculate it and store it in the cache
     if ranked_entries_dict is None:

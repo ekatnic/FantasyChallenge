@@ -5,6 +5,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getPlayers, getEntry, updateEntry } from "../services/api";
 import { processEntryData } from "../services/apiUtils";
+import { handleSort, sortPlayers, filterPlayers, handleAddPlayer } from "../componentUtils";
 import AvailableTeams from "./AvailableTeams";
 import Roster from "./Roster";
 import ScaledFlexRules from "./ScaledFlexRules";
@@ -16,6 +17,8 @@ import {
   wrPositions,
   tePositions,
 } from "../constants";
+
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || ""; // can remove when we replace home
 
 const EditEntry = () => {
   const { id } = useParams();
@@ -56,48 +59,6 @@ const EditEntry = () => {
     fetchData();
   }, [id]);
 
-  const handleAddPlayer = (player) => {
-    const position = player.position;
-    const playerTeam = player.team;
-
-    // Check if the team of the player being added is already in the roster
-    const teamAlreadyInRoster =
-      roster &&
-      Object.values(roster).some((playerId) => {
-        const existingPlayer = allPlayers.find((p) => p.id === playerId);
-        return existingPlayer && existingPlayer.team === playerTeam;
-      });
-
-    if (teamAlreadyInRoster) {
-      setTeamError(
-        `You cannot have more than one player from the same team (${playerTeam}) in your roster.`
-      );
-      return;
-    }
-
-    let positionToAdd = null;
-
-    if (position === "QB" || position === "DEF" || position === "K") {
-      positionToAdd = position;
-    } else if (position === "RB") {
-      positionToAdd = rbPositions.find((pos) => !roster[pos]) || "Scaled Flex";
-    } else if (position === "WR") {
-      positionToAdd = wrPositions.find((pos) => !roster[pos]) || "Scaled Flex";
-    } else if (position === "TE") {
-      positionToAdd = tePositions.find((pos) => !roster[pos]) || "Scaled Flex";
-    }
-
-    if (positionToAdd) {
-      setRoster((prev) => ({
-        ...prev,
-        [positionToAdd]: player.id,
-      }));
-    }
-
-    // Clear any previous team error
-    setTeamError(null);
-  };
-
   const handleRemovePlayer = (position) => {
     setRoster((prev) => {
       const newRoster = { ...prev };
@@ -109,78 +70,19 @@ const EditEntry = () => {
     setTeamError(null);
   };
 
-  const handleSort = (key) => {
-    setSortConfig((prevSortConfig) => {
-      const existingSort = prevSortConfig.find((sort) => sort.key === key);
-      if (existingSort) {
-        const newDirection =
-          existingSort.direction === "ascending" ? "descending" : "ascending";
-        return prevSortConfig.map((sort) =>
-          sort.key === key ? { ...sort, direction: newDirection } : sort
-        );
-      } else {
-        return [...prevSortConfig, { key, direction: "ascending" }];
-      }
-    });
-  };
+  const sortedPlayers = sortPlayers(players, sortConfig, positionOrder);
 
-  const sortedPlayers = [...players].sort((a, b) => {
-    for (const { key, direction } of sortConfig) {
-      if (key === "position") {
-        const orderA = positionOrder[a.position] || 99;
-        const orderB = positionOrder[b.position] || 99;
-        if (orderA < orderB) return direction === "ascending" ? -1 : 1;
-        if (orderA > orderB) return direction === "ascending" ? 1 : -1;
-      } else {
-        if (a[key] < b[key]) return direction === "ascending" ? -1 : 1;
-        if (a[key] > b[key]) return direction === "ascending" ? 1 : -1;
-      }
-    }
-    return 0;
-  });
-
-  const filteredPlayers = sortedPlayers
-    .map((player) => {
-      const teamAlreadyInRoster =
-        roster &&
-        Object.values(roster).some((playerId) => {
-          const existingPlayer = allPlayers.find((p) => p.id === playerId);
-          return existingPlayer && existingPlayer.team === player.team;
-        });
-
-      let isGrayedOut = teamAlreadyInRoster;
-
-      if (!isGrayedOut) {
-        if (player.position === "QB" && roster.QB) {
-          isGrayedOut = true;
-        } else if (player.position === "DEF" && roster.DEF) {
-          isGrayedOut = true;
-        } else if (player.position === "K" && roster.K) {
-          isGrayedOut = true;
-        } else if (player.position === "RB") {
-          isGrayedOut = rbPositions.every((pos) => roster[pos]);
-        } else if (player.position === "WR") {
-          isGrayedOut = wrPositions.every((pos) => roster[pos]);
-        } else if (player.position === "TE") {
-          isGrayedOut = tePositions.every((pos) => roster[pos]);
-        }
-      }
-
-      return {
-        ...player,
-        isGrayedOut,
-      };
-    })
-    .filter((player) => {
-      return (
-        (filterPosition === "All" ||
-          (filterPosition === "Flex" &&
-            ["RB", "WR", "TE"].includes(player.position)) ||
-          player.position === filterPosition) &&
-        (filterTeam === "All" || player.team === filterTeam) &&
-        player.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
+  const filteredPlayers = filterPlayers(
+    sortedPlayers,
+    roster,
+    allPlayers,
+    filterPosition,
+    filterTeam,
+    searchTerm,
+    rbPositions,
+    wrPositions,
+    tePositions
+  );
 
   const uniqueTeams = [...new Set(players.map((player) => player.team))];
 
@@ -189,7 +91,7 @@ const EditEntry = () => {
   const handleSubmit = async () => {
     try {
       await updateEntry(id, { roster, rosterName });
-      // Handle successful submission (e.g., redirect or show success message)
+      window.location.href = `${BASE_URL}/user_home/`;
     } catch (error) {
       //setSubmissionError(error.message);
     }
@@ -200,71 +102,84 @@ const EditEntry = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Container>
-        <Box sx={{ my: 4 }}>
-          {teamError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {teamError}
-            </Alert>
-          )}
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={3}>
-              <Box>
-                <AvailableTeams
-                  uniqueTeams={uniqueTeams}
-                  roster={roster}
-                  allPlayers={allPlayers}
-                />
-              </Box>
-              <Grid item xs={12}>
-                <ScaledFlexRules />
-              </Grid>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <PlayerFilterAndTable
-                filterPosition={filterPosition}
-                setFilterPosition={setFilterPosition}
-                filterTeam={filterTeam}
-                setFilterTeam={setFilterTeam}
-                uniqueTeams={uniqueTeams}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filteredPlayers={filteredPlayers}
-                handleAddPlayer={handleAddPlayer}
-                handleSort={handleSort}
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Box sx={{ mt: 4 }}>
-                <TextField
-                  fullWidth
-                  label="Roster Name"
-                  value={rosterName}
-                  onChange={(e) => setRosterName(e.target.value)}
-                  margin="normal"
-                />
-                <Roster
-                  rosterPositions={rosterPositions}
-                  roster={roster}
-                  allPlayers={allPlayers}
-                  handleRemovePlayer={handleRemovePlayer}
-                  handleAddPlayer={handleAddPlayer}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{ mt: 2 }}
-                  disabled={!isRosterFull}
-                  onClick={handleSubmit}
-                >
-                  Update Entry
-                </Button>
-              </Box>
-            </Grid>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={3}>
+          <Box mt={14}>
+            <AvailableTeams
+              uniqueTeams={uniqueTeams}
+              roster={roster}
+              allPlayers={allPlayers}
+            />
+          </Box>
+          <Grid item xs={12}>
+            <ScaledFlexRules />
           </Grid>
-        </Box>
-      </Container>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <PlayerFilterAndTable
+            filterPosition={filterPosition}
+            setFilterPosition={setFilterPosition}
+            filterTeam={filterTeam}
+            setFilterTeam={setFilterTeam}
+            uniqueTeams={uniqueTeams}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filteredPlayers={filteredPlayers}
+            handleAddPlayer={(player) =>
+              handleAddPlayer(
+                player,
+                roster,
+                setRoster,
+                allPlayers,
+                rbPositions,
+                wrPositions,
+                tePositions,
+                setTeamError
+              )
+            }
+            handleSort={(key) => handleSort(key, sortConfig, setSortConfig)}
+          />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Box sx={{ mt: 4 }}>
+            <TextField
+              fullWidth
+              label="Roster Name"
+              value={rosterName}
+              onChange={(e) => setRosterName(e.target.value)}
+              margin="normal"
+            />
+            <Roster
+              rosterPositions={rosterPositions}
+              roster={roster}
+              allPlayers={allPlayers}
+              handleRemovePlayer={handleRemovePlayer}
+              handleAddPlayer={(player) =>
+                handleAddPlayer(
+                  player,
+                  roster,
+                  setRoster,
+                  allPlayers,
+                  rbPositions,
+                  wrPositions,
+                  tePositions,
+                  setTeamError
+                )
+              }
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }}
+              disabled={!isRosterFull}
+              onClick={handleSubmit}
+            >
+              Update Entry
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
     </DndProvider>
   );
 };
