@@ -141,17 +141,6 @@ def standings(request):
 
 @login_required
 def view_entry(request, entry_id):
-    entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set'), id=entry_id)
-    if not flag_is_active(request, 'entry_lock') and entry.user.id is not request.user.id:
-        messages.error(request, 'You do not have permission to view this entry.')
-        return redirect('user_home')
-    player_total_dict = get_entry_score_dict(entry)
-    entry_total_dict = get_entry_total_dict(player_total_dict) 
-    zipped_player_list = zip(POSITION_ORDER, player_total_dict.items())
-    context = {
-        "player_list": zipped_player_list,
-        "entry_total": entry_total_dict['total'],
-    }
     return render(request, 'fantasy_football_app/view_entry.html', context) 
 
 def sign_out(request):

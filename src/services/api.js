@@ -22,6 +22,16 @@ export const getEntry = async (id) => {
   }
 };
 
+export const getEntryRoster = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/entries/${id}/roster/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching entry:", error);
+    throw error;
+  }
+};
+
 export const deleteEntry = async (id) => {
   try {
   const response = await axios.delete(`${BASE_URL}/api/entries/${id}/`);

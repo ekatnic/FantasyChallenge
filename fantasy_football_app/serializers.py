@@ -16,10 +16,11 @@ class PlayerSerializer(serializers.ModelSerializer):
 
 class RosteredPlayersSerializer(serializers.ModelSerializer):
     player_id = serializers.IntegerField(source='player.id')
+    player_name = serializers.CharField(source='player.name')
 
     class Meta:
         model = RosteredPlayers
-        fields = ['id', 'player_id', 'roster_position']
+        fields = ['id', 'player_id', 'player_name', 'roster_position']
 
 class EntrySerializer(serializers.ModelSerializer):
     rostered_players = RosteredPlayersSerializer(many=True, read_only=True, source='rosteredplayers_set')
