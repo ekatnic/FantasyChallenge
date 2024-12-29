@@ -17,7 +17,9 @@ const Roster = ({
   roster,
   allPlayers,
   handleRemovePlayer,
-  handleAddPlayer,
+  handleDropPlayer,
+  setRoster,
+  setTeamError,
 }) => {
   const ItemTypes = {
     PLAYER: "player",
@@ -72,7 +74,7 @@ const Roster = ({
           isEligiblePosition(item.player, position) &&
           !isTeamAlreadyInRoster(item.player)
         ) {
-          handleAddPlayer(item.player, position);
+          handleDropPlayer(item.player, position, roster, setRoster, allPlayers, setTeamError);
         }
       },
       collect: (monitor) => ({

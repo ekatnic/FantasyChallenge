@@ -36,10 +36,9 @@ def get_all_entry_score_dicts():
     """
     # Try to get the result from the cache
     ranked_entries_dict = cache.get('ranked_entries_dict') 
-
     # If the result was not in the cache, calculate it and store it in the cache
     if ranked_entries_dict is None:
-        entries = Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set').all().order_by('id')
+        entries = Entry.objects.filter(year="2025").prefetch_related('rosteredplayers_set__player__weeklystats_set').order_by('id')
         all_entry_score_dict = get_entry_list_score_dict(entries)
         ranked_entries_dict = rank_entries(all_entry_score_dict)
         cache.set('ranked_entries_dict', ranked_entries_dict, 60 * 30)  # Cache results for 30 minutes

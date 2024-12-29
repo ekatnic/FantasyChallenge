@@ -21,7 +21,7 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save()
-        cache.clear("ranked_entries_dict")
+        cache.delete("ranked_entries_dict")
 
 class EntryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Entry.objects.all()

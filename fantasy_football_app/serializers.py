@@ -34,7 +34,7 @@ class EntrySerializer(serializers.ModelSerializer):
         data = request.data
         user_entry_count = Entry.objects.filter(user=user).count()
         roster_name = data.get("rosterName") or f"{request.user.first_name} {request.user.last_name}'s Entry #{user_entry_count + 1}"
-        entry = Entry.objects.create(user=request.user, name=roster_name)
+        entry = Entry.objects.create(user=request.user, name=roster_name, year="2025")
         for position, player_id in data.get("roster").items():
             if player_id is not None:
                 RosteredPlayers.objects.create(

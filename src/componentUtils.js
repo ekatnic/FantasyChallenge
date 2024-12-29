@@ -30,17 +30,30 @@ export const sortPlayers = (players, sortConfig, positionOrder) => {
   });
 };
 
-export const filterPlayers = (players, roster, allPlayers, filterPosition, filterTeam, searchTerm, rbPositions, wrPositions, tePositions) => {
+const teamAlreadyInRoster = (roster, player, allPlayers) => {
+  return (
+    roster &&
+    Object.values(roster).some((playerId) => {
+      const existingPlayer = allPlayers.find((p) => p.id === playerId);
+      return existingPlayer && existingPlayer.team === player.team;
+    })
+  );
+};
+
+export const filterPlayers = (
+  players,
+  roster,
+  allPlayers,
+  filterPosition,
+  filterTeam,
+  searchTerm,
+  rbPositions,
+  wrPositions,
+  tePositions
+) => {
   return players
     .map((player) => {
-      const teamAlreadyInRoster =
-        roster &&
-        Object.values(roster).some((playerId) => {
-          const existingPlayer = allPlayers.find((p) => p.id === playerId);
-          return existingPlayer && existingPlayer.team === player.team;
-        });
-
-      let isGrayedOut = teamAlreadyInRoster;
+      let isGrayedOut = teamAlreadyInRoster(roster, player, allPlayers);
 
       if (!isGrayedOut) {
         if (player.position === "QB" && roster.QB) {
@@ -75,19 +88,20 @@ export const filterPlayers = (players, roster, allPlayers, filterPosition, filte
     });
 };
 
-export const handleAddPlayer = (player, roster, setRoster, allPlayers, rbPositions, wrPositions, tePositions, setTeamError) => {
+export const handleAddPlayer = (
+  player,
+  roster,
+  setRoster,
+  allPlayers,
+  rbPositions,
+  wrPositions,
+  tePositions,
+  setTeamError
+) => {
   const position = player.position;
   const playerTeam = player.team;
 
-  // Check if the team of the player being added is already in the roster
-  const teamAlreadyInRoster =
-    roster &&
-    Object.values(roster).some((playerId) => {
-      const existingPlayer = allPlayers.find((p) => p.id === playerId);
-      return existingPlayer && existingPlayer.team === playerTeam;
-    });
-
-  if (teamAlreadyInRoster) {
+  if (teamAlreadyInRoster(roster, player, allPlayers)) {
     setTeamError(
       `You cannot have more than one player from the same team (${playerTeam}) in your roster.`
     );
@@ -104,6 +118,34 @@ export const handleAddPlayer = (player, roster, setRoster, allPlayers, rbPositio
     positionToAdd = wrPositions.find((pos) => !roster[pos]) || "Scaled Flex";
   } else if (position === "TE") {
     positionToAdd = tePositions.find((pos) => !roster[pos]) || "Scaled Flex";
+  }
+
+  if (positionToAdd) {
+    setRoster((prev) => ({
+      ...prev,
+      [positionToAdd]: player.id,
+    }));
+  }
+
+  // Clear any previous team error
+  setTeamError(null);
+};
+
+export const handleDropPlayer = (
+  player,
+  positionToAdd,
+  roster,
+  setRoster,
+  allPlayers,
+  setTeamError
+) => {
+  const playerTeam = player.team;
+
+  if (teamAlreadyInRoster(roster, player, allPlayers)) {
+    setTeamError(
+      `You cannot have more than one player from the same team (${playerTeam}) in your roster.`
+    );
+    return;
   }
 
   if (positionToAdd) {
