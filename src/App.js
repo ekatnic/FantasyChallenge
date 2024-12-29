@@ -11,7 +11,7 @@ import Signup from "./components/auth/Signup";
 import ConfirmSignupForm from "./components/auth/ConfirmSignupForm";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Home from "./components/Home";
-// import ProtectedHome from "./components/ProtectedHome";
+import ProtectedHome from "./components/ProtectedHome";
 // import Standings from "./components/Standings";
 // import Players from "./components/Players";
 import Rules from "./components/Rules";
