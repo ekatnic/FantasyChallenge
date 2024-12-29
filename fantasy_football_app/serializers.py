@@ -26,7 +26,16 @@ class EntrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Entry
-        fields = ['id', 'name', 'rostered_players']
+        fields = [
+            'id', 
+            'name', 
+            'rostered_players', 
+            'wild_card_score', 
+            'divisional_score', 
+            'conference_score', 
+            'super_bowl_score', 
+            'total'
+        ]
 
     def create(self, validated_data):
         request = self.context.get('request')

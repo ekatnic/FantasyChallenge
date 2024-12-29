@@ -7,7 +7,7 @@ from django.core.cache import cache
 class EntryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -15,9 +15,11 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
         return context
 
     def get_queryset(self):
-        # if self.request.user.is_superuser:
-        return Entry.objects.all()
-        # return Entry.objects.filter(user=self.request.user)
+        queryset = Entry.objects.filter(user=self.request.user).prefetch_related('rosteredplayers_set')
+        year = self.request.query_params.get('year')
+        if year:
+            queryset = queryset.filter(year=year)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save()
@@ -26,12 +28,12 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
 class EntryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         # if self.request.user.is_superuser:
-        return Entry.objects.all()
-        # return Entry.objects.filter(user=self.request.user)
+        #     return Entry.objects.all()
+        return Entry.objects.filter(user=self.request.user)
 
 class PlayerListAPIView(generics.ListAPIView):
     queryset = Player.objects.all()

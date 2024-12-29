@@ -4,7 +4,7 @@ const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
 
 export const getEntries = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/entries/`);
+    const response = await axios.get(`${BASE_URL}/api/entries/?year=2025`);
     return response.data;
   } catch (error) {
     console.error("Error fetching entries:", error);
@@ -16,6 +16,16 @@ export const getEntry = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/api/entries/${id}/`);
     return response.data;
+  } catch (error) {
+    console.error("Error fetching entry:", error);
+    throw error;
+  }
+};
+
+export const deleteEntry = async (id) => {
+  try {
+  const response = await axios.delete(`${BASE_URL}/api/entries/${id}/`);
+  return response.data;
   } catch (error) {
     console.error("Error fetching entry:", error);
     throw error;

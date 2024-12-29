@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Alert, Container, Grid, TextField, Button } from "@mui/material";
+import { Box, Grid, TextField, Button } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -91,7 +91,7 @@ const EditEntry = () => {
   const handleSubmit = async () => {
     try {
       await updateEntry(id, { roster, rosterName });
-      window.location.href = `${BASE_URL}/user_home/`;
+      window.location.href = `${BASE_URL}/user-home/`;
     } catch (error) {
       //setSubmissionError(error.message);
     }
