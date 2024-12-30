@@ -139,10 +139,6 @@ def standings(request):
     all_entries_dict = get_all_entry_score_dicts()
     return render(request, 'fantasy_football_app/standings.html', {'entries': all_entries_dict})
 
-@login_required
-def view_entry(request, entry_id):
-    return render(request, 'fantasy_football_app/view_entry.html', context) 
-
 def sign_out(request):
     logout(request)
     return redirect('index')
