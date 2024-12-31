@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, TextField, Button, Alert } from "@mui/material";
+import { Box, Grid, TextField, Button } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { getPlayers, postEntry } from "../services/api";
@@ -82,7 +82,7 @@ const CreateEntry = () => {
   const handleSubmit = async () => {
     try {
       await postEntry({ roster, rosterName });
-      window.location.href = `${BASE_URL}/user_home/`;
+      window.location.href = `${BASE_URL}/my-entries/`;
     } catch (error) {
       // Handle error
     }

@@ -90,14 +90,6 @@ def create_entry(request):
     return render(request, 'fantasy_football_app/create_entry.html', context)
 
 @login_required
-def user_home(request):
-    all_entries_dict = get_all_entry_score_dicts()
-    # filter for only entries by that user
-    user_entries_dict = {entry: scoring_dict for entry, scoring_dict in all_entries_dict.items() if entry.user.id == request.user.id}
-    context = {'entries': user_entries_dict}
-    return render(request, 'fantasy_football_app/user_home.html', context)
-
-@login_required
 def delete_entry(request, entry_id):
     if flag_is_active(request, 'entry_lock'):
         messages.error(request, "Entry Deleting is Locked")
@@ -146,21 +138,6 @@ def edit_entry(request, entry_id):
 def standings(request):
     all_entries_dict = get_all_entry_score_dicts()
     return render(request, 'fantasy_football_app/standings.html', {'entries': all_entries_dict})
-
-@login_required
-def view_entry(request, entry_id):
-    entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set'), id=entry_id)
-    if not flag_is_active(request, 'entry_lock') and entry.user.id is not request.user.id:
-        messages.error(request, 'You do not have permission to view this entry.')
-        return redirect('user_home')
-    player_total_dict = get_entry_score_dict(entry)
-    entry_total_dict = get_entry_total_dict(player_total_dict) 
-    zipped_player_list = zip(POSITION_ORDER, player_total_dict.items())
-    context = {
-        "player_list": zipped_player_list,
-        "entry_total": entry_total_dict['total'],
-    }
-    return render(request, 'fantasy_football_app/view_entry.html', context) 
 
 def sign_out(request):
     logout(request)
