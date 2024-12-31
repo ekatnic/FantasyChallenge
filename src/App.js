@@ -20,6 +20,7 @@ import CreateEntry from "./components/CreateEntry";
 import EditEntry from "./components/EditEntry";
 import MyEntries from "./components/MyEntries";
 import ViewEntry from "./components/ViewEntry";
+import PlayerProfile from "./components/PlayerProfile";
 
 const App = () => {
   return (
@@ -46,6 +47,7 @@ const App = () => {
               {/* <Route path="/standings" element={<Standings />} />
               <Route path="/players" element={<Players />} /> */}
               <Route path="/create-entry" element={<CreateEntry />} />
+              <Route path="/player-profile" element={<PlayerProfile />} />
               <Route path="/edit-entry/:id" element={<EditEntry />} />
               <Route path="/view-entry/:id" element={<ViewEntry />} />
               <Route path="/view-entry" element={<EntryList />} />
