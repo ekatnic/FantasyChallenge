@@ -16,10 +16,10 @@ const NavBar = () => {
   ];
 
   const privateNavItems = [
-    { path: `${BASE_URL}/user_home/`, label: "Home" },
+    { path: `${BASE_URL}/my-entries/`, label: "My Entries" },
+    { path: `${BASE_URL}/create-entry`, label: "Create Entry" },
     { path: `${BASE_URL}/standings/`, label: "Standings" },
     { path: `${BASE_URL}/players/`, label: "Players" },
-    { path: "/create-entry", label: "Create Entry" },
     { path: "/rules", label: "Rules" },
   ];
 
