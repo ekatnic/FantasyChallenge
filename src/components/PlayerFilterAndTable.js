@@ -20,6 +20,7 @@ const PlayerFilterAndTable = ({
   handleAddPlayer,
   handleSort,
 }) => {
+  const sortedTeams = [...uniqueTeams].sort();
   return (
     <>
       <FormControl fullWidth margin="normal">
@@ -49,7 +50,7 @@ const PlayerFilterAndTable = ({
           label="Filter by Team"
         >
           <MenuItem value="All">All</MenuItem>
-          {uniqueTeams.map((team) => (
+          {sortedTeams.map((team) => (
             <MenuItem key={team} value={team}>
               {team}
             </MenuItem>

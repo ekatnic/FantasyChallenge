@@ -48,3 +48,24 @@ export const tePositions = [
   "Flex4",
   "Scaled Flex",
 ];
+
+// Remove non-playoff teams when final games conclude
+export const playoffTeams = [
+  "LAR",
+  "ATL",
+  "TB",
+  "DET",
+  "MIN",
+  "GB",
+  "PHI",
+  "WAS",
+  "KC",
+  "LAC",
+  "DEN",
+  "HOU",
+  "BAL",
+  "PIT",
+  "CIN",
+  "BUF",
+  "MIA"
+]
