@@ -107,25 +107,16 @@ def get_entry_total_dict(entry_score_dict):
 
 def get_summarized_players():
     """
-    Get a dictionary of player data with rostership counts and percentages
-    returns: dictionary of summarized player data {player : scoring/rostership dict}
+    Get a list of player data with rostership counts and percentages
+    returns: list of summarized player data dictionaries
     """
-    players_scoring_dict = {}
     total_entries = float(Entry.objects.count())
     player_counts = Player.objects.annotate(
         roster_count=Count('rosteredplayers'),
         roster_percentage=Round(F('roster_count') / total_entries * 100, 2),
-        captain_count=Sum(
-            Case(
-                When(rosteredplayers__is_captain=True, then=1),
-                default=0,
-                output_field=IntegerField()
-            )
-        ),
-        captain_percentage=Round(F('captain_count') / total_entries * 100, 2),
         scaled_flex_count=Sum(
             Case(
-                When(rosteredplayers__is_scaled_flex=True, then=1),
+                When(rosteredplayers__roster_position="Scaled Flex", then=1),
                 default=0,
                 output_field=IntegerField()
             )
@@ -135,15 +126,31 @@ def get_summarized_players():
 
     # Filter the QuerySet to include only Players with one or more RosteredPlayer
     player_counts = player_counts.order_by('-roster_percentage')
+    summarized_players = []
+
     for player in player_counts:
         player_dict = get_raw_player_scoring_dict(player)
-        player_dict['scaled_flex_multiplier'] = (
-            str(get_roster_percentage_multiplier(player.roster_percentage)) + 'x'
-            if player.position in FLEX_POSITIONS
-            else ''
-        )
-        players_scoring_dict[player] = player_dict
-    return players_scoring_dict
+        summarized_player = {
+            'id': player.id,
+            'name': player.name,
+            'team': player.team,
+            'position': player.position,
+            'roster_percentage': player.roster_percentage,
+            'scaled_flex_percentage': player.scaled_flex_percentage,
+            'WC': player_dict.get('WC', 0.0),
+            'DIV': player_dict.get('DIV', 0.0),
+            'CONF': player_dict.get('CONF', 0.0),
+            'SB': player_dict.get('SB', 0.0),
+            'total': player_dict.get('total', 0.0),
+            'scaled_flex_multiplier': (
+                str(get_roster_percentage_multiplier(player.roster_percentage)) + 'x'
+                if player.position in FLEX_POSITIONS
+                else ''
+            )
+        }
+        summarized_players.append(summarized_player)
+
+    return summarized_players
 
 def update_and_return(dict_obj, update_dict):
     dict_obj.update(update_dict)

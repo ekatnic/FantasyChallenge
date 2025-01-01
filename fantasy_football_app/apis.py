@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from .models import Entry, Player
-from .utils import get_entry_score_dict, get_entry_total_dict, get_all_entry_score_dicts
+from .utils import get_entry_score_dict, get_entry_total_dict, get_all_entry_score_dicts, get_summarized_players
 from .serializers import EntrySerializer, PlayerSerializer, RosteredPlayersSerializer
 from django.core.cache import cache
 
@@ -85,3 +85,13 @@ class StandingsAPIView(APIView):
     def get(self, request, *args, **kwargs):
         all_entries_list = get_all_entry_score_dicts()
         return Response({'entries': all_entries_list})
+
+class PlayerOwnershipAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        players_scoring_dict = cache.get('players_scoring_dict')
+        if not players_scoring_dict:
+            players_scoring_dict = get_summarized_players()
+            cache.set('players_scoring_dict', players_scoring_dict, 60 * 30)  # Cache for 30 minutes
+        return Response({'players_scoring_dict': players_scoring_dict})

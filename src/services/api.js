@@ -98,3 +98,13 @@ export const getStandings = async () => {
     throw error;
   }
 };
+
+export const getPlayerOwnership = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/player-ownership/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching player ownership:", error);
+    throw error;
+  }
+};
