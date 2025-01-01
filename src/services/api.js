@@ -88,3 +88,13 @@ export const postEntry = async (formData) => {
     throw error;
   }
 };
+
+export const getStandings = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/standings/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching standings:", error);
+    throw error;
+  }
+};

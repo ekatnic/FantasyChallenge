@@ -1,97 +1,87 @@
-// Needs to be reviewed, this is a GPT generated placeholder
+import React, { useState, useEffect } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import { useNavigate } from "react-router-dom";
+import { getStandings } from "../services/api"; // Make sure to import your API function
+import { makeStyles } from "@mui/styles";
+import { Paper, Typography } from "@mui/material";
 
-import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  Paper,
-  Link,
-} from "@mui/material";
+const useStyles = makeStyles({
+  dataGrid: {
+    "& .MuiDataGrid-cell": {
+      fontSize: "1rem", // Adjust the font size for the cells
+    },
+    "& .MuiDataGrid-columnHeaders": {
+      fontSize: "1.2rem", // Adjust the font size for the column headers
+    },
+  },
+  evenRow: {
+    backgroundColor: "#f5f5f5", // Light gray color for even rows
+  },
+  oddRow: {
+    backgroundColor: "#ffffff", // White color for odd rows
+  },
+});
 
 export default function Standings() {
-  // Replace w/ api/standings/ api call
-  const standingsData = [
+  const classes = useStyles();
+  const [standings, setStandings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchStandings = async () => {
+      try {
+        const data = await getStandings();
+        setStandings(data.entries);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
+    fetchStandings();
+  }, []);
+
+  const columns = [
+    { field: "rank", headerName: "Rank", width: 100 },
     {
-      rank: 1,
-      name: "Entry 1",
-      wildCard: 100,
-      divisional: 120,
-      conference: 90,
-      superBowl: 70,
-      total: 380,
-      isCurrentUser: true, // Highlight this row for the current user
+      field: "name",
+      headerName: "Name",
+      width: 200,
+      renderCell: (params) => (
+        <span
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => navigate(`/view-entry/${params.row.id}`)}
+        >
+          {params.value}
+        </span>
+      ),
     },
-    {
-      rank: 2,
-      name: "Entry 2",
-      wildCard: 80,
-      divisional: 110,
-      conference: 95,
-      superBowl: 60,
-      total: 345,
-    },
-    {
-      rank: 3,
-      name: "Entry 3",
-      wildCard: 70,
-      divisional: 100,
-      conference: 85,
-      superBowl: 75,
-      total: 330,
-    },
+    { field: "WC", headerName: "Wild Card", width: 150 },
+    { field: "DIV", headerName: "Divisional", width: 150 },
+    { field: "CONF", headerName: "Conference", width: 150 },
+    { field: "SB", headerName: "Super Bowl", width: 150 },
+    { field: "total", headerName: "Total", width: 150 },
   ];
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
-    <Paper sx={{ padding: 2 }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Challenge Standings
+    <Paper sx={{ p: 4, mt: 4 }}>
+      <Typography variant="h4" component="h2" gutterBottom>
+        Entry Standings
       </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Rank</TableCell>
-              <TableCell>Entry</TableCell>
-              <TableCell>Wild Card</TableCell>
-              <TableCell>Divisional</TableCell>
-              <TableCell>Conference</TableCell>
-              <TableCell>Super Bowl</TableCell>
-              <TableCell>Total</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {standingsData.map((entry, index) => (
-              <TableRow
-                key={index}
-                sx={{
-                  backgroundColor: entry.isCurrentUser
-                    ? "rgba(0, 123, 255, 0.2)"
-                    : "inherit",
-                }}
-              >
-                <TableCell>{entry.rank}</TableCell>
-                <TableCell>
-                  <Link href={`/view_entry/${entry.rank}`} underline="hover">
-                    {entry.name}
-                  </Link>
-                </TableCell>
-                <TableCell>{entry.wildCard}</TableCell>
-                <TableCell>{entry.divisional}</TableCell>
-                <TableCell>{entry.conference}</TableCell>
-                <TableCell>{entry.superBowl}</TableCell>
-                <TableCell>
-                  <strong>{entry.total}</strong>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <DataGrid
+        rows={standings}
+        columns={columns}
+        pageSize={10}
+        className={classes.dataGrid}
+        getRowClassName={(params) =>
+          params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow
+        }
+      />
     </Paper>
   );
 }

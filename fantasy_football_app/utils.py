@@ -30,19 +30,34 @@ def rank_entries(entries_dict):
 
 def get_all_entry_score_dicts():
     """
-    Get a dictionary of total scores for each entry in db
+    Get a list of total scores for each entry in the database.
     Returns:
-        dict: A dictionary where the keys are entries and the values are dicts of their total scores.
+        list: A list of dictionaries with the required fields.
     """
     # Try to get the result from the cache
-    ranked_entries_dict = cache.get('ranked_entries_dict') 
+    ranked_entries_dict = cache.get('ranked_entries_dict')
     # If the result was not in the cache, calculate it and store it in the cache
     if ranked_entries_dict is None:
         entries = Entry.objects.filter(year="2025").prefetch_related('rosteredplayers_set__player__weeklystats_set').order_by('id')
         all_entry_score_dict = get_entry_list_score_dict(entries)
         ranked_entries_dict = rank_entries(all_entry_score_dict)
         cache.set('ranked_entries_dict', ranked_entries_dict, 60 * 30)  # Cache results for 30 minutes
-    return ranked_entries_dict
+
+    # Convert the dictionary to a list of dictionaries with the required fields
+    result = [
+        {
+            'id': entry.id,
+            'name': entry.name,
+            'WC': scores['WC'],
+            'DIV': scores['DIV'],
+            'CONF': scores['CONF'],
+            'SB': scores['SB'],
+            'total': scores['total'],
+            'rank': scores['rank']
+        }
+        for entry, scores in ranked_entries_dict.items()
+    ]
+    return result
 
 def get_entry_list_score_dict(entry_list):
     """

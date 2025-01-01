@@ -1,9 +1,10 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from .models import Entry, Player
-from .utils import get_entry_score_dict, get_entry_total_dict
+from .utils import get_entry_score_dict, get_entry_total_dict, get_all_entry_score_dicts
 from .serializers import EntrySerializer, PlayerSerializer, RosteredPlayersSerializer
 from django.core.cache import cache
 
@@ -77,3 +78,10 @@ class EntryRosterAPIView(generics.RetrieveAPIView):
             "entry_scores": entry_total_dict,
         }
         return Response(data)
+
+class StandingsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        all_entries_list = get_all_entry_score_dicts()
+        return Response({'entries': all_entries_list})
