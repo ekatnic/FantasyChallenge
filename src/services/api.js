@@ -2,7 +2,7 @@ import axios from "axios";
 import { playoffTeams } from "../constants";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
-// const BASE_URL = ""
+
 export const getEntries = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/api/entries/?year=2025`);

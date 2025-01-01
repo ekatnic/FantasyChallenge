@@ -20,7 +20,6 @@ import CreateEntry from "./components/CreateEntry";
 import EditEntry from "./components/EditEntry";
 import MyEntries from "./components/MyEntries";
 import ViewEntry from "./components/ViewEntry";
-import PlayerProfile from "./components/PlayerProfile";
 
 const App = () => {
   return (
@@ -30,7 +29,6 @@ const App = () => {
           <Route element={<LayoutWrapper />}>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
-              <Route path="/pp" element={<PlayerProfile />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/confirm-signup" element={<ConfirmSignupForm />} />
