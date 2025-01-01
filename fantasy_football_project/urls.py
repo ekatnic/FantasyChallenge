@@ -27,7 +27,6 @@ from fantasy_football_app.views import (
     edit_entry, 
     standings, 
     sign_out,
-    players_view,
     rules,
     player_stats_view,
     entry_list_view,
@@ -39,7 +38,8 @@ from fantasy_football_app.apis import(
     EntryRetrieveUpdateDestroyAPIView,
     EntryRosterAPIView,
     PlayerListAPIView,
-    StandingsAPIView
+    StandingsAPIView,
+    PlayerOwnershipAPIView,
 )
 
 from fantasy_football_app.auth_views import (
@@ -61,7 +61,6 @@ urlpatterns = [
     path('sign_in/', sign_in, name='sign_in'),
     path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
     path('sign_out/', sign_out, name='sign_out'),
-    path('players/', players_view, name='players'),
     path('rules/', rules, name='rules'),
     path('player/<int:player_id>/', player_stats_view, name='player_stats'),
     path('entry_list/', entry_list_view, name='entry_list'),
@@ -83,6 +82,7 @@ urlpatterns = [
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
     path('api/entries/<int:pk>/roster/', EntryRosterAPIView.as_view(), name='entry-roster'),
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
+    path('api/player-ownership/', PlayerOwnershipAPIView.as_view(), name='player-ownership'),
     path('api/standings/', StandingsAPIView.as_view(), name='standings-api'),
 
     # React routes
@@ -91,5 +91,6 @@ urlpatterns = [
     path('my-entries/', react_view, name='user_home'),
     path('view-entry/<int:entry_id>', react_view, name='view_entry'),
     path('standings/', react_view, name='standings'),
+    path('player-ownership/', react_view, name='players'),
     re_path(r'^.*$', react_view),
 ]

@@ -21,16 +21,6 @@
       </li>
       {% flag 'entry_lock' %}
       <li
-        class="nav-item {% if request.resolver_match.url_name == 'standings' %}active{% endif %}"
-      >
-        <a class="nav-link" href="{% url 'standings' %}">Standings</a>
-      </li>
-      <li
-        class="nav-item {% if request.resolver_match.url_name == 'players' %}active{% endif %}"
-      >
-        <a class="nav-link" href="{% url 'players' %}">Players</a>
-      </li>
-      <li
         class="nav-item {% if request.resolver_match.url_name == 'rules' %}active{% endif %}"
       >
         <a class="nav-link" href="{% url 'rules' %}">Rules</a>

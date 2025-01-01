@@ -24,8 +24,7 @@ from .models import (
 )
 from .utils import (
     get_all_entry_score_dicts, get_entry_list_score_dict,
-    get_entry_score_dict, get_entry_total_dict,
-    get_summarized_players, update_and_return
+    get_entry_score_dict, get_entry_total_dict, update_and_return
 )
 
 def register(request):
@@ -142,18 +141,6 @@ def standings(request):
 def sign_out(request):
     logout(request)
     return redirect('index')
-
-
-def players_view(request):
-    players_scoring_dict = cache.get('players_scoring_dict')
-    if not players_scoring_dict:
-        # Get a QuerySet of Players, annotated with the count of related RosteredPlayer instances
-        players_scoring_dict = get_summarized_players()
-        cache.set('players_scoring_dict', players_scoring_dict, 60 * 30)  # Cache for 30 minutes
-    context = {
-        'players_scoring_dict': players_scoring_dict,
-    }
-    return render(request, 'fantasy_football_app/players.html', {'players_scoring_dict': players_scoring_dict})
 
 @login_required
 def rules(request):
