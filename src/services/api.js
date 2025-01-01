@@ -1,7 +1,8 @@
 import axios from "axios";
+import { playoffTeams } from "../constants";
 
-// const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
-const BASE_URL = ""
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
+// const BASE_URL = ""
 export const getEntries = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/api/entries/?year=2025`);
@@ -44,10 +45,12 @@ export const deleteEntry = async (id) => {
 
 export const getPlayers = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/players/`);
+    const response = await axios.get(`${BASE_URL}/api/players/`, {
+      params: { teams: playoffTeams.join(',') }
+    });
     return response.data;
   } catch (error) {
-    console.error("Error fetching entries:", error);
+    console.error("Error fetching players:", error);
     throw error;
   }
 };
@@ -82,6 +85,16 @@ export const postEntry = async (formData) => {
     return response.data;
   } catch (error) {
     console.error("Error creating entry:", error);
+    throw error;
+  }
+};
+
+export const getStandings = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/standings/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching standings:", error);
     throw error;
   }
 };

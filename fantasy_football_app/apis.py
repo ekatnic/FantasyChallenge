@@ -1,9 +1,10 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from .models import Entry, Player
-from .utils import get_entry_score_dict, get_entry_total_dict
+from .utils import get_entry_score_dict, get_entry_total_dict, get_all_entry_score_dicts
 from .serializers import EntrySerializer, PlayerSerializer, RosteredPlayersSerializer
 from django.core.cache import cache
 
@@ -43,7 +44,16 @@ class PlayerListAPIView(generics.ListAPIView):
     serializer_class = PlayerSerializer
 
     def get_queryset(self):
+<<<<<<< HEAD
         return Player.objects.select_related('info').prefetch_related('stats')
+=======
+        queryset = Player.objects.select_related('info').prefetch_related('stats')
+        teams = self.request.query_params.get('teams')
+        if teams:
+            team_list = teams.split(',')
+            queryset = queryset.filter(team__in=team_list)
+        return queryset
+>>>>>>> master
 
 class EntryRosterAPIView(generics.RetrieveAPIView):
     queryset = Entry.objects.all()
@@ -72,3 +82,10 @@ class EntryRosterAPIView(generics.RetrieveAPIView):
             "entry_scores": entry_total_dict,
         }
         return Response(data)
+
+class StandingsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        all_entries_list = get_all_entry_score_dicts()
+        return Response({'entries': all_entries_list})

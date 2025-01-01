@@ -15,6 +15,7 @@ class Player(models.Model):
         ('WR', 'Wide Receiver'),
         ('TE', 'Tight End'),
         ('DEF', 'Defense/Special Teams'),
+        ('K', 'Kicker')
     ]
 
     name = models.CharField(max_length=100)

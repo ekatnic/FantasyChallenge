@@ -4,8 +4,19 @@ import { getEntries, deleteEntry } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+  evenRow: {
+    backgroundColor: "#f5f5f5", // Light gray color for even rows
+  },
+  oddRow: {
+    backgroundColor: "#ffffff", // White color for odd rows
+  },
+});
 
 const MyEntries = () => {
+  const classes = useStyles();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,10 +85,10 @@ const MyEntries = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {entries.map((entry) => (
-                <TableRow key={entry.id}>
+              {entries.map((entry, index) => (
+                <TableRow key={entry.id} className={index % 2 === 0 ? classes.evenRow : classes.oddRow}>
                   <TableCell>
-                  <Button
+                    <Button
                       onClick={() => navigate(`/view-entry/${entry.id}`)}
                       sx={{ textTransform: "none" }}
                     >

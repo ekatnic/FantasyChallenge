@@ -75,7 +75,7 @@ const CreateEntry = () => {
     tePositions
   );
 
-  const uniqueTeams = [...new Set(players.map((player) => player.team))];
+  const uniqueTeams = [...new Set(players.map((player) => player.team))].sort();
 
   const isRosterFull = rosterPositions.every((position) => roster[position]);
 

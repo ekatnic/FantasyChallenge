@@ -39,6 +39,7 @@ from fantasy_football_app.apis import(
     EntryRetrieveUpdateDestroyAPIView,
     EntryRosterAPIView,
     PlayerListAPIView,
+    StandingsAPIView
 )
 
 from fantasy_football_app.auth_views import (
@@ -59,7 +60,6 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('sign_in/', sign_in, name='sign_in'),
     path('delete_entry/<int:entry_id>/', delete_entry, name='delete_entry'),
-    path('standings/', standings, name='standings'),
     path('sign_out/', sign_out, name='sign_out'),
     path('players/', players_view, name='players'),
     path('rules/', rules, name='rules'),
@@ -67,7 +67,7 @@ urlpatterns = [
     path('entry_list/', entry_list_view, name='entry_list'),
     path('load_players_api/', load_players_api_view, name='load_players_api'),
     
-    # TODO: Maybe these should be "api/auth/<route-name>" ? 
+    # Auth APIs
     path('api/signup/', SignupView.as_view(), name='signup'),
     path('api/confirm-signup/', ConfirmSignupView.as_view(), name='confirm_signup'),
     path('api/login/', LoginView.as_view(), name='login'),
@@ -78,12 +78,18 @@ urlpatterns = [
     path('api/auth-status/', AuthStatusView.as_view(), name='auth_status'),
     path('api/csrf-token/', CSRFTokenView.as_view(), name='csrf-token'),
 
+    # APIs
     path('api/entries/', EntryListCreateAPIView.as_view(), name='entry-list-create'),
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
     path('api/entries/<int:pk>/roster/', EntryRosterAPIView.as_view(), name='entry-roster'),
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
+    path('api/standings/', StandingsAPIView.as_view(), name='standings-api'),
+
+    # React routes
     path('create-entry/', react_view, name='create_entry'),
     path('edit-entry/<int:entry_id>', react_view, name='edit_entry'),
     path('my-entries/', react_view, name='user_home'),
+    path('view-entry/<int:entry_id>', react_view, name='view_entry'),
+    path('standings/', react_view, name='standings'),
     re_path(r'^.*$', react_view),
 ]
