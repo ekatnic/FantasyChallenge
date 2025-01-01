@@ -85,5 +85,6 @@ urlpatterns = [
     path('create-entry/', react_view, name='create_entry'),
     path('edit-entry/<int:entry_id>', react_view, name='edit_entry'),
     path('my-entries/', react_view, name='user_home'),
+    path('view-entry/<int:entry_id>', react_view, name='view_entry'),
     re_path(r'^.*$', react_view),
 ]

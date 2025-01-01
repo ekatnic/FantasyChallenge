@@ -42,6 +42,14 @@ class PlayerListAPIView(generics.ListAPIView):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
+    def get_queryset(self):
+        queryset = Player.objects.select_related('info').prefetch_related('stats')
+        teams = self.request.query_params.get('teams')
+        if teams:
+            team_list = teams.split(',')
+            queryset = queryset.filter(team__in=team_list)
+        return queryset
+
 class EntryRosterAPIView(generics.RetrieveAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer

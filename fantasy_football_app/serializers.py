@@ -1,18 +1,37 @@
 from rest_framework import serializers
 from .models import (
     Entry,
+    PlayerInfo, 
+    PlayerStats,
     Player,
-    RosteredPlayers,
+    RosteredPlayers
 )
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
+class PlayerInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlayerInfo
+        fields = '__all__'
+
+class PlayerStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlayerStats
+        fields = '__all__'
+
 class PlayerSerializer(serializers.ModelSerializer):
+    info = PlayerInfoSerializer(read_only=True)  # one to one with Players model 
+
+    # many to one with Players model (one player can have many stats entries, different seasons, regular season, post season, etc.) 
+    stats = PlayerStatsSerializer(many=True, read_only=True) 
+
     class Meta:
         model = Player
         fields = '__all__'
 
+    def __str__(self):
+        return f'{self.name} ({self.position}) - {self.team}'
 
 class RosteredPlayersSerializer(serializers.ModelSerializer):
     player_id = serializers.IntegerField(source='player.id')
