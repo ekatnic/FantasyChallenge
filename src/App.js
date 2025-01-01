@@ -30,6 +30,7 @@ const App = () => {
           <Route element={<LayoutWrapper />}>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
+              <Route path="/pp" element={<PlayerProfile />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/confirm-signup" element={<ConfirmSignupForm />} />
@@ -47,7 +48,6 @@ const App = () => {
               {/* <Route path="/standings" element={<Standings />} />
               <Route path="/players" element={<Players />} /> */}
               <Route path="/create-entry" element={<CreateEntry />} />
-              <Route path="/player-profile" element={<PlayerProfile />} />
               <Route path="/edit-entry/:id" element={<EditEntry />} />
               <Route path="/view-entry/:id" element={<ViewEntry />} />
               <Route path="/view-entry" element={<EntryList />} />
