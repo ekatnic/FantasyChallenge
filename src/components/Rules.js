@@ -37,7 +37,7 @@ export default function Rules() {
         "-1 pt for every Fumble Lost",
         "1 pt for every 10 Rushing or Receiving yards",
         "1 pt per Reception by RBs and WRs",
-        "1.5 pts per Reception by TEs",
+        <strong>1.5 pts per Reception by TEs</strong>,
         "2 pts for every 2 Point Conversion",
       ],
     },
