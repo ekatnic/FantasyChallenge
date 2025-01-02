@@ -67,7 +67,19 @@ export default function PlayerOwnership() {
   };
 
   const columns = [
-    { field: "name", headerName: "Player", width: 200 },
+    {
+      field: "name",
+      headerName: "Player",
+      width: 200,
+      renderCell: (params) => (
+        <span
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => handleOpen(params.row.id)}
+        >
+          {params.value}
+        </span>
+      ),
+    },
     { field: "team", headerName: "Team", width: 100 },
     { field: "position", headerName: "Position", width: 100 },
     {
