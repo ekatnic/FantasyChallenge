@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getPlayerOwnership } from "../services/api"; // Make sure to import your API function
 import { makeStyles } from "@mui/styles";
 import { Paper, Typography, TextField, Box } from "@mui/material";
+import PlayerWeeklyStats from "./PlayerWeeklyStats";
 
 const useStyles = makeStyles({
   dataGrid: {
@@ -29,6 +30,8 @@ export default function PlayerOwnership() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,18 +56,64 @@ export default function PlayerOwnership() {
     setFilteredPlayers(filtered);
   }, [searchTerm, players]);
 
+  const handleOpen = (playerId) => {
+    setSelectedPlayerId(playerId);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedPlayerId(null);
+  };
+
   const columns = [
     { field: "name", headerName: "Player", width: 200 },
     { field: "team", headerName: "Team", width: 100 },
     { field: "position", headerName: "Position", width: 100 },
-    { field: "roster_percentage", headerName: "Roster %", width: 150 },
-    { field: "scaled_flex_percentage", headerName: "Scaled Flex %", width: 150 },
+    {
+      field: "roster_percentage",
+      headerName: "Roster %",
+      width: 150,
+      renderCell: (params) => (
+        <span
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => navigate(`/standings?rostered_player=${params.row.id}`)}
+        >
+          {params.value}
+        </span>
+      ),
+    },
+    {
+      field: "scaled_flex_percentage",
+      headerName: "Scaled Flex %",
+      width: 150,
+      renderCell: (params) => (
+        <span
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => navigate(`/standings?scaled_flex=${params.row.id}`)}
+        >
+          {params.value}
+        </span>
+      ),
+    },
     { field: "scaled_flex_multiplier", headerName: "SF Multiplier", width: 150 },
+    {
+      field: "total",
+      headerName: "Total Points",
+      width: 150,
+      renderCell: (params) => (
+        <span
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => handleOpen(params.row.id)}
+        >
+          {params.value}
+        </span>
+      ),
+    },
     { field: "WC", headerName: "Wild Card", width: 150 },
     { field: "DIV", headerName: "Divisional", width: 150 },
     { field: "CONF", headerName: "Conference", width: 150 },
     { field: "SB", headerName: "Super Bowl", width: 150 },
-    { field: "total", headerName: "Total Points", width: 150 },
   ];
 
   if (loading) return <div>Loading...</div>;
@@ -89,11 +138,22 @@ export default function PlayerOwnership() {
         columns={columns}
         pageSize={10}
         className={classes.dataGrid}
-        sortModel={[{ field: 'roster_percentage', sort: 'desc' }]}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'roster_percentage', sort: 'desc' }],
+          },
+        }}
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow
         }
       />
+      {selectedPlayerId && (
+        <PlayerWeeklyStats
+          playerId={selectedPlayerId}
+          open={open}
+          onClose={handleClose}
+        />
+      )}
     </Paper>
   );
 }
