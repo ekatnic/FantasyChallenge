@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from .models import Entry, Player
+from .models import Entry, Player, RosteredPlayers, WeeklyStats
 from .utils import get_entry_score_dict, get_entry_total_dict, get_all_entry_score_dicts, get_summarized_players
-from .serializers import EntrySerializer, PlayerSerializer, RosteredPlayersSerializer
+from .serializers import WeeklyStatsSerializer, EntrySerializer, PlayerSerializer, RosteredPlayersSerializer
 from django.core.cache import cache
 
 class EntryListCreateAPIView(generics.ListCreateAPIView):
@@ -84,6 +84,20 @@ class StandingsAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         all_entries_list = get_all_entry_score_dicts()
+
+        # Get query parameters
+        rostered_player_id = request.query_params.get('rostered_player')
+        scaled_flex_id = request.query_params.get('scaled_flex')
+
+        if rostered_player_id:
+            entry_ids = RosteredPlayers.objects.filter(player_id=rostered_player_id).values_list('entry_id', flat=True)
+            all_entries_list = [entry for entry in all_entries_list if entry['id'] in entry_ids]
+
+        # Filter entries based on scaled_flex
+        if scaled_flex_id:
+            entry_ids = RosteredPlayers.objects.filter(player_id=scaled_flex_id, roster_position="Scaled Flex").values_list('entry_id', flat=True)
+            all_entries_list = [entry for entry in all_entries_list if entry['id'] in entry_ids]
+
         return Response({'entries': all_entries_list})
 
 class PlayerOwnershipAPIView(APIView):
@@ -95,3 +109,13 @@ class PlayerOwnershipAPIView(APIView):
             players_scoring_dict = get_summarized_players()
             cache.set('players_scoring_dict', players_scoring_dict, 60 * 30)  # Cache for 30 minutes
         return Response({'players_scoring_dict': players_scoring_dict})
+
+class PlayerWeeklyStatsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, player_id, *args, **kwargs):
+        player = get_object_or_404(Player, id=player_id)
+        weekly_stats = WeeklyStats.objects.filter(player=player)
+        player_data = PlayerSerializer(player).data
+        weekly_stats_data = WeeklyStatsSerializer(weekly_stats, many=True).data
+        return Response({'player': player_data, 'weekly_stats': weekly_stats_data})
