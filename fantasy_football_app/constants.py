@@ -98,9 +98,8 @@ ROSTER_POSITIONS = [
     ('TE', 'TE'),
     ('Flex1', 'Flex1'),
     ('Flex2', 'Flex2'),
-    ('Flex3', 'Flex3'),
-    ('Flex4', 'Flex4'),
-    ('Scaled Flex', 'Scaled Flex'),
+    ('Scaled Flex1', 'Scaled Flex1'),
+    ('Scaled Flex2', 'Scaled Flex2'),
     ('DEF', 'DEF'),
     ('K', 'K')
 ]

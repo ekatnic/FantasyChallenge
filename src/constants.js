@@ -7,9 +7,8 @@ export const rosterPositions = [
   "TE",
   "Flex1",
   "Flex2",
-  "Flex3",
-  "Flex4",
-  "Scaled Flex",
+  "Scaled Flex1",
+  "Scaled Flex2",
   "DEF",
   "K",
 ];
@@ -27,26 +26,23 @@ export const rbPositions = [
   "RB2",
   "Flex1",
   "Flex2",
-  "Flex3",
-  "Flex4",
-  "Scaled Flex",
+  "Scaled Flex1",
+  "Scaled Flex2",
 ];
 export const wrPositions = [
   "WR1",
   "WR2",
   "Flex1",
   "Flex2",
-  "Flex3",
-  "Flex4",
-  "Scaled Flex",
+  "Scaled Flex1",
+  "Scaled Flex2",
 ];
 export const tePositions = [
   "TE",
   "Flex1",
   "Flex2",
-  "Flex3",
-  "Flex4",
-  "Scaled Flex",
+  "Scaled Flex1",
+  "Scaled Flex2",
 ];
 
 // Remove non-playoff teams when final games conclude
