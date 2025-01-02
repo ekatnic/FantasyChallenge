@@ -95,7 +95,9 @@ class StandingsAPIView(APIView):
 
         # Filter entries based on scaled_flex
         if scaled_flex_id:
-            entry_ids = RosteredPlayers.objects.filter(player_id=scaled_flex_id, roster_position="Scaled Flex").values_list('entry_id', flat=True)
+            entry_ids = RosteredPlayers.objects.filter(
+                player_id=scaled_flex_id, roster_position__in=["Scaled Flex1", "Scaled Flex2"]
+            ).values_list('entry_id', flat=True)
             all_entries_list = [entry for entry in all_entries_list if entry['id'] in entry_ids]
 
         return Response({'entries': all_entries_list})

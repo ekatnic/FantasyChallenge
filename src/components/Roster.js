@@ -26,7 +26,7 @@ const Roster = ({
   };
 
   const isEligiblePosition = (player, position) => {
-    const flexPositions = ["Flex1", "Flex2", "Flex3", "Flex4", "Scaled Flex"];
+    const flexPositions = ["Flex1", "Flex2", "Scaled Flex1", "Scaled Flex2"];
     if (position === "QB" && player.position !== "QB") return false;
     if (
       position.startsWith("RB") &&

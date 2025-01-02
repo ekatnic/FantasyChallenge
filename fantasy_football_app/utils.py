@@ -116,7 +116,8 @@ def get_summarized_players():
         roster_percentage=Round(F('roster_count') / total_entries * 100, 2),
         scaled_flex_count=Sum(
             Case(
-                When(rosteredplayers__roster_position="Scaled Flex", then=1),
+                When(rosteredplayers__roster_position="Scaled Flex1", then=1),
+                When(rosteredplayers__roster_position="Scaled Flex2", then=1),
                 default=0,
                 output_field=IntegerField()
             )

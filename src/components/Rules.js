@@ -16,22 +16,13 @@ import ScaledFlexRulesTable from "./ScaledFlexRulesTable";
 
 export default function Rules() {
   const payouts = [
-    { position: "1st", amount: "$1250" },
-    { position: "2nd", amount: "$500" },
-    { position: "3rd", amount: "$350" },
-    { position: "4th", amount: "$125" },
-    { position: "5th", amount: "$125" },
-    { position: "6th", amount: "$75" },
-    { position: "7th", amount: "$75" },
-    { position: "8th", amount: "$75" },
-    { position: "9th", amount: "$75" },
-    { position: "10th", amount: "$50" },
-    { position: "11th", amount: "$20" },
-    { position: "12th", amount: "$20" },
-    { position: "13th", amount: "$20" },
-    { position: "14th", amount: "$20" },
-    { position: "15th", amount: "$20" },
-    { position: "Last Place", amount: "$20" },
+    { position: "1st", amount: "50% of pot" },
+    { position: "2nd", amount: "15% of pot" },
+    { position: "3rd", amount: "10% of pot" },
+    { position: "4th", amount: "8% of pot" },
+    { position: "5th", amount: "5% of pot" },
+    { position: "6th-10th", amount: "$20" },
+    { position: "Last Place*", amount: "$20" },
   ];
 
   // Full rules stored in a variable as an array of objects
@@ -46,7 +37,7 @@ export default function Rules() {
         "-1 pt for every Fumble Lost",
         "1 pt for every 10 Rushing or Receiving yards",
         "1 pt per Reception by RBs and WRs",
-        "1.5 pts per Reception by TEs",
+        <strong>1.5 pts per Reception by TEs</strong>,
         "2 pts for every 2 Point Conversion",
       ],
     },
@@ -78,6 +69,63 @@ export default function Rules() {
           gap: 2,
         }}
       >
+        {/* Build Your Roster and New Rules */}
+        <Paper
+          elevation={3}
+          sx={{
+            padding: 2,
+            flex: "1 1 calc(33% - 16px)",
+            minWidth: "280px",
+          }}
+        >
+          <Typography variant="h5" align="center" gutterBottom>
+            <strong>Build Your Roster:</strong>
+          </Typography>
+          <Typography gutterBottom>
+            Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup.
+          </Typography>
+          <Typography gutterBottom>
+            The catch is that you can only select ONE PLAYER PER TEAM. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
+          </Typography>
+          <Typography variant="h5" align="center" gutterBottom>
+            <strong>New Rules:</strong>
+          </Typography>
+          <ScaledFlexRulesTable />
+        </Paper>
+
+        {/* Full Rules */}
+        <Paper
+          elevation={3}
+          sx={{
+            padding: 2,
+            flex: "1 1 calc(33% - 16px)",
+            minWidth: "280px",
+          }}
+        >
+          <Typography variant="h5" align="center" gutterBottom>
+            <strong>Full Rules:</strong>
+          </Typography>
+          {fullRules.map((section, index) => (
+            <Box key={index}>
+              <Typography variant="h6" gutterBottom>
+                {section.title}:
+              </Typography>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableBody>
+                    {section.rules.map((rule, ruleIndex) => (
+                      <TableRow key={ruleIndex}>
+                        <TableCell>{rule}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <br />
+            </Box>
+          ))}
+        </Paper>
+
         {/* Payouts */}
         <Paper
           elevation={3}
@@ -89,6 +137,9 @@ export default function Rules() {
         >
           <Typography variant="h5" align="center" gutterBottom>
             <strong>Payouts:</strong>
+          </Typography>
+          <Typography gutterBottom>
+            Payouts determined by number of entries. Expected payout will be something like...
           </Typography>
           <TableContainer component={Paper}>
             <Table>
@@ -112,62 +163,9 @@ export default function Rules() {
               </TableBody>
             </Table>
           </TableContainer>
-        </Paper>
-
-        {/* Full Rules */}
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 2,
-            flex: "1 1 calc(33% - 16px)",
-            minWidth: "280px",
-          }}
-        >
-          <Typography variant="h5" align="center" gutterBottom>
-            <strong>Full Rules:</strong>
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            Around 1% of the pot will be used to pay web hosting fees.
           </Typography>
-          {fullRules.map((section, index) => (
-            <Box key={index}>
-              <Typography variant="h6" gutterBottom>
-                {section.title}:
-              </Typography>
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableBody>
-                    {section.rules.map((rule, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{rule}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Box>
-          ))}
-        </Paper>
-
-        {/* New Rules */}
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 2,
-            flex: "1 1 calc(33% - 16px)",
-            minWidth: "280px",
-          }}
-        >
-          <Typography variant="h5" align="center" gutterBottom>
-            <strong>New Rules:</strong>
-          </Typography>
-          <Typography variant="h6">
-            <strong>Captain:</strong>
-          </Typography>
-          <Typography gutterBottom>
-            You will select <strong>1 captain</strong> - this can be any
-            position other than QB. This player will receive{" "}
-            <strong>1.5x points</strong> each week.
-          </Typography>
-          {/* Scaled FLEX Scoring */}
-          <ScaledFlexRulesTable />
         </Paper>
       </Box>
       <Box sx={{ marginTop: 4 }}>
