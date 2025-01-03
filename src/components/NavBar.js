@@ -33,7 +33,7 @@ const NavBar = () => {
         <Typography
           variant="h6"
           component={RouterLink}
-          to="/"
+          to="/dashboard"
           sx={{
             flexGrow: 1,
             color: "white",

@@ -25,6 +25,13 @@ export default function Rules() {
     { position: "Last Place*", amount: "$20" },
   ];
 
+  const pricing = [
+    { entries: "1 entry", price: "$20" },
+    { entries: "3 entries", price: "$55" },
+    { entries: "5 entries", price: "$90" },
+    { entries: "10 entries", price: "$175" },
+  ];
+
   // Full rules stored in a variable as an array of objects
   const fullRules = [
     {
@@ -54,6 +61,15 @@ export default function Rules() {
         "5 pts for allowing 7-10 points",
       ],
     },
+    {
+      title: "Kicker Scoring",
+      rules: [
+        "1 pt for each PAT made",
+        "-1 pt for each PAT missed",
+        ".1 pt for each FG Made Yards (FGY)",
+        "-1 pt for each FG missed",
+      ]
+    }
   ];
 
   return (
@@ -82,12 +98,11 @@ export default function Rules() {
             <strong>Build Your Roster:</strong>
           </Typography>
           <Typography gutterBottom>
-            Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup.
-          </Typography>
-          <Typography gutterBottom>
-            The catch is that you can only select ONE PLAYER PER TEAM. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
+            Create a lineup of 12 player aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup.
+            You can only select ONE PLAYER PER TEAM. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
           </Typography>
           <Typography variant="h5" align="center" gutterBottom>
+            <br/>
             <strong>New Rules:</strong>
           </Typography>
           <ScaledFlexRulesTable />
@@ -115,7 +130,15 @@ export default function Rules() {
                   <TableBody>
                     {section.rules.map((rule, ruleIndex) => (
                       <TableRow key={ruleIndex}>
-                        <TableCell>{rule}</TableCell>
+                        <TableCell>
+                          {typeof rule === "string" ? (
+                            rule
+                          ) : (
+                            <Typography component="span" sx={{ fontWeight: "bold" }}>
+                              {rule}
+                            </Typography>
+                          )}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -126,7 +149,7 @@ export default function Rules() {
           ))}
         </Paper>
 
-        {/* Payouts */}
+        {/* Pricing */}
         <Paper
           elevation={3}
           sx={{
@@ -135,6 +158,27 @@ export default function Rules() {
             minWidth: "280px",
           }}
         >
+          <Typography variant="h5" align="center" gutterBottom>
+            <strong>Entry Pricing:</strong>
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            Max of 10 entries
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableBody>
+                {pricing.map((price, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{price.entries}</TableCell>
+                    <TableCell align="right">{price.price}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <br/>
+          <br/>
           <Typography variant="h5" align="center" gutterBottom>
             <strong>Payouts:</strong>
           </Typography>
@@ -169,7 +213,7 @@ export default function Rules() {
         </Paper>
       </Box>
       <Box sx={{ marginTop: 4 }}>
-        <Link href="/my-entries" underline="none">
+        <Link href="/dashboard" underline="none">
           Return to Home
         </Link>
       </Box>
