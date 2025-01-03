@@ -16,6 +16,7 @@ const NavBar = () => {
   ];
 
   const privateNavItems = [
+    { path: "/dashboard", label: "Home" },
     { path: `${BASE_URL}/my-entries/`, label: "My Entries" },
     { path: `${BASE_URL}/create-entry`, label: "Create Entry" },
     { path: `${BASE_URL}/standings/`, label: "Standings" },
