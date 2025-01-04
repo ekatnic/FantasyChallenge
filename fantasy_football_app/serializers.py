@@ -4,11 +4,17 @@ from .models import (
     PlayerInfo, 
     PlayerStats,
     Player,
-    RosteredPlayers
+    RosteredPlayers,
+    WeeklyStats,
 )
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+
+class WeeklyStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeeklyStats
+        fields = '__all__'
 
 class PlayerInfoSerializer(serializers.ModelSerializer):
     class Meta:

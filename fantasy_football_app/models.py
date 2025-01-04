@@ -21,7 +21,6 @@ class Player(models.Model):
     name = models.CharField(max_length=100)
     position = models.CharField(max_length=12, choices=POSITION_CHOICES)
     team = models.CharField(max_length=50)
-    #rostered_percentage = models.FloatField(default=0.0) 
 
     def __str__(self):
         return f'{self.name} ({self.position}) - {self.team}'

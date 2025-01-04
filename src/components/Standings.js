@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getStandings } from "../services/api"; // Make sure to import your API function
 import { makeStyles } from "@mui/styles";
 import { Paper, Typography } from "@mui/material";
@@ -11,7 +11,7 @@ const useStyles = makeStyles({
       fontSize: "1rem", // Adjust the font size for the cells
     },
     "& .MuiDataGrid-columnHeaders": {
-      fontSize: "1.2rem", // Adjust the font size for the column headers
+      fontSize: "1rem", // Adjust the font size for the column headers
     },
   },
   evenRow: {
@@ -28,11 +28,15 @@ export default function Standings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchStandings = async () => {
       try {
-        const data = await getStandings();
+        const queryParams = new URLSearchParams(location.search);
+        const rosteredPlayer = queryParams.get('rostered_player');
+        const scaledFlex = queryParams.get('scaled_flex');
+        const data = await getStandings({ rostered_player: rosteredPlayer, scaled_flex: scaledFlex });
         setStandings(data.entries);
         setLoading(false);
       } catch (error) {
@@ -41,13 +45,13 @@ export default function Standings() {
       }
     };
     fetchStandings();
-  }, []);
+  }, [location.search]);
 
   const columns = [
     { field: "rank", headerName: "Rank", width: 100 },
     {
       field: "name",
-      headerName: "Name",
+      headerName: "Entry Name",
       width: 200,
       renderCell: (params) => (
         <span
@@ -78,6 +82,11 @@ export default function Standings() {
         columns={columns}
         pageSize={10}
         className={classes.dataGrid}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'total', sort: 'desc' }],
+          },
+        }}
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow
         }

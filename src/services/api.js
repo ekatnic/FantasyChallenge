@@ -89,12 +89,32 @@ export const postEntry = async (formData) => {
   }
 };
 
-export const getStandings = async () => {
+export const getStandings = async (params = {}) => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/standings/`);
+    const response = await axios.get(`${BASE_URL}/api/standings/`, { params });
     return response.data;
   } catch (error) {
     console.error("Error fetching standings:", error);
+    throw error;
+  }
+};
+
+export const getPlayerOwnership = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/player-ownership/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching player ownership:", error);
+    throw error;
+  }
+};
+
+export const getPlayerWeeklyStats = async (playerId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/player-weekly-stats/${playerId}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching player ownership:", error);
     throw error;
   }
 };
