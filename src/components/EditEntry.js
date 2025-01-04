@@ -8,7 +8,6 @@ import { processEntryData } from "../services/apiUtils";
 import { handleSort, sortPlayers, filterPlayers, handleAddPlayer, handleDropPlayer } from "../componentUtils";
 import AvailableTeams from "./AvailableTeams";
 import Roster from "./Roster";
-import ScaledFlexRules from "./ScaledFlexRules";
 import PlayerFilterAndTable from "./PlayerFilterAndTable";
 import {
   rosterPositions,
@@ -17,6 +16,7 @@ import {
   wrPositions,
   tePositions,
 } from "../constants";
+import ScoringRulesDialog from "./ScoringRulesDialog";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL || ""; // can remove when we replace home
 
@@ -37,6 +37,7 @@ const EditEntry = () => {
   const [teamError, setTeamError] = useState(null);
   const [rosterName, setRosterName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [scoringRulesOpen, setScoringRulesOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,7 +113,15 @@ const EditEntry = () => {
             />
           </Box>
           <Grid item xs={12}>
-            <ScaledFlexRules />
+            <Button
+                variant="outlined"
+                color="primary"
+                fullWidth
+                sx={{ mt: 2 }}
+                onClick={() => setScoringRulesOpen(true)}
+              >
+                <strong>View Scoring Rules</strong>
+            </Button>
           </Grid>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -171,6 +180,10 @@ const EditEntry = () => {
           </Box>
         </Grid>
       </Grid>
+      <ScoringRulesDialog
+        open={scoringRulesOpen}
+        onClose={() => setScoringRulesOpen(false)}
+      />
     </DndProvider>
   );
 };

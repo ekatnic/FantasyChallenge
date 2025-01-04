@@ -111,6 +111,8 @@ def get_summarized_players():
     returns: list of summarized player data dictionaries
     """
     total_entries = float(Entry.objects.count())
+    if not total_entries:
+        return []
     player_counts = Player.objects.annotate(
         roster_count=Count('rosteredplayers'),
         roster_percentage=Round(F('roster_count') / total_entries * 100, 2),
@@ -128,8 +130,9 @@ def get_summarized_players():
     # Filter the QuerySet to include only Players with one or more RosteredPlayer
     player_counts = player_counts.order_by('-roster_percentage')
     summarized_players = []
-
     for player in player_counts:
+        if not player.roster_count:
+            continue
         player_dict = get_raw_player_scoring_dict(player)
         summarized_player = {
             'id': player.id,

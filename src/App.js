@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { useAuth } from "./contexts/AuthContext";
 
 // Components
 import LayoutWrapper from "./components/layouts/LayoutWrapper";
@@ -22,41 +22,37 @@ import MyEntries from "./components/MyEntries";
 import ViewEntry from "./components/ViewEntry";
 
 const App = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route element={<LayoutWrapper />}>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/confirm-signup" element={<ConfirmSignupForm />} />
-            <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-            <Route
-              path="/confirm-forgot-password"
-              element={<ConfirmForgotPassword />}
-            />
-            <Route path="/rules" element={<Rules />} />
+    <Routes>
+      <Route element={<LayoutWrapper />}>
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/confirm-signup" element={<ConfirmSignupForm />} />
+        <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+        <Route path="/confirm-forgot-password" element={<ConfirmForgotPassword />} />
+        <Route path="/rules" element={<Rules />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<ProtectedHome />} />
+          <Route path="/my-entries" element={<MyEntries />} />
+          <Route path="/standings" element={<Standings />} />
+          <Route path="/players" element={<PlayerOwnership />} />
+          <Route path="/create-entry" element={<CreateEntry />} />
+          <Route path="/edit-entry/:id" element={<EditEntry />} />
+          <Route path="/view-entry/:id" element={<ViewEntry />} />
+          <Route path="/view-entry" element={<EntryList />} />
+        </Route>
 
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<ProtectedHome />} />
-              <Route path="/my-entries" element={<MyEntries />} /> 
-              <Route path="/standings" element={<Standings />} />
-              <Route path="/players" element={<PlayerOwnership />} />
-              <Route path="/create-entry" element={<CreateEntry />} />
-              <Route path="/edit-entry/:id" element={<EditEntry />} />
-              <Route path="/view-entry/:id" element={<ViewEntry />} />
-              <Route path="/view-entry" element={<EntryList />} />
-            </Route>
-
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Route>
+    </Routes>
   );
 };
 
