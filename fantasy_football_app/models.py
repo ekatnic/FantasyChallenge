@@ -71,11 +71,33 @@ class PlayerStats(models.Model):
     pass_completions = models.IntegerField(default=0)
     passing_yards_avg = models.FloatField(default=0.0)
     qbr = models.FloatField(default=0.0)
-    sacked = models.IntegerField(default=0)
+    # sacked = models.IntegerField(default=0)
     rating = models.FloatField(default=0.0)
     fumbles = models.IntegerField(default=0)
     fumbles_lost = models.IntegerField(default=0)
     fumbles_recovered = models.IntegerField(default=0)
+
+    # kicking stats
+    fg_made = models.IntegerField(default=0)
+    fg_attempts = models.IntegerField(default=0)
+    xp_made = models.IntegerField(default=0)
+    xp_attempts = models.IntegerField(default=0)
+    long_fg = models.IntegerField(default=0)
+
+    # defesne 
+    def_td = models.IntegerField(default=0)
+    defensive_interceptions = models.IntegerField(default=0)
+    defensive_fumbles_recovered = models.IntegerField(default=0)
+    defensive_sacks = models.FloatField(default=0.0)  
+    pts_allowed_per_game = models.FloatField(default=0.0)
+    rushing_yards_allowed_per_game = models.FloatField(default=0.0)
+    passing_yards_allowed_per_game = models.FloatField(default=0.0)
+    total_yards_allowed_per_game = models.FloatField(default=0.0)
+
+    # fantasy 
+    standard = models.FloatField(default=0.0)
+    half_ppr = models.FloatField(default=0.0)
+    ppr = models.FloatField(default=0.0)
 
     def __str__(self):
         return f'Stats for {self.player} - Season {self.season}'
