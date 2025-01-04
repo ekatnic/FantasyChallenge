@@ -1,3 +1,45 @@
+# #main.tf
+# resource "aws_ses_configuration_set" "config_set" {
+#   name = "config-set"
+#   reputation_metrics_enabled = true
+# }
+
+# resource "aws_ses_domain_identity" "ses_domain_id" {
+#   domain = var.root_domain_name
+# }
+# resource "aws_route53_record" "cname_amazonses_verification_record" {
+#   zone_id = aws_route53_zone.example.zone_id
+#   name    = "_amazonses.${aws_ses_domain_identity.ses_domain_id.id}"
+#   type    = "TXT"
+#   ttl     = "600"
+#   records = [aws_ses_domain_identity.ses_domain_id.verification_token]
+# }
+
+# resource "aws_ses_domain_identity_verification" "ses_domain_id_verification" {
+#   domain = aws_ses_domain_identity.ses_domain_id.id
+
+#   depends_on = [aws_route53_record.cname_amazonses_verification_record]
+# }
+
+# resource "aws_ses_domain_dkim" "ses_domain_dkim" {
+#   domain = aws_ses_domain_identity.ses_domain_id.domain
+# }
+
+# resource "aws_route53_record" "amazonses_dkim_record" {
+#   count   = 3
+#   # zone_id = var.zone_id
+#   zone_id = aws_route53_zone.hosted_zone.zone_id
+#   name    = "${aws_ses_domain_dkim.ses_domain_dkim.dkim_tokens[count.index]}._domainkey.${aws_ses_domain_identity.ses_domain_id.domain}"
+#   type    = "CNAME"
+#   ttl     = "300"
+#   records = ["${aws_ses_domain_dkim.ses_domain_dkim.dkim_tokens[count.index]}.dkim.amazonses.com"]
+# }
+
+# resource "aws_ses_domain_identity_verification" "ses_domain_id_verification" {
+#   domain = aws_ses_domain_identity.ses_domain_id.id
+#   depends_on = [aws_route53_record.amazonses_dkim_record]
+# }
+
 # # -----------------------------------------------------------
 # # SES Configuration
 # # # TODO:
@@ -11,63 +53,63 @@ resource "aws_ses_domain_dkim" "ses_domain_dkim" {
   domain = "${aws_ses_domain_identity.ses_domain_id.domain}"
 }
 
-# resource "null_resource" "delay" {
-#   provisioner "local-exec" {
-#     command = "sleep 10"
+# # resource "null_resource" "delay" {
+# #   provisioner "local-exec" {
+# #     command = "sleep 10"
+# #   }
+# #   triggers = {
+# #     "after" = aws_s3_bucket.emails_bucket.id
+# #   }
+# # }
+
+# resource "aws_ses_receipt_rule" "store" {
+#   name          = "store"
+#   rule_set_name = "default-rule-set"
+#   enabled       = true
+#   scan_enabled  = true
+
+#   add_header_action {
+#     header_name  = "Custom-Header"
+#     header_value = "Added by SES"
+#     position     = 1
 #   }
-#   triggers = {
-#     "after" = aws_s3_bucket.emails_bucket.id
+
+#   s3_action {
+#     bucket_name = "${aws_s3_bucket.emails_bucket.id}"
+#     object_key_prefix = "incoming"
+#     position    = 2
 #   }
+
+#   depends_on = [
+#     aws_s3_bucket_policy.emails_bucket_policy,
+#     aws_ses_receipt_rule.store
+#   ]
 # }
 
-resource "aws_ses_receipt_rule" "store" {
-  name          = "store"
-  rule_set_name = "default-rule-set"
-  enabled       = true
-  scan_enabled  = true
+# # -----------------------------------------------------------
+# # SES Domain Verification 
+# # TODO: Add Route53 record for SES domain verification
+# # -----------------------------------------------------------
 
-  add_header_action {
-    header_name  = "Custom-Header"
-    header_value = "Added by SES"
-    position     = 1
-  }
-
-  s3_action {
-    bucket_name = "${aws_s3_bucket.emails_bucket.id}"
-    object_key_prefix = "incoming"
-    position    = 2
-  }
-
-  depends_on = [
-    aws_s3_bucket_policy.emails_bucket_policy,
-    aws_ses_receipt_rule.store
-  ]
-}
-
-# -----------------------------------------------------------
-# SES Domain Verification 
-# TODO: Add Route53 record for SES domain verification
-# -----------------------------------------------------------
-
-resource "aws_route53_record" "email_site_route53_record" {
-  provider = aws.cert_region
-  zone_id = aws_route53_zone.hosted_zone.zone_id
-  name    = "_amazonses.${aws_ses_domain_identity.ses_domain_id.id}"
-  type    = "TXT"
-#   ttl     = "600"
+# resource "aws_route53_record" "email_site_route53_record" {
+#   provider = aws.cert_region
+#   zone_id = aws_route53_zone.hosted_zone.zone_id
+#   name    = "_amazonses.${aws_ses_domain_identity.ses_domain_id.id}"
+#   type    = "TXT"
+# #   ttl     = "600"
    
-  records = [aws_ses_domain_identity.ses_domain_id.verification_token] 
+#   records = [aws_ses_domain_identity.ses_domain_id.verification_token] 
   
-  alias {
-    evaluate_target_health = false
-    name    = aws_cognito_user_pool_domain.cognito_user_pool_domain.cloudfront_distribution
-    zone_id = aws_cognito_user_pool_domain.cognito_user_pool_domain.cloudfront_distribution_zone_id
-  }
+#   alias {
+#     evaluate_target_health = false
+#     name    = aws_cognito_user_pool_domain.cognito_user_pool_domain.cloudfront_distribution
+#     zone_id = aws_cognito_user_pool_domain.cognito_user_pool_domain.cloudfront_distribution_zone_id
+#   }
 
-}
+# }
 
-resource "aws_ses_domain_identity_verification" "ses_domain_id_verification" {
-  domain = aws_ses_domain_identity.ses_domain_id.id
+# resource "aws_ses_domain_identity_verification" "ses_domain_id_verification" {
+#   domain = aws_ses_domain_identity.ses_domain_id.id
 
-  depends_on = [aws_route53_record.email_site_route53_record]
-}
+#   depends_on = [aws_route53_record.email_site_route53_record]
+# }

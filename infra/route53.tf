@@ -28,6 +28,15 @@ resource "aws_route53_zone" "hosted_zone" {
 #     private_zone = false
 # }
 
+
+resource "aws_route53_record" "www" {
+  zone_id = aws_route53_zone.hosted_zone.zone_id
+  name    = "www.${var.root_domain_name}"
+  type    = "CNAME"
+  ttl     = 60
+  records = [var.heroku_domain]
+}
+
 # --------------------------------------------------------
 # ACM Cert 
 # Route 53 record
