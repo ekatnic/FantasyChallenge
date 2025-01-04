@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDrag } from "react-dnd";
 import {
   Table,
@@ -9,9 +9,15 @@ import {
   TableRow,
   Paper,
   Button,
+  Link
 } from "@mui/material";
+import PlayerProfile from "./PlayerProfile";
+
 
 const PlayerTable = ({ filteredPlayers, handleSort, handleAddPlayer }) => {
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  
   const ItemTypes = {
     PLAYER: "player",
   };
@@ -26,10 +32,23 @@ const PlayerTable = ({ filteredPlayers, handleSort, handleAddPlayer }) => {
     }));
 
     const textStyle = player.isGrayedOut ? { color: "#d3d3d3" } : {};
+    
+    const handleNameClick = (player) => {
+      setSelectedPlayer(player);
+      setDialogOpen(true);
+    };
 
     return (
       <TableRow ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-        <TableCell style={textStyle}>{player.name}</TableCell>
+        <TableCell>
+          <Link
+            component="button"
+            onClick={() => handleNameClick(player)}
+            style={{ ...textStyle, textDecoration: "none" }}
+          >
+            {player.name}
+          </Link>
+        </TableCell>
         <TableCell style={textStyle}>{player.position}</TableCell>
         <TableCell style={textStyle}>{player.team}</TableCell>
         <TableCell>
@@ -47,6 +66,7 @@ const PlayerTable = ({ filteredPlayers, handleSort, handleAddPlayer }) => {
   };
 
   return (
+    <>
     <TableContainer component={Paper} sx={{ maxHeight: 700 }}>
       <Table stickyHeader>
         <TableHead>
@@ -71,7 +91,16 @@ const PlayerTable = ({ filteredPlayers, handleSort, handleAddPlayer }) => {
           ))}
         </TableBody>
       </Table>
+    
     </TableContainer>
+          {selectedPlayer && (
+            <PlayerProfile
+              playerData={selectedPlayer}
+              open={dialogOpen}
+              onClose={() => setDialogOpen(false)}
+            />
+          )}
+        </>
   );
 };
 

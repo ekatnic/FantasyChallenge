@@ -57,9 +57,31 @@ class Command(BaseCommand):
                     pass_completions=int(row.get('pass_completions', 0)),
                     passing_yards_avg=float(row.get('passing_yards_avg', 0.0)),
                     qbr=float(row.get('qbr', 0.0)),
-                    sacked=int(row.get('sacked', 0)),
+                    # sacked=int(row.get('sacked', 0)),
                     rating=float(row.get('rating', 0.0)),
                     fumbles=int(row.get('fumbles', 0)),
                     fumbles_lost=int(row.get('fumbles_lost', 0)),
                     fumbles_recovered=int(row.get('fumbles_recovered', 0)),
+
+                    # kicking
+                    fg_made=int(row.get('fg_made', 0)),
+                    fg_attempts=int(row.get('fg_attempts', 0)),
+                    xp_made=int(row.get('xp_made', 0)),
+                    xp_attempts=int(row.get('xp_attempts', 0)),
+                    long_fg=int(row.get('long_fg', 0)),
+
+                    # defense
+                    def_td=int(row.get('def_td', 0)),
+                    defensive_interceptions=int(row.get('defensive_interceptions', 0)),
+                    defensive_fumbles_recovered=int(row.get('defensive_fumbles_recovered', 0)),
+                    defensive_sacks=float(row.get('defensive_sacks', 0.0)),
+                    pts_allowed_per_game=float(row.get('pts_allowed_per_game', 0.0)),
+                    rushing_yards_allowed_per_game=float(row.get('rushing_yards_allowed_per_game', 0.0)),
+                    passing_yards_allowed_per_game=float(row.get('passing_yards_allowed_per_game', 0.0)),
+                    total_yards_allowed_per_game=float(row.get('total_yards_allowed_per_game', 0.0)),
+
+                    # fantasy
+                    standard=float(row.get('standard', 0.0)),
+                    half_ppr=float(row.get('half_ppr', 0.0)),
+                    ppr=float(row.get('ppr', 0.0)),
                 )
