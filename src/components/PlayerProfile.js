@@ -27,6 +27,10 @@ export function PlayerProfile({playerData, open, onClose}) {
       case 'WR':
       case 'TE':
         return ['Receiving', 'Rushing', 'Passing'];
+      case 'K':
+        return ['Kicking']
+      case 'DEF':
+          return ['Defense']
       default:
         return ['Passing', 'Rushing', 'Receiving'];
     }
@@ -36,7 +40,7 @@ export function PlayerProfile({playerData, open, onClose}) {
     const tableConfig = {
       'Receiving': {
         title: 'Receiving Stats',
-        headers: ['Season', 'Receptions', 'Targets', 'Yards', 'Avg', 'TDs', 'Long'],
+        headers: ['Season', 'Receptions', 'Targets', 'Yards', 'Avg', 'TDs', 'Long', 'FPTS'],
         cells: (season) => [
           season.season,
           season.receptions,
@@ -44,24 +48,26 @@ export function PlayerProfile({playerData, open, onClose}) {
           season.receiving_yards,
           season.receiving_yards_avg.toFixed(1),
           season.receiving_tds,
-          season.long_rec
+          season.long_rec,
+          season.half_ppr
         ]
       },
       'Rushing': {
         title: 'Rushing Stats',
-        headers: ['Season', 'Carries', 'Yards', 'Avg', 'TDs', 'Long'],
+        headers: ['Season', 'Carries', 'Yards', 'Avg', 'TDs', 'Long', 'FPTS'],
         cells: (season) => [
           season.season,
           season.carries,
           season.rushing_yards,
           season.rushing_yards_avg.toFixed(1),
           season.rushing_tds,
-          season.long_rush
+          season.long_rush,
+          season.half_ppr
         ]
       },
       'Passing': {
         title: 'Passing Stats',
-        headers: ['Season', 'Comp', 'Att', 'Yards', 'TDs', 'Int', 'Rating'],
+        headers: ['Season', 'Comp', 'Att', 'Yards', 'TDs', 'Int', 'Rating', 'FPTS'],
         cells: (season) => [
           season.season,
           season.pass_completions,
@@ -69,7 +75,27 @@ export function PlayerProfile({playerData, open, onClose}) {
           season.passing_yards,
           season.passing_tds,
           season.interceptions,
-          season.rating.toFixed(1)
+          season.rating.toFixed(1),
+          season.half_ppr
+        ]
+      },
+      'Kicking': {
+        title: 'Kicking Stats',
+        headers: ['Season', 'FG', 'XP', 'FPTS'],
+        cells: (season) => [
+          season.season,
+          `${season.fg_made}/${season.fg_attempts}`,
+          `${season.xp_made}/${season.xp_attempts}`,
+          season.half_ppr
+        ]
+      },
+      'Defense': {
+        title: 'Defensive Stats',
+        headers: ['Season', 'Yards / game', 'PA / game'],
+        cells: (season) => [
+          season.season,
+          season.total_yards_allowed_per_game.toFixed(1),
+          season.pts_allowed_per_game.toFixed(1)
         ]
       }
     };
@@ -152,7 +178,7 @@ export function PlayerProfile({playerData, open, onClose}) {
             onChange={(_, newValue) => setSeasonType(newValue)}
           >
             <Tab label="Regular Season" value="regular_season" />
-            <Tab label="Preseason" value="pre_season" />
+            {/* <Tab label="Preseason" value="pre_season" /> */}
             <Tab label="Postseason" value="post_season" />
           </Tabs>
         </Box>

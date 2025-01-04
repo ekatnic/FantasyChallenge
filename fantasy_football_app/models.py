@@ -98,6 +98,8 @@ class PlayerStats(models.Model):
     half_ppr = models.FloatField(default=0.0)
     ppr = models.FloatField(default=0.0)
 
+    games_played = models.IntegerField(default=0)
+
     def __str__(self):
         return f'Stats for {self.player} - Season {self.season}'
 

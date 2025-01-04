@@ -84,4 +84,6 @@ class Command(BaseCommand):
                     standard=float(row.get('standard', 0.0)),
                     half_ppr=float(row.get('half_ppr', 0.0)),
                     ppr=float(row.get('ppr', 0.0)),
+
+                    games_played=int(row.get('games_played', 0)),
                 )
