@@ -161,12 +161,14 @@ export function PlayerProfile({playerData, open, onClose}) {
                       {position} - {team}
                     </Typography>
                   </div>
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography>Height: {info.height}</Typography>
-                    <Typography>Weight: {info.weight} lbs</Typography>
-                    <Typography>Born: {formatDate(info.birthdate)}</Typography>
-                    <Typography>School: {info.school}</Typography>
-                  </Box>
+                  {position !== "DEF" && (
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography>Height: {info.height}</Typography>
+                      <Typography>Weight: {info.weight} lbs</Typography>
+                      <Typography>Born: {formatDate(info.birthdate)}</Typography>
+                      <Typography>School: {info.school}</Typography>
+                    </Box>
+                  )}
                 </Box>
               </Box>
             </Box>
