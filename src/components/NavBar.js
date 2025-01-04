@@ -16,6 +16,7 @@ const NavBar = () => {
   ];
 
   const privateNavItems = [
+    { path: "/dashboard", label: "Home" },
     { path: `${BASE_URL}/my-entries/`, label: "My Entries" },
     { path: `${BASE_URL}/create-entry`, label: "Create Entry" },
     { path: `${BASE_URL}/standings/`, label: "Standings" },
@@ -33,7 +34,7 @@ const NavBar = () => {
         <Typography
           variant="h6"
           component={RouterLink}
-          to="/"
+          to="/dashboard"
           sx={{
             flexGrow: 1,
             color: "white",

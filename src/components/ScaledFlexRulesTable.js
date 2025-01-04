@@ -56,12 +56,16 @@ export default function ScaledFlexRulesTable() {
         <strong>Scaled FLEX:</strong>
       </Typography>
       <Typography gutterBottom>
-        You will select <strong>2 Scaled FLEX's</strong> - this position is based
-        on the ownership % of each player.
-      </Typography>
-      <Typography gutterBottom>
-        You are rewarded with a higher bonus if the player is less popular in others' rosters. 
-        <strong style={{ color: "red" }}> Warning: You will get fewer points if you choose an extremely popular player</strong>
+        You will select <strong>2 Scaled FLEX's</strong>.
+         The scoring of this position is based on how commonly selected that player is.
+          You are rewarded with a higher bonus if the player is <strong>less</strong> popular in others' rosters.
+          <br/>
+           Meaning if you selected Derrick Henry for your scaled flex and he was in 55% of lineups, he would score .75x points over the course of the playoffs,
+            but if you selected Rashod Bateman and you were the only person to have him selected, he would score 3x points each game. 
+            
+            <br/>
+            Warning: You get fewer points if you choose an extremely popular player.
+              (Ownership is determined by entire rostership, not just scaled flex position)
       </Typography>
       <Paper elevation={3}>
         <TableContainer>
