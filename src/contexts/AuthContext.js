@@ -68,7 +68,24 @@ export const AuthProvider = ({ children }) => {
       });
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
+      // console.log("Signup failed: ")
+      // console.log("err: ", err)
+      // const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
+      // const errors = err.response?.data?.errors || {};
+      // const detailedErrorMessage = Object.values(errors).flat().join(' ') || errorMessage;
+      // setError(err.response?.data?.message || "Signup failed");
+      // Improve error handling to capture both message and validation errors
+      const errorMessage = err.response?.data?.message;
+      const validationErrors = err.response?.data?.errors;
+      
+      // Combine validation errors into a single message if they exist
+      const fullErrorMessage = validationErrors 
+        ? Object.entries(validationErrors)
+            .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
+            .join('; ')
+        : errorMessage || "Signup failed";
+      
+      setError(fullErrorMessage);
       throw err;
     } finally {
       setLoading(false);

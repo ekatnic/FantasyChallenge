@@ -35,6 +35,7 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
   
     // Validate that password1 and confirm password1 match
     if (formData.password1 !== formData.password2) {
@@ -54,10 +55,11 @@ export default function Signup() {
       });
     } catch (err) {
       console.error("Signup failed:", err);
-      const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
-      const errors = err.response?.data?.errors || {};
-      const detailedErrorMessage = Object.values(errors).flat().join(' ') || errorMessage;
-      setFormError(detailedErrorMessage);
+      // const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
+      // const errors = err.response?.data?.errors || {};
+      // const detailedErrorMessage = Object.values(errors).flat().join(' ') || errorMessage;
+      // setFormError(detailedErrorMessage);
+      // setFormError(err)
     }
   };
 
@@ -75,9 +77,9 @@ export default function Signup() {
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             Sign Up
           </Typography>
-          {formError && (
+          {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {formError}
+              {error}
             </Alert>
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>

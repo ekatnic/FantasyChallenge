@@ -109,16 +109,16 @@ class SignupView(generics.CreateAPIView):
 
         except cognito_service.cognito_idp_client.exceptions.UsernameExistsException:
             return APIErrorResponse.cognito_error(
-                'USERNAME_EXISTS',
-                'An account with this email already exists.',
-                status.HTTP_400_BAD_REQUEST
+                error='USERNAME_EXISTS',
+                message='An account with this email already exists.',
+                status=status.HTTP_400_BAD_REQUEST
             )
         except cognito_service.cognito_idp_client.exceptions.InvalidPasswordException as e:
             return APIErrorResponse.cognito_error(
-                'INVALID_PASSWORD',
+                error_type='INVALID_PASSWORD',
                 # 'Password does not meet requirements.',
-                e.response["Error"]["Message"],
-                status.HTTP_400_BAD_REQUEST
+                message=e.response["Error"]["Message"],
+                status=status.HTTP_400_BAD_REQUEST
             )
         except Exception as e:
             logger.error(f"Signup error: {str(e)}", exc_info=True)

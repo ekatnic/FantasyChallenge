@@ -6,7 +6,6 @@ axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
-
 // ------------------------------------------
 // ---- CSRF cookies ----
 // ------------------------------------------
