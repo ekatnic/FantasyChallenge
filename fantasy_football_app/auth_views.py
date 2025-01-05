@@ -80,7 +80,7 @@ class SignupView(generics.CreateAPIView):
             except cognito_service.cognito_idp_client.exceptions.UsernameExistsException:
                 return Response({
                     'success': False,
-                    'message': 'Username already exists in Cognito'
+                    'message': 'Username already exists.'
                 }, status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
                 return Response({
