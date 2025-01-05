@@ -68,11 +68,6 @@ export const AuthProvider = ({ children }) => {
       });
       return data;
     } catch (err) {
-      // console.log("Signup failed: ")
-      // console.log("err: ", err)
-      // const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
-      // const errors = err.response?.data?.errors || {};
-      // const detailedErrorMessage = Object.values(errors).flat().join(' ') || errorMessage;
       // setError(err.response?.data?.message || "Signup failed");
       // Improve error handling to capture both message and validation errors
       const errorMessage = err.response?.data?.message;
