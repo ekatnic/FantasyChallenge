@@ -306,8 +306,6 @@ class ConfirmForgotPasswordView(APIView):
                 )
                 
         except cognito_service.cognito_idp_client.exceptions.CodeMismatchException as e:
-            print(f"e: {e}")
-            print(f"vars(e): {vars(e)}")
             return APIErrorResponse.cognito_error(
                 "INVALID_CODE",
                 e.response["Error"]["Message"],
