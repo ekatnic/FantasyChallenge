@@ -53,6 +53,9 @@ export default function LoginForm() {
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             Log In
           </Typography>
+          <Typography component="h4" align="center" gutterBottom>
+            If you signed up last year, you'll need to create a new account to join the competition.
+          </Typography>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}

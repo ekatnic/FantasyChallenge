@@ -6,8 +6,8 @@ import { getPlayers, postEntry } from "../services/api";
 import { handleSort, sortPlayers, filterPlayers, handleAddPlayer, handleDropPlayer } from "../componentUtils";
 import AvailableTeams from "./AvailableTeams";
 import Roster from "./Roster";
-import ScaledFlexRules from "./ScaledFlexRules";
 import PlayerFilterAndTable from "./PlayerFilterAndTable";
+import ScoringRulesDialog from "./ScoringRulesDialog";
 import {
   rosterPositions,
   positionOrder,
@@ -34,6 +34,7 @@ const CreateEntry = () => {
   const [teamError, setTeamError] = useState(null);
   const [rosterName, setRosterName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [scoringRulesOpen, setScoringRulesOpen] = useState(false);
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -103,7 +104,15 @@ const CreateEntry = () => {
             />
           </Box>
           <Grid item xs={12}>
-            <ScaledFlexRules />
+          <Button
+              variant="outlined"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }}
+              onClick={() => setScoringRulesOpen(true)}
+            >
+              <strong>View Scoring Rules</strong>
+            </Button>
           </Grid>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -162,6 +171,10 @@ const CreateEntry = () => {
           </Box>
         </Grid>
       </Grid>
+      <ScoringRulesDialog
+        open={scoringRulesOpen}
+        onClose={() => setScoringRulesOpen(false)}
+      />
     </DndProvider>
   );
 };
