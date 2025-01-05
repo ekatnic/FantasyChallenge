@@ -23,6 +23,10 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 
+import typing 
+from typing import Dict, Any 
+import logging
+
 from .serializers import (
     UserSerializer, 
     SignupSerializer, 
@@ -36,193 +40,196 @@ from .serializers import (
 # NOTE: import instantiaed CognitoIdentityProvider class 
 from .cognito_idp import cognito_service
 
-@method_decorator(ensure_csrf_cookie, name = "post")
+logger = logging.getLogger(__name__)
+
+class APIErrorResponse:
+    @staticmethod
+    def validation_error(errors: Dict[str, Any]) -> Response:
+        return Response({
+            'success': False,
+            'error_type': 'VALIDATION_ERROR',
+            'errors': errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    @staticmethod
+    def cognito_error(error_type: str, message: str, status_code: int) -> Response:
+        return Response({
+            'success': False,
+            'error_type': error_type,
+            'message': message
+        }, status=status_code)
+    
+    @staticmethod
+    def server_error(message: str = "An unexpected error occurred") -> Response:
+        return Response({
+            'success': False,
+            'error_type': 'SERVER_ERROR',
+            'message': message
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@method_decorator(ensure_csrf_cookie, name="post")
 class SignupView(generics.CreateAPIView):
     serializer_class = SignupSerializer
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            if not serializer.is_valid():
+                return APIErrorResponse.validation_error(serializer.errors)
 
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                # Register with Cognito
-                signup_resp = cognito_service.sign_up_user(
-                    user_name=serializer.validated_data['email'],
-                    password=serializer.validated_data['password1'],
-                    user_email=serializer.validated_data['email']
-                )
+            signup_resp = cognito_service.sign_up_user(
+                user_name=serializer.validated_data['email'],
+                password=serializer.validated_data['password1'],
+                user_email=serializer.validated_data['email']
+            )
+            # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
+            # # Confirm the user in Cognito
+            # cognito_service.admin_confirm_user_sign_up(
+            #     user_name=serializer.validated_data['email']
+            # )
 
-                # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
-                # # Confirm the user in Cognito
-                # cognito_service.admin_confirm_user_sign_up(
-                #     user_name=serializer.validated_data['email']
-                # )
+            # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
+            # Update the users email to be marked as True 
+            # The alternative is to send an email with a Confirm code that the user needs to provide to verify email
+            # update_user_attrs_resp = cognito_service.admin_update_user_attributes(
+            #     user_name=serializer.validated_data['email'],
+            #     user_attributes=[ 
+            #         {"Name" : "email_verified", "Value" : "true"}
+            #         ] 
+            #         ) 
 
-                # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
-                # Update the users email to be marked as True 
-                # The alternative is to send an email with a Confirm code that the user needs to provide to verify email
-                # update_user_attrs_resp = cognito_service.admin_update_user_attributes(
-                #     user_name=serializer.validated_data['email'],
-                #     user_attributes=[ 
-                #         {"Name" : "email_verified", "Value" : "true"}
-                #         ] 
-                #         ) 
+            # # Create Django user
+            # user = serializer.save()
+            return Response({
+                'success': True,
+                'message': 'Account created in pending state. Awaiting email verification confirmation.',
+            }, status=status.HTTP_201_CREATED)
 
-                # # Create Django user
-                # user = serializer.save()
-                
-                return Response({
-                    'success': True,
-                    'message': 'Account created in pending state. Awaiting email verification confirmation.',
-                }, status=status.HTTP_201_CREATED)
-                
-            except cognito_service.cognito_idp_client.exceptions.UsernameExistsException:
-                return Response({
-                    'success': False,
-                    'message': 'Username already exists.'
-                }, status=status.HTTP_400_BAD_REQUEST)
-            except Exception as e:
-                return Response({
-                    'success': False,
-                    'message': str(e)
-                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-        return Response({
-            'success': False,
-            'message': 'Validation error',
-            'errors': serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
+        except cognito_service.cognito_idp_client.exceptions.UsernameExistsException:
+            return APIErrorResponse.cognito_error(
+                'USERNAME_EXISTS',
+                'An account with this email already exists.',
+                status.HTTP_400_BAD_REQUEST
+            )
+        except cognito_service.cognito_idp_client.exceptions.InvalidPasswordException as e:
+            return APIErrorResponse.cognito_error(
+                'INVALID_PASSWORD',
+                # 'Password does not meet requirements.',
+                e.response["Error"]["Message"],
+                status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            logger.error(f"Signup error: {str(e)}", exc_info=True)
+            return APIErrorResponse.server_error()
 
-@method_decorator(ensure_csrf_cookie, name = "post")
+@method_decorator(ensure_csrf_cookie, name="post")
 class ConfirmSignupView(APIView):
-    """
-    Confirms a user's received confirmation code from Cognito after calling SignupView
-    """
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = ConfirmSignupSerializer(data=request.data)
+        try:
+            serializer = ConfirmSignupSerializer(data=request.data)
+            if not serializer.is_valid():
+                return APIErrorResponse.validation_error(serializer.errors)
 
-        if not serializer.is_valid():
-            return Response(
-                {"success": False, "errors": serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST,
+            validated_data = serializer.validated_data
+            confirm_signup_resp = cognito_service.confirm_user_sign_up(
+                user_name=validated_data['email'],
+                confirmation_code=validated_data['confirmation_code']
             )
 
-        validated_data = serializer.validated_data
-        email = validated_data['email']
-        confirmation_code = validated_data['confirmation_code']
-
-        try:
-            # Confirm user signup in Cognito
-            confirm_signup_resp = cognito_service.confirm_user_sign_up(user_name=email, confirmation_code=confirmation_code)
-
-            # Create Django user
             user = User.objects.create(
-                username=email.lower(),
-                email=email,
+                username=validated_data['email'].lower(),
+                email=validated_data['email'],
                 first_name=validated_data['first_name'],
                 last_name=validated_data['last_name']
             )
             user.set_password(validated_data['password1'])
             user.save()
 
-            return Response(
-                {"success": True, 
-                 "message": "Signup confirmation successful.",
+            return Response({
+                'success': True,
+                'message': 'Signup confirmation successful.',
                 'user': UserSerializer(user).data
-                         },
-                status=status.HTTP_201_CREATED,
-            )
+            }, status=status.HTTP_201_CREATED)
+
         except cognito_service.cognito_idp_client.exceptions.CodeMismatchException:
-            return Response(
-                {"success": False, "errors": {"confirmation_code": ["Invalid confirmation code."]}},
-                status=status.HTTP_400_BAD_REQUEST,
+
+            return APIErrorResponse.cognito_error(
+                'INVALID_CODE',
+                'Invalid confirmation code.',
+                status.HTTP_400_BAD_REQUEST
             )
         except cognito_service.cognito_idp_client.exceptions.ExpiredCodeException:
-            return Response(
-                {"success": False, "errors": {"confirmation_code": ["Confirmation code has expired."]}},
-                status=status.HTTP_400_BAD_REQUEST,
+            return APIErrorResponse.cognito_error(
+                'EXPIRED_CODE',
+                'Confirmation code has expired.',
+                status.HTTP_400_BAD_REQUEST
             )
         except cognito_service.cognito_idp_client.exceptions.UserNotFoundException:
-            return Response(
-                {"success": False, "errors": {"email": ["User not found."]}},
-                status=status.HTTP_404_NOT_FOUND,
+            return APIErrorResponse.cognito_error(
+                'USER_NOT_FOUND',
+                'User not found.',
+                status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
-            return Response(
-                {"success": False, "errors": {"server": [str(e)]}},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-@method_decorator(ensure_csrf_cookie, name = "post")
+            logger.error(f"Confirm signup error: {str(e)}", exc_info=True)
+            return APIErrorResponse.server_error()
+         
+@method_decorator(ensure_csrf_cookie, name="post")
 class LoginView(APIView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
+        try:
+            serializer = self.serializer_class(data=request.data)
+            if not serializer.is_valid():
+                return APIErrorResponse.validation_error(serializer.errors)
+
             username = serializer.validated_data['username']
             password = serializer.validated_data['password']
             
             user = authenticate(request, username=username, password=password)
-            
-            if user:
-                try:
+            if not user:
+                return APIErrorResponse.cognito_error(
+                    'INVALID_CREDENTIALS',
+                    'Invalid username or password',
+                    status.HTTP_401_UNAUTHORIZED
+                )
 
-                    # TODO: Can we just NOT use Cognito sign in/out and only for sign up / forgot / change password
-                    # Authenticate with Cognito
-                    # response = cognito_service.start_sign_in(username, password)
-                    # print(f"Response from cognito: {response}")
-                    # if response.get("ChallengeName") == "NEW_PASSWORD_REQUIRED":
-                    #     return Response({
-                    #         'success': False,
-                    #         'requiresPasswordReset': True,
-                    #         'message': 'Password reset required'
-                    #     }, status=status.HTTP_401_UNAUTHORIZED)
-                    
-                    django_login(request, user)
-                    
-                    return Response({
-                        'success': True,
-                        'user': UserSerializer(user).data
-                    })
-                    
-                except Exception as e:
-                    return Response({
-                        'success': False,
-                        'errors': {'server': [str(e)]}
-                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+            django_login(request, user)
             return Response({
-                'success': False,
-                'errors': {'credentials': ['Invalid username or password']}
-            }, status=status.HTTP_401_UNAUTHORIZED)
-        
-        return Response({
-            'success': False,
-            'errors': serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
+                'success': True,
+                'user': UserSerializer(user).data
+            })
+        except Exception as e:
+            logger.error(f"Login error: {str(e)}", exc_info=True)
+            return APIErrorResponse.server_error()
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # Get the actual username string from the user object
-        username = str(request.user)
+        try: 
+            # Get the actual username string from the user object
+            username = str(request.user)
 
-        # TODO: Idea: dont even bother signing into/out of Cognito if we are not using the access_tokens from Cognito
-        # TODO: 
-        # logout_resp = cognito_service.admin_sign_out(user_name=username)
-        
-        django_logout(request)
+            # TODO: Idea: dont even bother signing into/out of Cognito if we are not using the access_tokens from Cognito
+            # TODO: 
+            # logout_resp = cognito_service.admin_sign_out(user_name=username)
+            
+            django_logout(request)
 
-        return Response({
-            'success': True,
-            'message': 'Successfully logged out'
-        })
+            return Response({
+                'success': True,
+                'message': 'Successfully logged out'
+            })
+        except Exception as e:
+            logger.error(f"Login error: {str(e)}", exc_info=True)
+            return APIErrorResponse.server_error()
 
 class ForgotPasswordView(APIView):
     permission_classes = [AllowAny]
@@ -230,97 +237,94 @@ class ForgotPasswordView(APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            return APIErrorResponse.validation_error(serializer.errors)
+
+        email = serializer.validated_data['email']
         
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
+        try:
+            # Verify user exists in Django DB
+            User.objects.get(email=email)
             
-            try:
-                # Verify user exists in Django DB
-                User.objects.get(email=email)
-                
-                # Initiate Cognito forgot password flow
-                forgot_resp = cognito_service.forgot_password(user_name=email)
-                
-                return Response({
-                    'success': True,
-                    'message': 'Password reset code sent to your email',
-                    'details': forgot_resp
-                })
-                
-            except User.DoesNotExist:
-                return Response({
-                    'success': False,
-                    'errors': {'email': ['No account found with this email address']}
-                }, status=status.HTTP_404_NOT_FOUND)
-                
-            except Exception as e:
-                return Response({
-                    'success': False,
-                    'errors': {'server': [str(e)]}
-                }, status=status.HTTP_400_BAD_REQUEST)
+            # Initiate Cognito forgot password flow
+            forgot_resp = cognito_service.forgot_password(user_name=email)
+            
+            return Response({
+                'success': True,
+                'message': 'Password reset code sent to your email',
+                'delivery_details': forgot_resp.get('CodeDeliveryDetails', {})
+            })
+            
+        except User.DoesNotExist:
+            return APIErrorResponse.cognito_error(
+                'USER_NOT_FOUND',
+                'No account found with this email address',
+                status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error in forgot password flow: {str(e)}", exc_info=True)
+            return APIErrorResponse.server_error()
         
-        return Response({
-            'success': False,
-            'errors': serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
-
-
 class ConfirmForgotPasswordView(APIView):
     permission_classes = [AllowAny]
     serializer_class = ConfirmForgotPasswordSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            return APIErrorResponse.validation_error(serializer.errors)
+
+        email = serializer.validated_data['email']
+        confirmation_code = serializer.validated_data['confirmation_code']
+        new_password = serializer.validated_data['password']
         
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            confirmation_code = serializer.validated_data['confirmation_code']
-            new_password = serializer.validated_data['password']
+        try:
+            # First confirm with Cognito
+            confirm_resp = cognito_service.confirm_forgot_password(
+                user_name=email,
+                confirmation_code=confirmation_code,
+                password=new_password
+            )
             
             try:
-                # First confirm with Cognito
-                confirm_resp = cognito_service.confirm_forgot_password(
-                    user_name=email,
-                    confirmation_code=confirmation_code,
-                    password=new_password
+                # Update Django user password if Cognito confirms successfully
+                user = User.objects.get(email=email)
+                user.set_password(new_password)
+                user.save()
+                
+                return Response({
+                    'success': True,
+                    'message': 'Password reset successful'
+                })
+                
+            except User.DoesNotExist:
+                logger.error(f"User {email} exists in Cognito but not in Django DB")
+                return APIErrorResponse.cognito_error(
+                    'USER_SYNC_ERROR',
+                    'User account sync error. Please contact support.',
+                    status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
                 
-                # If Cognito confirms successfully, update Django user password
-                try:
-                    user = User.objects.get(email=email)
-                    user.set_password(new_password)
-                    user.save()
-                    
-                    return Response({
-                        'success': True,
-                        'message': 'Password reset successful',
-                        'details': confirm_resp
-                    })
-                    
-                except User.DoesNotExist:
-                    # This shouldn't happen if the earlier flow worked correctly
-                    return Response({
-                        'success': False,
-                        'errors': {'email': ['User not found in system']}
-                    }, status=status.HTTP_404_NOT_FOUND)
-                
-            except Exception as e:
-                return Response({
-                    'success': False,
-                    'errors': {'server': [str(e)]}
-                }, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response({
-            'success': False,
-            'errors': serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
+        except cognito_service.cognito_idp_client.exceptions.CodeMismatchException as e:
+            print(f"e: {e}")
+            print(f"vars(e): {vars(e)}")
+            return APIErrorResponse.cognito_error(
+                "INVALID_CODE",
+                e.response["Error"]["Message"],
+                status.HTTP_400_BAD_REQUEST
+            ) 
+        except Exception as e:
+            logger.error(f"Unexpected error in confirm forgot password: {str(e)}", exc_info=True)
+            return APIErrorResponse.server_error()
+
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            return APIErrorResponse.validation_error(serializer.errors)
         
         if serializer.is_valid():
             try:
