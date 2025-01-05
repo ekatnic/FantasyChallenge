@@ -14,7 +14,7 @@ export default function ProtectedHome() {
       </Typography>
       <Box sx={{ mt: 3, mb: 3 }}>
         <Typography variant="body1" gutterBottom>
-          Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup. The catch is that you can only select ONE PLAYER PER TEAM.
+          Create a lineup of 12 players. Once the playoffs start you will not be able to change your lineup. The catch is that you can only select ONE PLAYER PER TEAM. $20 to enter the competition. You can submit up to 10 entries (see full rules). 
         </Typography>
         <Box sx={{ textAlign: "center", mb: 3 }}>
           <img
@@ -25,7 +25,7 @@ export default function ProtectedHome() {
           />
         </Box>
         <Typography variant="body1" gutterBottom>
-          Please Venmo @Spenser-Wyatt by kickoff Saturday. Payouts will be determined as a percentage after all entries have been locked. Check out the full rules <a href="/rules">here</a>. Standings will be available after the first game kicks off. Check out <a href="https://twitter.com/ShowdownUpdates">our Twitter</a> for updates on the competition. Any questions please reach out: spenserjwyatt@gmail.com
+        Please Venmo @Spenser-Wyatt by kickoff Saturday. Payouts will be determined as a percentage after all entries have been locked. Check out the full rules <a href="/rules">here</a>. Standings will be available after the first game kicks off. Check out <a href="https://twitter.com/ShowdownUpdates">our Twitter</a> for updates on the competition. Any questions please reach out: spenserjwyatt@gmail.com
         </Typography>
         <Typography variant="body2" color="text.secondary" gutterBottom>
           Website developed by Ethan Katnic and Angus Watters.

@@ -98,6 +98,16 @@ const ScoringRulesDialog = ({ open, onClose }) => {
         <CloseIcon />
       </IconButton>
       <DialogContent>
+        Create a lineup of 12 player aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup. You can only select ONE PLAYER PER TEAM. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
+        <br/>
+        <br/>
+        You will select 2 Scaled FLEX's. The scoring of this position is based on how commonly selected that player is. You are rewarded with a higher bonus if the player is less popular in others' rosters.
+        Meaning if you selected Derrick Henry for your scaled flex and he was in 55% of lineups, he would score .75x points over the course of the playoffs, but if you selected Rashod Bateman and you were the only person to have him selected, he would score 3x points each game.
+        <br/>
+        <br/>
+        Warning: You get fewer points if you choose an extremely popular player. (Ownership is determined by entire rostership, not just scaled flex position)
+        <br/>
+        <br/>
         {fullRules.map((section, index) => (
           <Box key={index} sx={{ mb: 2 }}>
             <Typography variant="h6" gutterBottom>
@@ -107,7 +117,11 @@ const ScoringRulesDialog = ({ open, onClose }) => {
               {section.rules.map((rule, ruleIndex) => (
                 <li key={ruleIndex}>
                   {typeof rule === "string" ? (
-                    <Typography variant="body1" component="span">
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      sx={{ fontWeight: rule === "1.5 pts per Reception by TEs" ? 'bold' : 'normal' }}
+                    >
                       {rule}
                     </Typography>
                   ) : (
