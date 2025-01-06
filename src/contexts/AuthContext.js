@@ -68,7 +68,22 @@ export const AuthProvider = ({ children }) => {
       });
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
+      console.log("signup func err: ", err)
+      // setError(err.response?.data?.message || "Signup failed");
+      // Improve error handling to capture both message and validation errors
+      const errorMessage = err.response?.data?.message;
+      const validationErrors = err.response?.data?.errors;
+      // console.log("errorMessage: ", errorMessage)
+      // console.log("validationErrors: ", validationErrors)
+
+    // Flatten and format all error messages
+      const fullErrorMessage = validationErrors ? Object.values(validationErrors) 
+        .flat() // Flatten the arrays of error messages
+        .join("\n") // Join them with a newline
+        : errorMessage || "Signup failed"; 
+
+    //  console.log("full error mes", fullErrorMessage) 
+      setError(fullErrorMessage);
       throw err;
     } finally {
       setLoading(false);

@@ -133,7 +133,7 @@ class CognitoIdentityProvider:
                     err.response["Error"]["Code"],
                     err.response["Error"]["Message"],
                 )
-                raise
+                raise err
         return confirmed
 
     def resend_confirmation(self, user_name):
@@ -187,7 +187,7 @@ class CognitoIdentityProvider:
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
-            raise
+            raise err
         else:
             return True
 
@@ -254,7 +254,7 @@ class CognitoIdentityProvider:
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
-            raise
+            raise err
         else:
             return forgot_resp 
 
@@ -288,7 +288,7 @@ class CognitoIdentityProvider:
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
-            raise
+            raise err
         else:
             return True
     

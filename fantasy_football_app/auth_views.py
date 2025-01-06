@@ -82,6 +82,11 @@ class SignupView(generics.CreateAPIView):
                     'success': False,
                     'message': 'Username already exists in Cognito'
                 }, status=status.HTTP_400_BAD_REQUEST)
+            except cognito_service.cognito_idp_client.exceptions.InvalidPasswordException:
+                return Response({
+                    'success': False,
+                    'message': 'Invalid password'
+                }, status=status.HTTP_400_BAD_REQUEST) 
             except Exception as e:
                 return Response({
                     'success': False,

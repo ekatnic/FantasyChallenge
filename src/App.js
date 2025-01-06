@@ -22,6 +22,7 @@ import MyEntries from "./components/MyEntries";
 import ViewEntry from "./components/ViewEntry";
 
 const App = () => {
+  
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
