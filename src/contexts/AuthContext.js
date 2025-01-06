@@ -68,18 +68,21 @@ export const AuthProvider = ({ children }) => {
       });
       return data;
     } catch (err) {
+      console.log("signup func err: ", err)
       // setError(err.response?.data?.message || "Signup failed");
       // Improve error handling to capture both message and validation errors
       const errorMessage = err.response?.data?.message;
       const validationErrors = err.response?.data?.errors;
-      
-      // Combine validation errors into a single message if they exist
-      const fullErrorMessage = validationErrors 
-        ? Object.entries(validationErrors)
-            .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
-            .join('; ')
-        : errorMessage || "Signup failed";
-      
+      // console.log("errorMessage: ", errorMessage)
+      // console.log("validationErrors: ", validationErrors)
+
+    // Flatten and format all error messages
+      const fullErrorMessage = validationErrors ? Object.values(validationErrors) 
+        .flat() // Flatten the arrays of error messages
+        .join("\n") // Join them with a newline
+        : errorMessage || "Signup failed"; 
+
+    //  console.log("full error mes", fullErrorMessage) 
       setError(fullErrorMessage);
       throw err;
     } finally {
