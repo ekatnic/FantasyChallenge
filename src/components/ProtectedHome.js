@@ -28,7 +28,7 @@ export default function ProtectedHome() {
         Please Venmo @Spenser-Wyatt by kickoff Saturday. Payouts will be determined as a percentage after all entries have been locked. Check out the full rules <a href="/rules">here</a>. Standings will be available after the first game kicks off. Check out <a href="https://twitter.com/ShowdownUpdates">our Twitter</a> for updates on the competition. Any questions please reach out: spenserjwyatt@gmail.com
         </Typography>
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Website developed by Ethan Katnic and Angus Watters.
+          Website developed by Ethan Katnic, Spenser Wyatt, and Angus Watters.
         </Typography>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
