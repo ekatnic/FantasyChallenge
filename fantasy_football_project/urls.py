@@ -83,8 +83,8 @@ urlpatterns = [
     path('api/entries/<int:pk>/', EntryRetrieveUpdateDestroyAPIView.as_view(), name='entry-detail'),
     path('api/entries/<int:pk>/roster/', EntryRosterAPIView.as_view(), name='entry-roster'),
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
-    path('api/player-ownership/', PlayerOwnershipAPIView.as_view(), name='player-ownership'),
-    path('api/standings/', StandingsAPIView.as_view(), name='standings-api'),
+    # path('api/player-ownership/', PlayerOwnershipAPIView.as_view(), name='player-ownership'),
+    # path('api/standings/', StandingsAPIView.as_view(), name='standings-api'),
     path('api/player-weekly-stats/<int:player_id>/', PlayerWeeklyStatsAPIView.as_view(), name='weekly-stats-api'),
 
     # React routes
@@ -92,7 +92,7 @@ urlpatterns = [
     path('edit-entry/<int:entry_id>', react_view, name='edit_entry'),
     path('my-entries/', react_view, name='user_home'),
     path('view-entry/<int:entry_id>', react_view, name='view_entry'),
-    path('standings/', react_view, name='standings'),
-    path('player-ownership/', react_view, name='players'),
+    # path('standings/', react_view, name='standings'),
+    # path('player-ownership/', react_view, name='players'),
     re_path(r'^.*$', react_view),
 ]

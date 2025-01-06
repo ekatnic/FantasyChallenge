@@ -42,8 +42,8 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<ProtectedHome />} />
           <Route path="/my-entries" element={<MyEntries />} />
-          <Route path="/standings" element={<Standings />} />
-          <Route path="/players" element={<PlayerOwnership />} />
+          {/* <Route path="/standings" element={<Standings />} /> */}
+          {/* <Route path="/players" element={<PlayerOwnership />} /> */}
           <Route path="/create-entry" element={<CreateEntry />} />
           <Route path="/edit-entry/:id" element={<EditEntry />} />
           <Route path="/view-entry/:id" element={<ViewEntry />} />

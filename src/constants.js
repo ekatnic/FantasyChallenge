@@ -48,7 +48,6 @@ export const tePositions = [
 // Remove non-playoff teams when final games conclude
 export const playoffTeams = [
   "LAR",
-  "ATL",
   "TB",
   "DET",
   "MIN",
@@ -61,7 +60,5 @@ export const playoffTeams = [
   "HOU",
   "BAL",
   "PIT",
-  "CIN",
   "BUF",
-  "MIA"
 ]
