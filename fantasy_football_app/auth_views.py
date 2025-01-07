@@ -82,11 +82,17 @@ class SignupView(generics.CreateAPIView):
                     'success': False,
                     'message': 'Username already exists in Cognito'
                 }, status=status.HTTP_400_BAD_REQUEST)
-            except cognito_service.cognito_idp_client.exceptions.InvalidPasswordException:
+            except cognito_service.cognito_idp_client.exceptions.InvalidPasswordException as e:
+                error_message = str(e)
+                if "Password did not conform with policy:" in error_message:
+                    reason = error_message.split("Password did not conform with policy:")[1].strip()
+                else:
+                    reason = "Unknown reason"
+
                 return Response({
                     'success': False,
-                    'message': 'Invalid password'
-                }, status=status.HTTP_400_BAD_REQUEST) 
+                    'message': f'Invalid password - {reason}'
+                }, status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
                 return Response({
                     'success': False,
