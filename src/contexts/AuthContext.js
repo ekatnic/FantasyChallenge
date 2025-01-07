@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -58,7 +59,6 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await authAPI.signup(userData);
-
       // TODO: Set null user and redirects to the confirm-signup page
       setUser(null);
       setError(null);
@@ -69,12 +69,9 @@ export const AuthProvider = ({ children }) => {
       return data;
     } catch (err) {
       console.log("signup func err: ", err)
-      // setError(err.response?.data?.message || "Signup failed");
-      // Improve error handling to capture both message and validation errors
+    //   // Improve error handling to capture both message and validation errors
       const errorMessage = err.response?.data?.message;
       const validationErrors = err.response?.data?.errors;
-      // console.log("errorMessage: ", errorMessage)
-      // console.log("validationErrors: ", validationErrors)
 
     // Flatten and format all error messages
       const fullErrorMessage = validationErrors ? Object.values(validationErrors) 
@@ -82,7 +79,7 @@ export const AuthProvider = ({ children }) => {
         .join("\n") // Join them with a newline
         : errorMessage || "Signup failed"; 
 
-    //  console.log("full error mes", fullErrorMessage) 
+      // console.log("full error mes", fullErrorMessage) 
       setError(fullErrorMessage);
       throw err;
     } finally {
@@ -139,6 +136,7 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     error,
+    setError,
     login,
     signup,
     confirmSignup,
