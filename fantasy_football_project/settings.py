@@ -20,6 +20,10 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+PROD_DOMAINS = [
+    'https://playoff-showdown.com',
+    'https://www.playoff-showdown.com',
+]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -121,11 +125,23 @@ if IS_HEROKU_APP:
         'http://playoff-showdown.com',
         'https://playoff-showdown.com',
     ]
+    CORS_ALLOWED_ORIGINS = PROD_DOMAINS
+    CORS_ALLOW_CREDENTIALS = True  # Allow cookies to be sent with requests
+    
+    CSRF_TRUSTED_ORIGINS = PROD_DOMAINS
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_HTTPONLY = True
+
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 else:
     # When running locally in development or in CI, a sqlite database file will be used instead
     # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
     DEBUG = True
+    ALLOWED_HOSTS = []
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -136,54 +152,26 @@ else:
             'PORT': '5432'
         }
     }
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-
-        'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
-        'http://playoff-showdown.com',
-        'https://playoff-showdown.com',
-    ]
-    
-    # ---------------------------------------------
-    # ---- Auth -----
-    # - CORS + CSRF + Cookies settings
-    # TODO: this works in local dev right now
-    # TODO: need to nail down how itll work in Prod
-    # ---------------------------------------------
-    CORS_ORIGIN_ALLOW_ALL  = True 
-    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ORIGIN_ALLOW_ALL = True  # Allow all origins in development
     CORS_ALLOW_CREDENTIALS = True  # Allow cookies to be sent with requests
 
     CSRF_TRUSTED_ORIGINS = [
         "http://localhost:8000",
         "http://127.0.0.1:8000",
-
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-
-        'https://fantasy-challenge-2024-59233a8817fc.herokuapp.com',
-        'http://playoff-showdown.com',
-        'https://playoff-showdown.com',
-    ]
-
-    CSRF_COOKIE_SAMESITE    = None 
+    ] + PROD_DOMAINS
+    
+    CSRF_COOKIE_SAMESITE = None
     SESSION_COOKIE_SAMESITE = None
-    CSRF_COOKIE_HTTPONLY    = False  # False since we will grab it via universal-cookies
+    CSRF_COOKIE_HTTPONLY = False  # False since we will grab it via universal-cookies
     SESSION_COOKIE_HTTPONLY = False
-    SESSION_COOKIE_SECURE   = False
-    SESSION_COOKIE_SAMESITE = None
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
-    COOKIE_SECURE           = False # True in production, False in development (not DEBUG ? )
-    CSRF_COOKIE_SECURE      = False 
-
-    # # TODO: PROD ONLY
-    # CSRF_COOKIE_SECURE = True
-    # SESSION_COOKIE_SECURE = True
-    # ---------------------------------------------
+# Common settings
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_ALL_ORIGINS = False
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
