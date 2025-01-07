@@ -16,9 +16,10 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from django.middleware.csrf import get_token
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
@@ -46,6 +47,7 @@ class SignupView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             try:
+                
                 # Register with Cognito
                 signup_resp = cognito_service.sign_up_user(
                     user_name=serializer.validated_data['email'],

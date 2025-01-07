@@ -10,14 +10,20 @@ import {
 } from "@mui/material";
 import { confirmForgotPassword } from "../../services/auth";
 
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+
 export default function ConfirmForgotPassowrd() {
+  
   const location = useLocation();
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: location.state?.email || "",
     confirmation_code: "",
     password: "",
   });
+  
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
@@ -36,6 +42,32 @@ export default function ConfirmForgotPassowrd() {
       setError(err.response?.data?.errors || "An error occurred");
     }
   };
+
+  const isValidConfirmationCode = (confirmCode) => {
+    // check length is 6 and its all numbers
+    return confirmCode.length == 6 && isOnlyNumbers(confirmCode) 
+  }
+
+  const isPasswordCorrectLength = (password) => {
+    return password.length >= 9; 
+  };
+
+  const hasNoLeadingOrTrailingWhitespaces = (password) => {
+    return password === password.trim() ;
+  }
+
+  const isOnlyNumbers = (s) => {
+    return typeof s === 'string' && /^[0-9]+$/.test(s);
+  }
+
+  const hasAlphabetcalOrSpecialChar = (s) => {
+    const regex = /[a-zA-Z]|[^a-zA-Z0-9]/;
+    return typeof s === 'string' && regex.test(s);
+  }
+
+  const hasValidPasswordChars = (s) => {
+    return hasAlphabetcalOrSpecialChar(s) && !isOnlyNumbers(s)
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -78,6 +110,16 @@ export default function ConfirmForgotPassowrd() {
               setFormData({ ...formData, confirmation_code: e.target.value })
             }
           />
+           {/* Validation Indicators For confirm code */}
+           <Box sx={{ mt: 1 }}>
+              <Typography variant="body2">
+                {isValidConfirmationCode(formData.confirmation_code) ? (
+                  <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                ) : (
+                  <CancelIcon color="error" sx={{ mr: 1 }} />
+                )} Valid confirmation code 
+              </Typography>
+            </Box>
           <TextField
             margin="normal"
             required
@@ -90,11 +132,36 @@ export default function ConfirmForgotPassowrd() {
               setFormData({ ...formData, password: e.target.value })
             }
           />
+          {/* Validation Indicators */}
+          <Box sx={{ mt: 1 }}>
+              <Typography variant="body2">
+                {isPasswordCorrectLength(formData.password) ? (
+                  <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                ) : (
+                  <CancelIcon color="error" sx={{ mr: 1 }} />
+                )} Correct password length
+              </Typography>
+              <Typography variant="body2">
+                {hasNoLeadingOrTrailingWhitespaces(formData.password) && formData.password ? (
+                  <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                ) : (
+                  <CancelIcon color="error" sx={{ mr: 1 }} />
+                )} Password does not have leading or trailing whitespaces 
+              </Typography>
+              <Typography variant="body2">
+                {hasValidPasswordChars(formData.password) ? (
+                  <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                ) : (
+                  <CancelIcon color="error" sx={{ mr: 1 }} />
+                )} Password contains atleast 1 alphabetical character or 1 special character and is not entirely numbers
+              </Typography>
+            </Box>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={!isValidConfirmationCode(formData.confirmation_code) || !isPasswordCorrectLength(formData.password) || !hasNoLeadingOrTrailingWhitespaces(formData.password) || !hasValidPasswordChars(formData.password)}
           >
             Reset Password
           </Button>

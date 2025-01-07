@@ -14,8 +14,14 @@ axios.defaults.withCredentials = true;
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
+  const [checkAuthError, setCheckAuthError] = useState(null);
+  const [signupError, setSignupError] = useState(null);
+  const [confirmSignupError, setConfirmSignupError] = useState(null);
+  const [loginError, setLoginError] = useState(null);
+  const [forgotPasswordError, setForgotPasswordError] = useState(null);
+  const [logoutError, setLogoutError] = useState(null);
+    
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,10 +34,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authAPI.checkAuthStatus();
       setUser(data.user);
-      setError(null);
+      setCheckAuthError(null);
     } catch (err) {
       setUser(null);
-      setError("Authentication check failed");
+      setCheckAuthError("Authentication check failed");
     } finally {
       setLoading(false);
     }
@@ -42,13 +48,13 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const data = await authAPI.login(credentials);
       setUser(data.user);
-      setError(null);
+      setLoginError(null);
       // Redirect to starting page
       const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, { replace: true });
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setLoginError(err.response?.data?.message || "Login failed");
       throw err;
     } finally {
       setLoading(false);
@@ -61,7 +67,7 @@ export const AuthProvider = ({ children }) => {
       const data = await authAPI.signup(userData);
       // TODO: Set null user and redirects to the confirm-signup page
       setUser(null);
-      setError(null);
+      setSignupError(null);
       // Go to confirm-signup route and pass email as state so user can just give confirmation code from email
       navigate("/confirm-signup", {
         state: { userData },
@@ -80,7 +86,7 @@ export const AuthProvider = ({ children }) => {
         : errorMessage || "Signup failed"; 
 
       // console.log("full error mes", fullErrorMessage) 
-      setError(fullErrorMessage);
+      setSignupError(fullErrorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -92,11 +98,11 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const data = await authAPI.confirmSignup(confirmationData);
       setUser(null); // NOTE: Setting user to null means the user needs to login again after signing up
-      setError(null);
+      setConfirmSignupError(null);
       navigate("/login");
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Signup confirmation failed");
+      setConfirmSignupError(err.response?.data?.message || "Signup confirmation failed");
       throw err;
     } finally {
       setLoading(false);
@@ -108,10 +114,10 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       await authAPI.logout();
       setUser(null);
-      setError(null);
+      setLogoutError(null);
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Logout failed");
+      setLogoutError(err.response?.data?.message || "Logout failed");
       throw err;
     } finally {
       setLoading(false);
@@ -122,26 +128,30 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await authAPI.forgotPassword(email);
-      setError(null);
+      setForgotPasswordError(null);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Password reset request failed");
+      setForgotPasswordError(err.response?.data?.message || "Password reset request failed");
       throw err;
     } finally {
       setLoading(false);
     }
   };
-
+  
   const value = {
     user,
     loading,
-    error,
-    setError,
-    login,
+    checkAuthError,
+    signupError,
+    confirmSignupError,
+    loginError,
+    forgotPasswordError,
+    logoutError,
     signup,
     confirmSignup,
-    logout,
+    login,
     forgotPassword,
+    logout,
     isAuthenticated: !!user,
     checkAuth,
   };

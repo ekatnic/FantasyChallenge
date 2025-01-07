@@ -21,7 +21,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 export default function Signup() {
-  const { signup, error, setError} = useAuth();
+  const { signup, signupError, setSignupError} = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password1: "",
@@ -29,8 +29,6 @@ export default function Signup() {
     first_name: "",
     last_name: "",
   });
-
-  const [formError, setFormError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -67,8 +65,8 @@ export default function Signup() {
   
     // Validate that password1 and confirm password1 match
     if (formData.password1 !== formData.password2) {
-      setError("Passwords don't match!")
-      // setFormError("Passwords don't match!");
+      // setError("Passwords don't match!")
+      setSignupError("Passwords don't match!");
       return;
     }
   
@@ -104,9 +102,9 @@ export default function Signup() {
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             Sign Up
           </Typography>
-          {error && (
+          {signupError && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
+              {signupError}
             </Alert>
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
