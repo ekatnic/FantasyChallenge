@@ -8,13 +8,15 @@ import {
   Container,
   Alert,
 } from "@mui/material";
-import { confirmForgotPassword } from "../../services/auth";
+// import { confirmForgotPassword } from "../../services/auth";
+import { useAuth } from "../../contexts/AuthContext";
 
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 export default function ConfirmForgotPassowrd() {
-  
+  const { confirmForgotPassword, confirmForgotPasswordError } = useAuth();
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -24,22 +26,37 @@ export default function ConfirmForgotPassowrd() {
     password: "",
   });
   
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+
+  //   try {
+  //     await confirmForgotPassword(formData);
+  //     navigate("/login", {
+  //       state: {
+  //         message:
+  //           "Password reset successful! Please log in with your new password.",
+  //       },
+  //     });
+  //   } catch (err) {
+  //     setError(err.response?.data?.errors || "An error occurred");
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-
     try {
       await confirmForgotPassword(formData);
-      navigate("/login", {
-        state: {
-          message:
-            "Password reset successful! Please log in with your new password.",
-        },
-      });
+      // await confirmForgotPassword({
+      //   email: userData.email,
+      //   confirmation_code: confirmationCode,
+      //   password: userData.password,
+      // });
     } catch (err) {
-      setError(err.response?.data?.errors || "An error occurred");
+      console.error("Confirmation failed:", err);
+
     }
   };
 
@@ -82,9 +99,9 @@ export default function ConfirmForgotPassowrd() {
         <Typography component="h1" variant="h5">
           Reset Password
         </Typography>
-        {error && (
+        {confirmForgotPasswordError && (
           <Alert severity="error" sx={{ width: "100%", mt: 2 }}>
-            {error}
+            {confirmForgotPasswordError}
           </Alert>
         )}
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>

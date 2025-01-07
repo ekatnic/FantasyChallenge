@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as authAPI from "../services/auth";
+import {getFullValidationErrorMessage} from "../componentUtils"
 
 // Create context
 const AuthContext = createContext(null);
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }) => {
   const [confirmSignupError, setConfirmSignupError] = useState(null);
   const [loginError, setLoginError] = useState(null);
   const [forgotPasswordError, setForgotPasswordError] = useState(null);
+  const [confirmForgotPasswordError, setConfirmForgotPasswordError] = useState(null);
   const [logoutError, setLogoutError] = useState(null);
     
   const navigate = useNavigate();
@@ -85,6 +87,8 @@ export const AuthProvider = ({ children }) => {
         .join("\n") // Join them with a newline
         : errorMessage || "Signup failed"; 
 
+      // const fullErrorMessage = getFullValidationErrorMessage(err)
+
       // console.log("full error mes", fullErrorMessage) 
       setSignupError(fullErrorMessage);
       throw err;
@@ -138,6 +142,51 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
+  const confirmForgotPassword = async (confirmationData) => {
+    try {
+      setLoading(true);
+      const data = await authAPI.confirmForgotPassword(confirmationData);
+      setUser(null); // NOTE: Setting user to null means the user needs to login again after signing up
+      setConfirmForgotPasswordError(null);
+      navigate("/login", {
+        state: {
+          message:
+            "Password reset successful! Please log in with your new password.",
+        },
+      });
+      return data;
+    } catch (err) {
+
+      const errorMessage = err.response?.data?.message;
+      const validationErrors = err.response?.data?.errors;
+
+    // Flatten and format all error messages
+      const fullErrorMessage = validationErrors ? Object.values(validationErrors) 
+        .flat() // Flatten the arrays of error messages
+        .join("\n") // Join them with a newline
+        : errorMessage || "Forgot password confirmation failed"; 
+
+      // const fullErrorMessage = getFullValidationErrorMessage(err, "Forgot password confirmation failed")
+      
+      setConfirmForgotPasswordError(fullErrorMessage)
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+  // try {
+  //   await confirmForgotPassword(formData);
+  //   navigate("/login", {
+  //     state: {
+  //       message:
+  //         "Password reset successful! Please log in with your new password.",
+  //     },
+  //   });
+  // } catch (err) {
+  //   setError(err.response?.data?.errors || "An error occurred");
+  // }
+  
   const value = {
     user,
     loading,
@@ -146,11 +195,13 @@ export const AuthProvider = ({ children }) => {
     confirmSignupError,
     loginError,
     forgotPasswordError,
+    confirmForgotPasswordError,
     logoutError,
     signup,
     confirmSignup,
     login,
     forgotPassword,
+    confirmForgotPassword,
     logout,
     isAuthenticated: !!user,
     checkAuth,
