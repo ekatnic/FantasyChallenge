@@ -162,6 +162,7 @@ export const AuthProvider = ({ children }) => {
       const data = await authAPI.confirmForgotPassword(confirmationData);
       setUser(null); // NOTE: Setting user to null means the user needs to login again after signing up
       setConfirmForgotPasswordError(null);
+      setLoginError(null);
       navigate("/login", {
         state: {
           message:
