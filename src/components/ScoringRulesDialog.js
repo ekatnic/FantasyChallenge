@@ -5,42 +5,6 @@ import CloseIcon from '@mui/icons-material/Close';
 const ScoringRulesDialog = ({ open, onClose }) => {
   const fullRules = [
     {
-      title: "Offense Scoring",
-      rules: [
-        "4 pts for Passing TDs",
-        "6 pts for non Passing TDs",
-        "1 pt for every 20 Yards Passing",
-        "-1 pt for every Interception Thrown",
-        "-1 pt for every Fumble Lost",
-        "1 pt for every 10 Rushing or Receiving yards",
-        "1 pt per Reception by RBs and WRs",
-        "1.5 pts per Reception by TEs",
-        "2 pts for every 2 Point Conversion",
-      ],
-    },
-    {
-      title: "Defense Scoring",
-      rules: [
-        "1 pt for every Sack",
-        "2 pts for every Interception",
-        "2 pts for every Fumble Recovery",
-        "5 pts for every Safety",
-        "6 pts for every Defensive/ST TD",
-        "12 pts for a Shutout",
-        "8 pts for allowing 1-6 points",
-        "5 pts for allowing 7-10 points",
-      ],
-    },
-    {
-      title: "Kicker Scoring",
-      rules: [
-        "1 pt for each PAT made",
-        "-1 pt for each PAT missed",
-        ".1 pt for each FG Made Yards (FGY)",
-        "-1 pt for each FG missed",
-      ],
-    },
-    {
       title: "Scaled Flex Scoring",
       rules: [
         {
@@ -79,6 +43,42 @@ const ScoringRulesDialog = ({ open, onClose }) => {
           score: "10 points scored = 30 points",
           color: "darkgreen",
         },
+      ],
+    },
+    {
+      title: "Offense Scoring",
+      rules: [
+        "4 pts for Passing TDs",
+        "6 pts for non Passing TDs",
+        "1 pt for every 20 Yards Passing",
+        "-1 pt for every Interception Thrown",
+        "-1 pt for every Fumble Lost",
+        "1 pt for every 10 Rushing or Receiving yards",
+        "1 pt per Reception by RBs and WRs",
+        "1.5 pts per Reception by TEs",
+        "2 pts for every 2 Point Conversion",
+      ],
+    },
+    {
+      title: "Defense Scoring",
+      rules: [
+        "1 pt for every Sack",
+        "2 pts for every Interception",
+        "2 pts for every Fumble Recovery",
+        "5 pts for every Safety",
+        "6 pts for every Defensive/ST TD",
+        "12 pts for a Shutout",
+        "8 pts for allowing 1-6 points",
+        "5 pts for allowing 7-10 points",
+      ],
+    },
+    {
+      title: "Kicker Scoring",
+      rules: [
+        "1 pt for each PAT made",
+        "-1 pt for each PAT missed",
+        ".1 pt for each FG Made Yards (FGY)",
+        "-1 pt for each FG missed",
       ],
     },
   ];
