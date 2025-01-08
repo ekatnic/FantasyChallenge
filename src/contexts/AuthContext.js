@@ -67,13 +67,24 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await authAPI.signup(userData);
-      // TODO: Set null user and redirects to the confirm-signup page
-      setUser(null);
+
+      // METHOD 1:
+      // TODO: automatically logs in user after successful signup and redirects to dashboard
+      setUser(data.user);
       setSignupError(null);
+      navigate("/dashboard");
       
+      // METHOD 2: 
+      // TODO: Set null user and redirects to the confirm-signup page
       // TODO: temporarly get rid of user confirm sign up while email is down
-      navigate("/login")
-      // Go to confirm-signup route and pass email as state so user can just give confirmation code from email
+      // setUser(null);
+      // setSignupError(null);
+      // navigate("/login")
+
+      // METHOD 3:
+      // TODO: Go to confirm-signup route and pass email as state so user can just give confirmation code from email
+      // setUser(null);
+      // setSignupError(null);
       // navigate("/confirm-signup", {
       //   state: { userData },
       // });

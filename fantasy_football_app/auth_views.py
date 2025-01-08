@@ -84,11 +84,21 @@ class SignupView(generics.CreateAPIView):
                 user.set_password(serializer.validated_data['password1'])
                 user.save()
                 # user = serializer.save()
+
+                # TODO: Note that we are now automatically signing in users once they've successfully signed up
+                # Log user into Django
+                django_login(request, user)
                 
                 return Response({
                     'success': True,
-                    'message': 'Account created in pending state. Awaiting email verification confirmation.',
+                    'message': 'Account created and logged in successfully',
+                    'user': UserSerializer(user).data
                 }, status=status.HTTP_201_CREATED)
+            
+                # return Response({
+                #     'success': True,
+                #     'message': 'Account created in pending state. Awaiting email verification confirmation.',
+                # }, status=status.HTTP_201_CREATED)
                 
             except cognito_service.cognito_idp_client.exceptions.UsernameExistsException:
                 return Response({
