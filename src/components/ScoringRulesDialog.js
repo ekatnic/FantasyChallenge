@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, Typography, Box, IconButton } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Typography, Box, IconButton, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 
 const ScoringRulesDialog = ({ open, onClose }) => {
@@ -85,53 +85,65 @@ const ScoringRulesDialog = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Scoring Rules</DialogTitle>
-      <IconButton onClick={onClose}
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: 'grey.500',
-          zIndex: 1
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
+      <DialogTitle>
+        Scoring Rules
+        <IconButton
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: "grey.500",
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
-        Create a lineup of 12 player aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup. You can only select ONE PLAYER PER TEAM. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
-        <br/>
-        <br/>
-        You will select 2 Scaled FLEX's. The scoring of this position is based on how commonly selected that player is. You are rewarded with a higher bonus if the player is less popular in others' rosters.
-        Meaning if you selected Derrick Henry for your scaled flex and he was in 55% of lineups, he would score .75x points over the course of the playoffs, but if you selected Rashod Bateman and you were the only person to have him selected, he would score 3x points each game.
-        <br/>
-        <br/>
-        Warning: You get fewer points if you choose an extremely popular player. (Ownership is determined by entire rostership, not just scaled flex position)
-        <br/>
-        <br/>
+        <Typography>
+          Create a lineup of 12 players aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup. You can only select <strong>ONE PLAYER PER TEAM</strong>. So if you choose Lamar Jackson, you cannot also have Derrick Henry in your lineup.
+        </Typography>
+        <Typography variant="body1" sx={{ my: 2 }}>
+          You will select 2 Scaled FLEX's. The scoring of this position is based on how commonly selected that player is. You are rewarded with a higher bonus if the player is less popular in others' rosters. Meaning if you selected Derrick Henry for your scaled flex and he was in 55% of lineups, he would score .75x points over the course of the playoffs, but if you selected Rashod Bateman and you were the only person to have him selected, he would score 3x points each game.
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          <strong>Warning:</strong> You get fewer points if you choose an extremely popular player. (Ownership is determined by entire rostership, not just scaled flex position)
+        </Typography>
         {fullRules.map((section, index) => (
-          <Box key={index} sx={{ mb: 2 }}>
+          <Box key={index} sx={{ mb: 4 }}>
             <Typography variant="h6" gutterBottom>
               {section.title}
             </Typography>
-            <ul>
-              {section.rules.map((rule, ruleIndex) => (
-                <li key={ruleIndex}>
-                  {typeof rule === "string" ? (
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      sx={{ fontWeight: rule === "1.5 pts per Reception by TEs" ? 'bold' : 'normal' }}
-                    >
-                      {rule}
-                    </Typography>
-                  ) : (
-                    <Typography variant="body1" component="span">
-                      <span style={{ color: rule.color }}>{rule.ownership} - {rule.multiplier}</span> - {rule.score}
-                    </Typography>
-                  )}
-                </li>
-              ))}
-            </ul>
+            {Array.isArray(section.rules) && typeof section.rules[0] === "object" ? (
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Ownership</TableCell>
+                      <TableCell>Multiplier</TableCell>
+                      <TableCell>Score</TableCell>
+                    </TableRow>
+                  </TableHead>
+                <TableBody>
+                    {section.rules.map((rule, ruleIndex) => (
+                      <TableRow key={ruleIndex}>
+                        <TableCell style={rule.color ? { color: rule.color } : {}}>{rule.ownership}</TableCell>
+                        <TableCell style={rule.color ? { color: rule.color } : {}}>{rule.multiplier}</TableCell>
+                        <TableCell>{rule.score}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <ul>
+                {section.rules.map((rule, ruleIndex) => (
+                  <li key={ruleIndex}>
+                    <Typography variant="body1">{rule}</Typography>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Box>
         ))}
       </DialogContent>
