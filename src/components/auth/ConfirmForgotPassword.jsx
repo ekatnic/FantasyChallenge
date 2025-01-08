@@ -14,7 +14,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 
-export default function ConfirmForgotPassowrd() {
+export default function ConfirmForgotPassword() {
   const { confirmForgotPassword, confirmForgotPasswordError } = useAuth();
 
   const location = useLocation();
