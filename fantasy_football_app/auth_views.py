@@ -54,6 +54,8 @@ class SignupView(generics.CreateAPIView):
                     password=serializer.validated_data['password1'],
                     user_email=serializer.validated_data['email']
                 )
+                
+                # TODO: Uncomment these blocks if we want to auto signup users, we manually confirm there emails and save them to the Django DB
 
                 # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
                 # # Confirm the user in Cognito
