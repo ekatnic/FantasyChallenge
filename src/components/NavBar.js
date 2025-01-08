@@ -70,7 +70,6 @@ const NavBar = () => {
                 </Button>
               ))}
               <UserProfile email={user?.email} />
-              <LogoutButton />
             </>
           ) : (
             <>
