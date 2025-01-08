@@ -72,11 +72,11 @@ export const AuthProvider = ({ children }) => {
       setSignupError(null);
       
       // TODO: temporarly get rid of user confirm sign up while email is down
-      // navigate("/login")
+      navigate("/login")
       // Go to confirm-signup route and pass email as state so user can just give confirmation code from email
-      navigate("/confirm-signup", {
-        state: { userData },
-      });
+      // navigate("/confirm-signup", {
+      //   state: { userData },
+      // });
       return data;
     } catch (err) {
       console.log("signup func err: ", err)

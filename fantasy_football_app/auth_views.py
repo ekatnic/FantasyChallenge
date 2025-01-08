@@ -57,32 +57,32 @@ class SignupView(generics.CreateAPIView):
                 
                 # TODO: Uncomment these blocks if we want to auto signup users, we manually confirm there emails and save them to the Django DB
 
-                # # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
-                # # Confirm the user in Cognito
-                # cognito_service.admin_confirm_user_sign_up(
-                #     user_name=serializer.validated_data['email']
-                # )
+                # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
+                # Confirm the user in Cognito
+                cognito_service.admin_confirm_user_sign_up(
+                    user_name=serializer.validated_data['email']
+                )
 
-                # # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
-                # # Update the users email to be marked as True 
-                # # The alternative is to send an email with a Confirm code that the user needs to provide to verify email
-                # update_user_attrs_resp = cognito_service.admin_update_user_attributes(
-                #     user_name=serializer.validated_data['email'],
-                #     user_attributes=[ 
-                #         {"Name" : "email_verified", "Value" : "true"}
-                #         ] 
-                #         ) 
+                # TODO: Comment out to test out ConfirmSignupView that requires user to provide confirmation_code
+                # Update the users email to be marked as True 
+                # The alternative is to send an email with a Confirm code that the user needs to provide to verify email
+                update_user_attrs_resp = cognito_service.admin_update_user_attributes(
+                    user_name=serializer.validated_data['email'],
+                    user_attributes=[ 
+                        {"Name" : "email_verified", "Value" : "true"}
+                        ] 
+                        ) 
                 
-                # # Create Django user
-                # user = User.objects.create(
-                #     # username=email.lower(),
-                #     username=serializer.validated_data['email'].lower(),
-                #     email=serializer.validated_data['email'],
-                #     first_name=serializer.validated_data['first_name'],
-                #     last_name=serializer.validated_data['last_name']
-                # )
-                # user.set_password(serializer.validated_data['password1'])
-                # user.save()
+                # Create Django user
+                user = User.objects.create(
+                    # username=email.lower(),
+                    username=serializer.validated_data['email'].lower(),
+                    email=serializer.validated_data['email'],
+                    first_name=serializer.validated_data['first_name'],
+                    last_name=serializer.validated_data['last_name']
+                )
+                user.set_password(serializer.validated_data['password1'])
+                user.save()
                 # user = serializer.save()
                 
                 return Response({

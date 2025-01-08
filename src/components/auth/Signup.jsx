@@ -158,14 +158,25 @@ export default function Signup() {
               value={formData.password1}
               onChange={handleChange}
             />
-            {/* Validation Indicators */}
-            <Box sx={{ mt: 1 }}>
+            {/* Confirm Password Field */}
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password2"
+              label="Confirm Password"
+              type="password"
+              value={formData.password2}
+              onChange={handleChange}
+            />
+              {/* Validation Indicators */}
+              <Box sx={{ mt: 1 }}>
               <Typography variant="body2">
                 {isPasswordCorrectLength(formData.password1) ? (
                   <CheckCircleIcon color="success" sx={{ mr: 1 }} />
                 ) : (
                   <CancelIcon color="error" sx={{ mr: 1 }} />
-                )} Correct password length
+                )} at least 9 characters
               </Typography>
               <Typography variant="body2">
                 {hasNoLeadingOrTrailingWhitespaces(formData.password1) && formData.password1 ? (
@@ -189,18 +200,6 @@ export default function Signup() {
                 )} Passwords match
               </Typography>
             </Box>
-            {/* Confirm Password Field */}
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password2"
-              label="Confirm Password"
-              type="password"
-              value={formData.password2}
-              onChange={handleChange}
-            />
-
             {/* Submit Button */}
             <Button
               type="submit"

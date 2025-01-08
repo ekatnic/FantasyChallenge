@@ -156,7 +156,7 @@ export default function ConfirmForgotPassowrd() {
                   <CheckCircleIcon color="success" sx={{ mr: 1 }} />
                 ) : (
                   <CancelIcon color="error" sx={{ mr: 1 }} />
-                )} Correct password length
+                )} at least 9 characters
               </Typography>
               <Typography variant="body2">
                 {hasNoLeadingOrTrailingWhitespaces(formData.password) && formData.password ? (
