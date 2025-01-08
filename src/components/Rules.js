@@ -100,7 +100,7 @@ export default function Rules() {
           </Typography>
           <Typography gutterBottom>
             Create a lineup of 12 player aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup.
-            You can only select ONE PLAYER PER TEAM. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
+            You can only select <strong>ONE PLAYER PER TEAM</strong>. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
           </Typography>
           <Typography variant="h5" align="center" gutterBottom>
             <br/>
