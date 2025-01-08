@@ -48,40 +48,151 @@ const ScoringRulesDialog = ({ open, onClose }) => {
     {
       title: "Offense Scoring",
       rules: [
-        "4 pts for Passing TDs",
-        "6 pts for non Passing TDs",
-        "1 pt for every 20 Yards Passing",
-        "-1 pt for every Interception Thrown",
-        "-1 pt for every Fumble Lost",
-        "1 pt for every 10 Rushing or Receiving yards",
-        "1 pt per Reception by RBs and WRs",
-        "1.5 pts per Reception by TEs",
-        "2 pts for every 2 Point Conversion",
-      ],
+        {
+          game_event: "Passing TD",
+          points: "4"
+        },
+        {
+          game_event: "Non-Passing TD",
+          points: "6"
+        },
+        {
+          game_event: "Passing Yards",
+          points: "1"
+        },
+        {
+          game_event: "Interception Thrown",
+          points: "-1"
+        },
+        {
+          game_event: "Fumble Lost",
+          points: "-1"
+        },
+        {
+          game_event: "Rushing/Receiving Yards",
+          points: "1"
+        },
+        {
+          game_event: "RB/WR Reception",
+          points: "1"
+        },
+        {
+          game_event: "TE Reception",
+          points: "1.5"
+        },
+        {
+          game_event: "2-Point Conversion",
+          points: "2"
+        }
+      ]
     },
     {
       title: "Defense Scoring",
       rules: [
-        "1 pt for every Sack",
-        "2 pts for every Interception",
-        "2 pts for every Fumble Recovery",
-        "5 pts for every Safety",
-        "6 pts for every Defensive/ST TD",
-        "12 pts for a Shutout",
-        "8 pts for allowing 1-6 points",
-        "5 pts for allowing 7-10 points",
-      ],
+        {
+          game_event: "Sack",
+          points: "1"
+        },
+        {
+          game_event: "Interception",
+          points: "2"
+        },
+        {
+          game_event: "Fumble Recovery",
+          points: "2"
+        },
+        {
+          game_event: "Safety",
+          points: "5"
+        },
+        {
+          game_event: "Defensive/ST TD",
+          points: "6"
+        },
+        {
+          game_event: "Shutout",
+          points: "12"
+        },
+        {
+          game_event: "Points Allowed (1-6)",
+          points: "8"
+        },
+        {
+          game_event: "Points Allowed (7-10)",
+          points: "5"
+        }
+      ]
     },
     {
       title: "Kicker Scoring",
       rules: [
-        "1 pt for each PAT made",
-        "-1 pt for each PAT missed",
-        ".1 pt for each FG Made Yards (FGY)",
-        "-1 pt for each FG missed",
-      ],
-    },
+        {
+          game_event: "PAT Made",
+          points: "1"
+        },
+        {
+          game_event: "PAT Missed",
+          points: "-1"
+        },
+        {
+          game_event: "Field Goal Made",
+          points: "0.1"
+        },
+        {
+          game_event: "Field Goal Missed",
+          points: "-1"
+        }
+      ]
+    }
   ];
+
+  const renderTable = (section) => {
+    if (section.title === "Scaled Flex Scoring") {
+      return (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Ownership</TableCell>
+                <TableCell>Multiplier</TableCell>
+                <TableCell>Score</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {section.rules.map((rule, ruleIndex) => (
+                <TableRow key={ruleIndex}>
+                  <TableCell style={rule.color ? { color: rule.color } : {}}>{rule.ownership}</TableCell>
+                  <TableCell style={rule.color ? { color: rule.color } : {}}>{rule.multiplier}</TableCell>
+                  <TableCell>{rule.score}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      );
+    }
+
+    return (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell></TableCell>
+              <TableCell><strong>Points</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {section.rules.map((rule, ruleIndex) => (
+              <TableRow key={ruleIndex}>
+                <TableCell>{rule.game_event}</TableCell>
+                <TableCell>{rule.points}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -114,36 +225,7 @@ const ScoringRulesDialog = ({ open, onClose }) => {
             <Typography variant="h6" gutterBottom>
               {section.title}
             </Typography>
-            {Array.isArray(section.rules) && typeof section.rules[0] === "object" ? (
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Ownership</TableCell>
-                      <TableCell>Multiplier</TableCell>
-                      <TableCell>Score</TableCell>
-                    </TableRow>
-                  </TableHead>
-                <TableBody>
-                    {section.rules.map((rule, ruleIndex) => (
-                      <TableRow key={ruleIndex}>
-                        <TableCell style={rule.color ? { color: rule.color } : {}}>{rule.ownership}</TableCell>
-                        <TableCell style={rule.color ? { color: rule.color } : {}}>{rule.multiplier}</TableCell>
-                        <TableCell>{rule.score}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            ) : (
-              <ul>
-                {section.rules.map((rule, ruleIndex) => (
-                  <li key={ruleIndex}>
-                    <Typography variant="body1">{rule}</Typography>
-                  </li>
-                ))}
-              </ul>
-            )}
+            {renderTable(section)}
           </Box>
         ))}
       </DialogContent>
