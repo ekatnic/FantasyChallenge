@@ -153,9 +153,9 @@ const ScoringRulesDialog = ({ open, onClose }) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Ownership</TableCell>
-                <TableCell>Multiplier</TableCell>
-                <TableCell>Score</TableCell>
+                <TableCell><strong>Ownership</strong></TableCell>
+                <TableCell><strong>Multiplier</strong></TableCell>
+                <TableCell><strong>Score</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
