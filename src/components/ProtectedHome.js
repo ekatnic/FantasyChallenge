@@ -37,9 +37,6 @@ export default function ProtectedHome() {
       >
         Welcome to the Playoff Challenge
       </Typography>
-      <Typography variant="h5" component="h2" gutterBottom>
-        Compete, Watch, Win!
-      </Typography>
       <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 2 }}>
         <Button
           variant="contained"
@@ -115,12 +112,6 @@ export default function ProtectedHome() {
         </CardContent>
       </Card>
 
-      <Typography variant="body2" gutterBottom>
-        Looking for a free content? visit{" "}
-        <Link href="https://playoff-showdown-free.com" target="_blank" rel="noopener" sx={{ fontWeight: "bold" }}>
-          playoff-showdown-free.com
-        </Link>
-      </Typography>
       <Box sx={{ mt: 4 }}>
       <Typography>
         Follow us on{" "}

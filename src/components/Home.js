@@ -100,12 +100,6 @@ const Home = () => {
         </CardContent>
       </Card>
 
-      <Typography variant="body2" gutterBottom>
-        Looking for a free content? visit{" "}
-        <Link href="https://playoff-showdown-free.com" target="_blank" rel="noopener" sx={{ fontWeight: "bold" }}>
-          playoff-showdown-free.com
-        </Link>
-      </Typography>
       <Box sx={{ mt: 4 }}>
       <Typography>
         Follow us on{" "}
