@@ -94,7 +94,6 @@ class SignupView(generics.CreateAPIView):
                     'message': 'Account created and logged in successfully',
                     'user': UserSerializer(user).data
                 }, status=status.HTTP_201_CREATED)
-
             except cognito_service.cognito_idp_client.exceptions.UsernameExistsException:
                 return Response({
                     'success': False,

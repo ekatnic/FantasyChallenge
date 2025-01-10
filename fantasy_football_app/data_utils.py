@@ -58,6 +58,7 @@ def process_offensive_weekly_stat(weekly_stats, stats):
     passing_stats = stats.get('Passing', {})
     receiving_stats = stats.get('Receiving', {})
     rushing_stats = stats.get('Rushing', {})
+    kicking_stats = stats.get('Kicking', {})
     fumble_stats = stats.get('Defense', {})
     weekly_stats.passing_yards = int(passing_stats.get('passYds', 0))
     weekly_stats.passing_tds = int(passing_stats.get('passTD', 0))
@@ -73,6 +74,10 @@ def process_offensive_weekly_stat(weekly_stats, stats):
         int(passing_stats.get('passingTwoPointConversion', 0))
     )
     weekly_stats.fumbles_lost = int(fumble_stats.get('fumblesLost', 0))
+    weekly_stats.fg_made = int(kicking_stats.get('fgMade', 0))
+    weekly_stats.fg_missed = int(kicking_stats.get('fgMissed', 0))
+    weekly_stats.xp_made = int(kicking_stats.get('xpMade', 0))
+    weekly_stats.xp_missed = int(kicking_stats.get('xpMissed', 0))
 
     # Convert the weekly stats for that week to fantasy points
     weekly_stats.save()

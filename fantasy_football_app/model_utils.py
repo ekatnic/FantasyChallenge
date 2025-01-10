@@ -16,6 +16,11 @@ def calculate_weekly_score_for_player(weekly_stats):
             base_score += 5
         else:
             base_score += 0
+    elif position == 'K':
+        base_score += weekly_stats.fg_made * 3
+        base_score -= weekly_stats.fg_missed
+        base_score += weekly_stats.xp_made
+        base_score -= weekly_stats.xp_missed
     elif position == 'TE':
         base_score += weekly_stats.passing_yards * 0.05
         base_score += weekly_stats.passing_tds * 4.0

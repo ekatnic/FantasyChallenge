@@ -7,14 +7,14 @@ from ..constants import TEAM_ABBREV_TO_TEAM_NAME
 from ..models import Player
 from ..data_utils import create_or_update_weekly_stats_from_stats
 
-STAT_TYPES = ["Rushing", "Receiving", "Passing"]
+STAT_TYPES = ["Rushing", "Receiving", "Passing", "Kicking"]
 
 class DataProcessor:
 
     @staticmethod
     def process_player_stats_dict(player_stats_dict, week):
         player_set = set()
-        for player_id, player_stats in player_stats_dict.items():
+        for _, player_stats in player_stats_dict.items():
             if not any(player_stats.get(stat_type) for stat_type in STAT_TYPES):
                 logging.warning(f'Player {player_stats["longName"]} does not have offensive stats')
                 continue

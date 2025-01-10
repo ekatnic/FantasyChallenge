@@ -1,7 +1,7 @@
 # scoring.py
 from django.db.models import F
 
-from .models import Entry, Player, RosteredPlayers, WeeklyStats
+from .models import Entry, RosteredPlayers
 
 
 def get_roster_percentage_multiplier(rostered_percentage):
@@ -9,15 +9,15 @@ def get_roster_percentage_multiplier(rostered_percentage):
     Calculate and return the roster percentage multiplier based on the percentage of entries they are rostered in.
     """
     if rostered_percentage >= 50:
-        return 1.0
+        return .75
     elif 25 <= rostered_percentage < 50:
-        return 1.2
+        return 1.0
     elif 12.5 <= rostered_percentage < 25:
-        return 1.3
+        return 1.25
     elif 5 <= rostered_percentage < 12.5:
         return 1.5
     else:
-        return 1.75
+        return 2.0
 
 def get_player_scaled_flex_multiplier(player):
     """
@@ -31,6 +31,8 @@ def get_player_scaled_flex_multiplier(player):
     """
     total_entries = Entry.objects.all().count()
     rostered_count = RosteredPlayers.objects.filter(player=player).count()
+    if rostered_count == 1:
+        return 3.0
     rostered_percentage = (rostered_count / total_entries) * 100
     return get_roster_percentage_multiplier(rostered_percentage)
 
@@ -47,9 +49,7 @@ def get_scaled_player_scoring_dict(rostered_player):
     """
     scoring_dict = get_raw_player_scoring_dict(rostered_player.player)
     for week, score in scoring_dict.items():
-        if rostered_player.is_captain:
-            scoring_dict[week] = round(score * 1.5, 2)
-        elif rostered_player.is_scaled_flex:
+        if 'Scaled Flex' in rostered_player.roster_position:
             scoring_dict[week] = round(score * get_player_scaled_flex_multiplier(rostered_player.player), 2)
     return scoring_dict
 

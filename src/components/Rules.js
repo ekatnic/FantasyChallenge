@@ -67,7 +67,7 @@ export default function Rules() {
       rules: [
         "1 pt for each PAT made",
         "-1 pt for each PAT missed",
-        ".1 pt for each FG Made Yards (FGY)",
+        "3 pt for each FG Made",
         "-1 pt for each FG missed",
       ]
     }
