@@ -94,12 +94,7 @@ class SignupView(generics.CreateAPIView):
                     'message': 'Account created and logged in successfully',
                     'user': UserSerializer(user).data
                 }, status=status.HTTP_201_CREATED)
-            
-                # return Response({
-                #     'success': True,
-                #     'message': 'Account created in pending state. Awaiting email verification confirmation.',
-                # }, status=status.HTTP_201_CREATED)
-                
+
             except cognito_service.cognito_idp_client.exceptions.UsernameExistsException:
                 return Response({
                     'success': False,

@@ -162,8 +162,6 @@ export const AuthProvider = ({ children }) => {
         .flat() // Flatten the arrays of error messages
         .join("\n") // Join them with a newline
         : errorMessage || "Forgot password confirmation failed"; 
-
-      // const fullErrorMessage = getFullValidationErrorMessage(err, "Forgot password confirmation failed")
       
       setConfirmForgotPasswordError(fullErrorMessage)
 
