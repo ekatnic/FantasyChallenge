@@ -68,42 +68,24 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const data = await authAPI.signup(userData);
 
-      // METHOD 1:
-      // TODO: automatically logs in user after successful signup and redirects to dashboard
+      // NOTE: automatically logs in user after successful signup and redirects to dashboard
       setUser(data.user);
       setSignupError(null);
       navigate("/dashboard");
       
-      // METHOD 2: 
-      // TODO: Set null user and redirects to the confirm-signup page
-      // TODO: temporarly get rid of user confirm sign up while email is down
-      // setUser(null);
-      // setSignupError(null);
-      // navigate("/login")
-
-      // METHOD 3:
-      // TODO: Go to confirm-signup route and pass email as state so user can just give confirmation code from email
-      // setUser(null);
-      // setSignupError(null);
-      // navigate("/confirm-signup", {
-      //   state: { userData },
-      // });
       return data;
     } catch (err) {
       console.log("signup func err: ", err)
-    //   // Improve error handling to capture both message and validation errors
+      // error handling to capture both message and validation errors
       const errorMessage = err.response?.data?.message;
       const validationErrors = err.response?.data?.errors;
-
-    // Flatten and format all error messages
+  
+      // Flatten and format all error messages
       const fullErrorMessage = validationErrors ? Object.values(validationErrors) 
         .flat() // Flatten the arrays of error messages
         .join("\n") // Join them with a newline
         : errorMessage || "Signup failed"; 
 
-      // const fullErrorMessage = getFullValidationErrorMessage(err)
-
-      // console.log("full error mes", fullErrorMessage) 
       setSignupError(fullErrorMessage);
       throw err;
     } finally {
@@ -180,8 +162,6 @@ export const AuthProvider = ({ children }) => {
         .flat() // Flatten the arrays of error messages
         .join("\n") // Join them with a newline
         : errorMessage || "Forgot password confirmation failed"; 
-
-      // const fullErrorMessage = getFullValidationErrorMessage(err, "Forgot password confirmation failed")
       
       setConfirmForgotPasswordError(fullErrorMessage)
 
@@ -190,17 +170,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  // try {
-  //   await confirmForgotPassword(formData);
-  //   navigate("/login", {
-  //     state: {
-  //       message:
-  //         "Password reset successful! Please log in with your new password.",
-  //     },
-  //   });
-  // } catch (err) {
-  //   setError(err.response?.data?.errors || "An error occurred");
-  // }
   
   const value = {
     user,

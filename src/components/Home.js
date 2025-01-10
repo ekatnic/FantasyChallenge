@@ -11,16 +11,12 @@ const Home = () => {
         p: 4,
         mt: 4,
         mx: "auto",
-        // maxWidth: 800,
         maxWidth: '75%',
         textAlign: "center",
         background: "#f9f9f9",
       }}
       elevation={3}
     >
-      {/* <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: "bold", color: "#1976d2" }}>
-        Playoff Challenge
-      </Typography> */}
       <Typography
         variant="h3"
         component="h1"

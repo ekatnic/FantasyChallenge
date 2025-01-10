@@ -35,7 +35,6 @@ const App = () => {
         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<Signup />} />
-        {/* <Route path="/confirm-signup" element={<ConfirmSignupForm />} /> */}
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/confirm-forgot-password" element={<ConfirmForgotPassword />} />
         <Route path="/rules" element={<Rules />} />

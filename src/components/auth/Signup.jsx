@@ -82,9 +82,6 @@ export default function Signup() {
       });
     } catch (err) {
       console.error("Signup failed:", err);
-      // const errorMessage = handleError(err)
-      // console.log("errorMessage: ", errorMessage)
-      // setFormError(errorMessage)
     }
   };
 
