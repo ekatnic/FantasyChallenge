@@ -22,9 +22,6 @@ export default function ProtectedHome() {
       }}
       elevation={3}
     >
-      {/* <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: "bold", color: "#1976d2" }}>
-        Playoff Challenge
-      </Typography> */}
       <Typography
         variant="h3"
         component="h1"
@@ -47,14 +44,14 @@ export default function ProtectedHome() {
         <Button
           variant="contained"
           color="info"
-          startIcon={<ListIcon />} // Add list icon
+          startIcon={<ListIcon />} 
           onClick={() => navigate("/my-entries")}>
           My Entries
         </Button>
         <Button
           variant="contained"
           sx={{ bgcolor: "green" }}
-          startIcon={<AddIcon />} // Add plus icon
+          startIcon={<AddIcon />} 
           onClick={() => navigate("/create-entry")}>
           Create Entry
         </Button>

@@ -26,37 +26,12 @@ export default function ConfirmForgotPassword() {
     password: "",
   });
   
-  // const [error, setError] = useState("");
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError("");
-
-  //   try {
-  //     await confirmForgotPassword(formData);
-  //     navigate("/login", {
-  //       state: {
-  //         message:
-  //           "Password reset successful! Please log in with your new password.",
-  //       },
-  //     });
-  //   } catch (err) {
-  //     setError(err.response?.data?.errors || "An error occurred");
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await confirmForgotPassword(formData);
-      // await confirmForgotPassword({
-      //   email: userData.email,
-      //   confirmation_code: confirmationCode,
-      //   password: userData.password,
-      // });
     } catch (err) {
       console.error("Confirmation failed:", err);
-
     }
   };
 
