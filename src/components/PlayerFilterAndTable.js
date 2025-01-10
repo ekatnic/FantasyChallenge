@@ -5,6 +5,7 @@ import {
   Select,
   MenuItem,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import PlayerTable from "./PlayerTable";
 
@@ -63,11 +64,27 @@ const PlayerFilterAndTable = ({
         onChange={(e) => setSearchTerm(e.target.value)}
         margin="normal"
       />
-      <PlayerTable
+      <Tooltip title="Drag players to Your Roster or click Add"
+        arrow
+        sx={{
+          fontSize: '3rem',  // Increase the font size
+          padding: '15px',     // Add padding for better spacing
+          maxWidth: 400,       // Limit the width if necessary
+        }}
+      >
+        <span>
+          <PlayerTable
+            filteredPlayers={filteredPlayers}
+            handleAddPlayer={handleAddPlayer}
+            handleSort={handleSort}
+          />
+        </span>
+      </Tooltip>
+      {/* <PlayerTable
         filteredPlayers={filteredPlayers}
         handleAddPlayer={handleAddPlayer}
         handleSort={handleSort}
-      />
+      /> */}
     </>
   );
 };
