@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, Paper, Box, Button, Card, CardContent, Link } from "@mui/material";
+import EntryNodeGraph from "./EntryNodeGraph";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const Home = () => {
       }}
       elevation={3}
     >
+      <EntryNodeGraph />
       <Typography
         variant="h3"
         component="h1"

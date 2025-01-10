@@ -118,3 +118,14 @@ export const getPlayerWeeklyStats = async (playerId) => {
     throw error;
   }
 };
+
+export const getEntryRosterProfiles = async (id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/entries/${id}/roster-profiles/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching entry:", error);
+    throw error;
+  }
+};
+

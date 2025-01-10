@@ -5,6 +5,7 @@ import { Dialog, Card, CardContent, CardHeader, Avatar, Typography, Box, Table,
 import CloseIcon from '@mui/icons-material/Close';
 
 export function PlayerProfile({playerData, open, onClose}) {
+  console.log("playerData", playerData)
   const { name, position, team, info, stats } = playerData;
   const [seasonType, setSeasonType] = useState('regular_season');
 

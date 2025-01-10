@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from .models import Entry, Player, RosteredPlayers, WeeklyStats
 from .utils import get_entry_score_dict, get_entry_total_dict, get_all_entry_score_dicts, get_summarized_players
-from .serializers import WeeklyStatsSerializer, EntrySerializer, PlayerSerializer, RosteredPlayersSerializer
+from .serializers import WeeklyStatsSerializer, EntrySerializer, PlayerSerializer, RosteredPlayersSerializer, PlayerInfoSerializer
 from django.core.cache import cache
 
 class EntryListCreateAPIView(generics.ListCreateAPIView):
@@ -61,6 +61,8 @@ class EntryRosterAPIView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set'), id=kwargs['pk'], user=request.user)
+        # print(f"Entry: {entry}")
+        print(f"Entry: {vars(entry)}")
         player_total_dict = get_entry_score_dict(entry)
         entry_total_dict = get_entry_total_dict(player_total_dict)
 
@@ -77,6 +79,7 @@ class EntryRosterAPIView(generics.RetrieveAPIView):
             "player_list": player_list,
             "entry_scores": entry_total_dict,
         }
+        print(f"Data: {data}")
         return Response(data)
 
 class StandingsAPIView(APIView):
@@ -121,3 +124,145 @@ class PlayerWeeklyStatsAPIView(APIView):
         player_data = PlayerSerializer(player).data
         weekly_stats_data = WeeklyStatsSerializer(weekly_stats, many=True).data
         return Response({'player': player_data, 'weekly_stats': weekly_stats_data})
+
+
+# -----------------------------------------
+# -------- PROFILE VIEWS -----------------
+# -----------------------------------------
+class EntriesWithPlayersAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # Fetch entries for the current user
+        # entries = Entry.objects.filter(user=request.user).prefetch_related('rosteredplayers_set__player')
+        entries = Entry.objects.all().prefetch_related('rosteredplayers_set__player')
+        print(f"Entries: {entries}")
+        print(f"vars(entries): {vars(entries)}")
+        all_entries_list = get_all_entry_score_dicts()
+
+        print(f"Entries: {entries}") 
+        print(f"All Entries List: {all_entries_list}")
+        # Create the response dictionary
+        data = {}
+        for entry in entries:
+            rostered_players = RosteredPlayers.objects.filter(entry=entry).select_related('player')
+            players_list = [
+                {
+                    "id": rp.player.id,
+                    "name": rp.player.name,
+                    "position": rp.player.position,
+                    "team": rp.player.team,
+                    "is_captain": rp.is_captain,
+                    "roster_position": rp.roster_position,
+                }
+                for rp in rostered_players
+            ]
+            data[entry.id] = {
+                "entry_name": entry.name,
+                "players": players_list,
+            }
+
+        return Response(data)
+
+class EntryWithPlayersAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # Fetch entries for the current user
+        entries = Entry.objects.filter(user=request.user).prefetch_related('rosteredplayers_set__player')
+        print(f"Entries: {entries}")
+        print(f"vars(entries): {vars(entries)}")
+        all_entries_list = get_all_entry_score_dicts()
+
+        print(f"Entries: {entries}") 
+        print(f"All Entries List: {all_entries_list}")
+        # Create the response dictionary
+        data = {}
+        for entry in entries:
+            rostered_players = RosteredPlayers.objects.filter(entry=entry).select_related('player')
+            players_list = [
+                {
+                    "id": rp.player.id,
+                    "name": rp.player.name,
+                    "position": rp.player.position,
+                    "team": rp.player.team,
+                    "is_captain": rp.is_captain,
+                    "roster_position": rp.roster_position,
+                }
+                for rp in rostered_players
+            ]
+            data[entry.id] = {
+                "entry_name": entry.name,
+                "players": players_list,
+            }
+
+        return Response(data)
+
+# class EntryRosterWithInfoAPIView(generics.RetrieveAPIView):
+#     queryset = Entry.objects.all()
+#     serializer_class = EntrySerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get_queryset(self):
+#         return Entry.objects.filter(user=self.request.user)
+
+#     def retrieve(self, request, *args, **kwargs):
+#         # Get the entry by ID and ensure the user is authorized to access it
+#         entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__info'),
+#                                   id=kwargs['pk'], user=request.user)
+
+#         # Create a list of player data, including PlayerInfo
+#         player_list = [
+#             {
+#                 "player": RosteredPlayersSerializer(player).data,
+#                 "player_info": PlayerInfoSerializer(player.player.info).data  # Serialize the PlayerInfo model
+#             }
+#             for player in entry.rosteredplayers_set.all()
+#         ]
+
+#         # Build the data to return, including the entry's name and the player list
+#         data = {
+#             "entry_name": entry.name,
+#             "player_list": player_list,
+#         }
+
+#         return Response(data)
+
+class EntryRosterWithInfoAPIView(generics.RetrieveAPIView):
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Entry.objects.filter(user=self.request.user)
+
+    def retrieve(self, request, *args, **kwargs):
+        # Get the entry by ID and ensure the user is authorized to access it
+        entry = get_object_or_404(
+            Entry.objects.prefetch_related(
+                'rosteredplayers_set__player'
+            ),
+            id=kwargs['pk'], user=request.user
+        )
+
+        # Create a list of player data, including PlayerInfo and team
+        player_list = []
+        for player in entry.rosteredplayers_set.all():
+            player_data = RosteredPlayersSerializer(player).data
+            player_info_data = PlayerInfoSerializer(player.player.info).data
+
+            player_team = Player.objects.get(id=player.player_id).team
+            player_data['team'] = player_team  # Add the team field to the player data
+
+            player_list.append({
+                "player": player_data,
+                "player_info": player_info_data
+            })
+
+        # Build the data to return, including the entry's name and the player list
+        data = {
+            "entry_name": entry.name,
+            "player_list": player_list,
+        }
+
+        return Response(data)

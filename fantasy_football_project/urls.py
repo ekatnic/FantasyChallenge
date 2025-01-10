@@ -41,6 +41,9 @@ from fantasy_football_app.apis import(
     StandingsAPIView,
     PlayerOwnershipAPIView,
     PlayerWeeklyStatsAPIView,
+    EntriesWithPlayersAPIView,
+    EntryWithPlayersAPIView, 
+    EntryRosterWithInfoAPIView
 )
 
 from fantasy_football_app.auth_views import (
@@ -86,6 +89,9 @@ urlpatterns = [
     # path('api/player-ownership/', PlayerOwnershipAPIView.as_view(), name='player-ownership'),
     # path('api/standings/', StandingsAPIView.as_view(), name='standings-api'),
     path('api/player-weekly-stats/<int:player_id>/', PlayerWeeklyStatsAPIView.as_view(), name='weekly-stats-api'),
+    path('api/entries-with-players/', EntriesWithPlayersAPIView.as_view(), name='entries-with-players-api'),
+    path('api/entry-with-players/<int:pk>/', EntryWithPlayersAPIView.as_view(), name='entry-with-players-api'),
+    path('api/entries/<int:pk>/roster-profiles/', EntryRosterWithInfoAPIView.as_view(), name='entry-roster-profiles'),
 
     # React routes
     path('create-entry/', react_view, name='create_entry'),

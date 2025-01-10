@@ -62,3 +62,23 @@ export const playoffTeams = [
   "PIT",
   "BUF",
 ]
+
+// Remove non-playoff teams when final games conclude
+export const alivePlayoffTeams = {
+  "LAR": true,
+  "TB": true,
+  "DET": true,
+  "MIN": true,
+  "GB": true,
+  "PHI": true,
+  "WAS": true,
+  "KC": false,
+  "LAC": true,
+  "DEN": true,
+  "HOU": true,
+  "BAL": true,
+  "PIT": true,
+  "BUF": true
+}
+
+export const currentRound = 1;
