@@ -16,13 +16,14 @@ import ScaledFlexRulesTable from "./ScaledFlexRulesTable";
 
 export default function Rules() {
   const payouts = [
-    { position: "1st", amount: "50% of pot" },
-    { position: "2nd", amount: "15% of pot" },
+    { position: "1st", amount: "55% of pot" },
+    { position: "2nd", amount: "20% of pot" },
     { position: "3rd", amount: "10% of pot" },
-    { position: "4th", amount: "8% of pot" },
+    { position: "4th", amount: "7.5% of pot" },
     { position: "5th", amount: "5% of pot" },
-    { position: "6th-10th", amount: "$20" },
-    { position: "Last Place*", amount: "$20" },
+    { position: "6th", amount: "$20" },
+    { position: "7th", amount: "$20" },
+    { position: "Last Place", amount: "$20" },
   ];
 
   const pricing = [
@@ -99,7 +100,7 @@ export default function Rules() {
           </Typography>
           <Typography gutterBottom>
             Create a lineup of 12 player aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup.
-            You can only select ONE PLAYER PER TEAM. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
+            You can only select <strong>ONE PLAYER PER TEAM</strong>. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
           </Typography>
           <Typography variant="h5" align="center" gutterBottom>
             <br/>

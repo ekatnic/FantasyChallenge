@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+
 import {
   Container,
   Paper,
@@ -12,7 +13,7 @@ import {
 } from "@mui/material";
 
 export default function ConfirmSignupForm() {
-  const { confirmSignup, error } = useAuth();
+  const { confirmSignup, confirmSignupError } = useAuth();
   const [confirmationCode, setConfirmationCode] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,9 +54,9 @@ export default function ConfirmSignupForm() {
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             Confirm Your Email
           </Typography>
-          {error && (
+          {confirmSignupError && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
+              {confirmSignupError}
             </Alert>
           )}
           <Typography variant="body2" align="center" sx={{ mb: 3 }}>

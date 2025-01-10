@@ -20,7 +20,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 export default function LoginForm() {
-  const { login, error } = useAuth();
+  const { login, loginError } = useAuth();
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
@@ -56,9 +56,9 @@ export default function LoginForm() {
           <Typography component="h4" align="center" gutterBottom>
             If you signed up last year, you'll need to create a new account to join the competition.
           </Typography>
-          {error && (
+          {loginError && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
+              {loginError}
             </Alert>
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>

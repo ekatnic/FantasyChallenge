@@ -12,6 +12,8 @@ import {
   Box,
   Alert,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 // Configure axios to work with Django CSRF token
 axios.defaults.withCredentials = true;
@@ -19,7 +21,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 export default function Signup() {
-  const { signup, error } = useAuth();
+  const { signup, signupError, setSignupError} = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password1: "",
@@ -27,11 +29,35 @@ export default function Signup() {
     first_name: "",
     last_name: "",
   });
-  const [formError, setFormError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  
+  const isPasswordCorrectLength = (password) => {
+    return password.length >= 9; 
+  };
+
+  const hasNoLeadingOrTrailingWhitespaces = (password) => {
+    return password === password.trim() ;
+  }
+
+  const isMatchingPasswords = (password1, password2) => {
+    return password1 === password2 && password1 && password2;
+  };
+
+  const isOnlyNumbers = (s) => {
+    return typeof s === 'string' && /^[0-9]+$/.test(s);
+  }
+
+  const hasAlphabetcalOrSpecialChar = (s) => {
+    const regex = /[a-zA-Z]|[^a-zA-Z0-9]/;
+    return typeof s === 'string' && regex.test(s);
+  }
+
+  const hasValidPasswordChars = (s) => {
+    return hasAlphabetcalOrSpecialChar(s) && !isOnlyNumbers(s)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +65,8 @@ export default function Signup() {
   
     // Validate that password1 and confirm password1 match
     if (formData.password1 !== formData.password2) {
-      setFormError("Passwords don't match!");
+      // setError("Passwords don't match!")
+      setSignupError("Passwords don't match!");
       return;
     }
   
@@ -55,11 +82,6 @@ export default function Signup() {
       });
     } catch (err) {
       console.error("Signup failed:", err);
-      // const errorMessage = err.response?.data?.message || "Signup failed. Please try again.";
-      // const errors = err.response?.data?.errors || {};
-      // const detailedErrorMessage = Object.values(errors).flat().join(' ') || errorMessage;
-      // setFormError(detailedErrorMessage);
-      // setFormError(err)
     }
   };
 
@@ -77,9 +99,9 @@ export default function Signup() {
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             Sign Up
           </Typography>
-          {error && (
+          {signupError && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
+              {signupError}
             </Alert>
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
@@ -133,7 +155,6 @@ export default function Signup() {
               value={formData.password1}
               onChange={handleChange}
             />
-
             {/* Confirm Password Field */}
             <TextField
               margin="normal"
@@ -145,13 +166,44 @@ export default function Signup() {
               value={formData.password2}
               onChange={handleChange}
             />
-
+              {/* Validation Indicators */}
+              <Box sx={{ mt: 1 }}>
+              <Typography variant="body2">
+                {isPasswordCorrectLength(formData.password1) ? (
+                  <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                ) : (
+                  <CancelIcon color="error" sx={{ mr: 1 }} />
+                )} at least 9 characters
+              </Typography>
+              <Typography variant="body2">
+                {hasNoLeadingOrTrailingWhitespaces(formData.password1) && formData.password1 ? (
+                  <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                ) : (
+                  <CancelIcon color="error" sx={{ mr: 1 }} />
+                )} Password does not have leading or trailing whitespaces 
+              </Typography>
+              <Typography variant="body2">
+                {hasValidPasswordChars(formData.password1) ? (
+                  <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                ) : (
+                  <CancelIcon color="error" sx={{ mr: 1 }} />
+                )} Password contains atleast 1 alphabetical character or 1 special character and is not entirely numbers
+              </Typography>
+              <Typography variant="body2">
+                {isMatchingPasswords(formData.password1, formData.password2) ? (
+                  <CheckCircleIcon color="success" sx={{ mr: 1 }} />
+                ) : (
+                  <CancelIcon color="error" sx={{ mr: 1 }} />
+                )} Passwords match
+              </Typography>
+            </Box>
             {/* Submit Button */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={!isPasswordCorrectLength(formData.password1) || !hasNoLeadingOrTrailingWhitespaces(formData.password1) || !hasValidPasswordChars(formData.password1) || !isMatchingPasswords(formData.password1, formData.password2)}
             >
               Sign Up
             </Button>

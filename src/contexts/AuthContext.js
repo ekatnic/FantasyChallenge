@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as authAPI from "../services/auth";
+import {getFullValidationErrorMessage} from "../componentUtils"
 
 // Create context
 const AuthContext = createContext(null);
@@ -14,7 +15,15 @@ axios.defaults.withCredentials = true;
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const [checkAuthError, setCheckAuthError] = useState(null);
+  const [signupError, setSignupError] = useState(null);
+  const [confirmSignupError, setConfirmSignupError] = useState(null);
+  const [loginError, setLoginError] = useState(null);
+  const [forgotPasswordError, setForgotPasswordError] = useState(null);
+  const [confirmForgotPasswordError, setConfirmForgotPasswordError] = useState(null);
+  const [logoutError, setLogoutError] = useState(null);
+    
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,10 +36,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authAPI.checkAuthStatus();
       setUser(data.user);
-      setError(null);
+      setCheckAuthError(null);
     } catch (err) {
       setUser(null);
-      setError("Authentication check failed");
+      setCheckAuthError("Authentication check failed");
     } finally {
       setLoading(false);
     }
@@ -41,13 +50,13 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const data = await authAPI.login(credentials);
       setUser(data.user);
-      setError(null);
+      setLoginError(null);
       // Redirect to starting page
       const from = location.state?.from?.pathname || "/dashboard";
       navigate(from, { replace: true });
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setLoginError(err.response?.data?.message || "Login failed");
       throw err;
     } finally {
       setLoading(false);
@@ -59,31 +68,25 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const data = await authAPI.signup(userData);
 
-      // TODO: Set null user and redirects to the confirm-signup page
-      setUser(null);
-      setError(null);
-      // Go to confirm-signup route and pass email as state so user can just give confirmation code from email
-      navigate("/confirm-signup", {
-        state: { userData },
-      });
+      // NOTE: automatically logs in user after successful signup and redirects to dashboard
+      setUser(data.user);
+      setSignupError(null);
+      navigate("/dashboard");
+      
       return data;
     } catch (err) {
       console.log("signup func err: ", err)
-      // setError(err.response?.data?.message || "Signup failed");
-      // Improve error handling to capture both message and validation errors
+      // error handling to capture both message and validation errors
       const errorMessage = err.response?.data?.message;
       const validationErrors = err.response?.data?.errors;
-      // console.log("errorMessage: ", errorMessage)
-      // console.log("validationErrors: ", validationErrors)
-
-    // Flatten and format all error messages
+  
+      // Flatten and format all error messages
       const fullErrorMessage = validationErrors ? Object.values(validationErrors) 
         .flat() // Flatten the arrays of error messages
         .join("\n") // Join them with a newline
         : errorMessage || "Signup failed"; 
 
-    //  console.log("full error mes", fullErrorMessage) 
-      setError(fullErrorMessage);
+      setSignupError(fullErrorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -95,11 +98,11 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const data = await authAPI.confirmSignup(confirmationData);
       setUser(null); // NOTE: Setting user to null means the user needs to login again after signing up
-      setError(null);
+      setConfirmSignupError(null);
       navigate("/login");
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Signup confirmation failed");
+      setConfirmSignupError(err.response?.data?.message || "Signup confirmation failed");
       throw err;
     } finally {
       setLoading(false);
@@ -111,10 +114,10 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       await authAPI.logout();
       setUser(null);
-      setError(null);
+      setLogoutError(null);
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Logout failed");
+      setLogoutError(err.response?.data?.message || "Logout failed");
       throw err;
     } finally {
       setLoading(false);
@@ -125,25 +128,65 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await authAPI.forgotPassword(email);
-      setError(null);
+      setForgotPasswordError(null);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || "Password reset request failed");
+      setForgotPasswordError(err.response?.data?.message || "Password reset request failed");
       throw err;
     } finally {
       setLoading(false);
     }
   };
+  
+  const confirmForgotPassword = async (confirmationData) => {
+    try {
+      setLoading(true);
+      const data = await authAPI.confirmForgotPassword(confirmationData);
+      setUser(null); // NOTE: Setting user to null means the user needs to login again after signing up
+      setConfirmForgotPasswordError(null);
+      setLoginError(null);
+      navigate("/login", {
+        state: {
+          message:
+            "Password reset successful! Please log in with your new password.",
+        },
+      });
+      return data;
+    } catch (err) {
 
+      const errorMessage = err.response?.data?.message;
+      const validationErrors = err.response?.data?.errors;
+
+    // Flatten and format all error messages
+      const fullErrorMessage = validationErrors ? Object.values(validationErrors) 
+        .flat() // Flatten the arrays of error messages
+        .join("\n") // Join them with a newline
+        : errorMessage || "Forgot password confirmation failed"; 
+      
+      setConfirmForgotPasswordError(fullErrorMessage)
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const value = {
     user,
     loading,
-    error,
-    login,
+    checkAuthError,
+    signupError,
+    confirmSignupError,
+    loginError,
+    forgotPasswordError,
+    confirmForgotPasswordError,
+    logoutError,
     signup,
     confirmSignup,
-    logout,
+    login,
     forgotPassword,
+    confirmForgotPassword,
+    logout,
     isAuthenticated: !!user,
     checkAuth,
   };

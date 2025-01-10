@@ -1,45 +1,9 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, Typography, Box, IconButton } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Typography, Box, IconButton, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 
 const ScoringRulesDialog = ({ open, onClose }) => {
   const fullRules = [
-    {
-      title: "Offense Scoring",
-      rules: [
-        "4 pts for Passing TDs",
-        "6 pts for non Passing TDs",
-        "1 pt for every 20 Yards Passing",
-        "-1 pt for every Interception Thrown",
-        "-1 pt for every Fumble Lost",
-        "1 pt for every 10 Rushing or Receiving yards",
-        "1 pt per Reception by RBs and WRs",
-        "1.5 pts per Reception by TEs",
-        "2 pts for every 2 Point Conversion",
-      ],
-    },
-    {
-      title: "Defense Scoring",
-      rules: [
-        "1 pt for every Sack",
-        "2 pts for every Interception",
-        "2 pts for every Fumble Recovery",
-        "5 pts for every Safety",
-        "6 pts for every Defensive/ST TD",
-        "12 pts for a Shutout",
-        "8 pts for allowing 1-6 points",
-        "5 pts for allowing 7-10 points",
-      ],
-    },
-    {
-      title: "Kicker Scoring",
-      rules: [
-        "1 pt for each PAT made",
-        "-1 pt for each PAT missed",
-        ".1 pt for each FG Made Yards (FGY)",
-        "-1 pt for each FG missed",
-      ],
-    },
     {
       title: "Scaled Flex Scoring",
       rules: [
@@ -81,57 +45,187 @@ const ScoringRulesDialog = ({ open, onClose }) => {
         },
       ],
     },
+    {
+      title: "Offense Scoring",
+      rules: [
+        {
+          game_event: "Passing TD",
+          points: "4"
+        },
+        {
+          game_event: "Non-Passing TD",
+          points: "6"
+        },
+        {
+          game_event: "Passing Yards",
+          points: "1"
+        },
+        {
+          game_event: "Interception Thrown",
+          points: "-1"
+        },
+        {
+          game_event: "Fumble Lost",
+          points: "-1"
+        },
+        {
+          game_event: "Rushing/Receiving Yards",
+          points: "1"
+        },
+        {
+          game_event: "RB/WR Reception",
+          points: "1"
+        },
+        {
+          game_event: "TE Reception",
+          points: "1.5"
+        },
+        {
+          game_event: "2-Point Conversion",
+          points: "2"
+        }
+      ]
+    },
+    {
+      title: "Defense Scoring",
+      rules: [
+        {
+          game_event: "Sack",
+          points: "1"
+        },
+        {
+          game_event: "Interception",
+          points: "2"
+        },
+        {
+          game_event: "Fumble Recovery",
+          points: "2"
+        },
+        {
+          game_event: "Safety",
+          points: "5"
+        },
+        {
+          game_event: "Defensive/ST TD",
+          points: "6"
+        },
+        {
+          game_event: "Shutout",
+          points: "12"
+        },
+        {
+          game_event: "Points Allowed (1-6)",
+          points: "8"
+        },
+        {
+          game_event: "Points Allowed (7-10)",
+          points: "5"
+        }
+      ]
+    },
+    {
+      title: "Kicker Scoring",
+      rules: [
+        {
+          game_event: "PAT Made",
+          points: "1"
+        },
+        {
+          game_event: "PAT Missed",
+          points: "-1"
+        },
+        {
+          game_event: "Field Goal Made",
+          points: "0.1"
+        },
+        {
+          game_event: "Field Goal Missed",
+          points: "-1"
+        }
+      ]
+    }
   ];
+
+  const renderTable = (section) => {
+    if (section.title === "Scaled Flex Scoring") {
+      return (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>Ownership</strong></TableCell>
+                <TableCell><strong>Multiplier</strong></TableCell>
+                <TableCell><strong>Score</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {section.rules.map((rule, ruleIndex) => (
+                <TableRow key={ruleIndex}>
+                  <TableCell style={rule.color ? { color: rule.color } : {}}>{rule.ownership}</TableCell>
+                  <TableCell style={rule.color ? { color: rule.color } : {}}>{rule.multiplier}</TableCell>
+                  <TableCell>{rule.score}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      );
+    }
+
+    return (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell></TableCell>
+              <TableCell><strong>Points</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {section.rules.map((rule, ruleIndex) => (
+              <TableRow key={ruleIndex}>
+                <TableCell>{rule.game_event}</TableCell>
+                <TableCell>{rule.points}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Scoring Rules</DialogTitle>
-      <IconButton onClick={onClose}
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: 'grey.500',
-          zIndex: 1
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
+      <DialogTitle>
+        Scoring Rules
+        <IconButton
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: "grey.500",
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
-        Create a lineup of 12 player aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup. You can only select ONE PLAYER PER TEAM. So if you choose Lamar Jackson you cannot also have Derrick Henry in your lineup.
-        <br/>
-        <br/>
-        You will select 2 Scaled FLEX's. The scoring of this position is based on how commonly selected that player is. You are rewarded with a higher bonus if the player is less popular in others' rosters.
-        Meaning if you selected Derrick Henry for your scaled flex and he was in 55% of lineups, he would score .75x points over the course of the playoffs, but if you selected Rashod Bateman and you were the only person to have him selected, he would score 3x points each game.
-        <br/>
-        <br/>
-        Warning: You get fewer points if you choose an extremely popular player. (Ownership is determined by entire rostership, not just scaled flex position)
-        <br/>
-        <br/>
+        <Typography>
+          Create a lineup of 12 players aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup. You can only select <strong>ONE PLAYER PER TEAM</strong>. So if you choose Lamar Jackson, you cannot also have Derrick Henry in your lineup.
+        </Typography>
+        <Typography variant="body1" sx={{ my: 2 }}>
+          You will select 2 Scaled FLEX's. The scoring of this position is based on how commonly selected that player is. You are rewarded with a higher bonus if the player is less popular in others' rosters. Meaning if you selected Derrick Henry for your scaled flex and he was in 55% of lineups, he would score .75x points over the course of the playoffs, but if you selected Rashod Bateman and you were the only person to have him selected, he would score 3x points each game.
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          <strong>Warning:</strong> You get fewer points if you choose an extremely popular player. (Ownership is determined by entire rostership, not just scaled flex position)
+        </Typography>
         {fullRules.map((section, index) => (
-          <Box key={index} sx={{ mb: 2 }}>
+          <Box key={index} sx={{ mb: 4 }}>
             <Typography variant="h6" gutterBottom>
               {section.title}
             </Typography>
-            <ul>
-              {section.rules.map((rule, ruleIndex) => (
-                <li key={ruleIndex}>
-                  {typeof rule === "string" ? (
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      sx={{ fontWeight: rule === "1.5 pts per Reception by TEs" ? 'bold' : 'normal' }}
-                    >
-                      {rule}
-                    </Typography>
-                  ) : (
-                    <Typography variant="body1" component="span">
-                      <span style={{ color: rule.color }}>{rule.ownership} - {rule.multiplier}</span> - {rule.score}
-                    </Typography>
-                  )}
-                </li>
-              ))}
-            </ul>
+            {renderTable(section)}
           </Box>
         ))}
       </DialogContent>

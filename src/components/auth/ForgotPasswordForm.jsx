@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 
 export default function ForgotPasswordForm() {
-  const { forgotPassword, error } = useAuth();
+  const { forgotPassword, forgotPasswordError } = useAuth();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -77,9 +77,9 @@ export default function ForgotPasswordForm() {
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             Reset Password
           </Typography>
-          {error && (
+          {forgotPasswordError && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
+              {forgotPasswordError}
             </Alert>
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>

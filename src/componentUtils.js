@@ -158,3 +158,17 @@ export const handleDropPlayer = (
   // Clear any previous team error
   setTeamError(null);
 };
+
+export const getFullValidationErrorMessage = (err, fallbackMessage = "Signup failed") => {
+  const errorMessage = err.response?.data?.message;
+  const validationErrors = err.response?.data?.errors;
+
+  // Flatten and format all error messages
+  const fullErrorMessage = validationErrors
+    ? Object.values(validationErrors)
+        .flat() // Flatten the arrays of error messages
+        .join("\n") // Join them with a newline
+    : errorMessage || fallbackMessage;
+
+  return fullErrorMessage;
+}
