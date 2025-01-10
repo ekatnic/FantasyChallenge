@@ -136,7 +136,7 @@ const ScoringRulesDialog = ({ open, onClose }) => {
         },
         {
           game_event: "Field Goal Made",
-          points: "0.1"
+          points: "3"
         },
         {
           game_event: "Field Goal Missed",
