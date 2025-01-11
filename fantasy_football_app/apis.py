@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from django.db.models import F, Sum
 from .models import Entry, Player, RosteredPlayers, WeeklyStats
 from .utils import get_entry_score_dict, get_entry_total_dict, get_all_entry_score_dicts, get_summarized_players
 from .serializers import WeeklyStatsSerializer, EntrySerializer, PlayerSerializer, RosteredPlayersSerializer
@@ -121,3 +122,87 @@ class PlayerWeeklyStatsAPIView(APIView):
         player_data = PlayerSerializer(player).data
         weekly_stats_data = WeeklyStatsSerializer(weekly_stats, many=True).data
         return Response({'player': player_data, 'weekly_stats': weekly_stats_data})
+
+class SurvivorStandingsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        cache_key = "survivor_entry_standings"
+        # cache.delete(cache_key)
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        entries = Entry.objects.prefetch_related(
+            'rosteredplayers_set__player',
+            'rosteredplayers_set__player__weeklystats_set'
+        ).all()
+
+        standings_data = []
+        
+        for entry in entries:
+            # all rostered players for this entry
+            rostered_players = RosteredPlayers.objects.filter(
+                entry=entry
+            ).select_related('player')
+
+            # calc total points for each player
+            players_data = []
+            for rp in rostered_players:
+                # total weekly points for this player
+                total_points = WeeklyStats.objects.filter(
+                    player=rp.player
+                ).aggregate(
+                    total_score=Sum('week_score')
+                )['total_score'] or 0.0
+
+                players_data.append({
+                    "rostered_position": rp.roster_position,
+                    "total_points": round(total_points, 2),
+                    "player_name": rp.player.name,
+                    "team": rp.player.team
+                })
+
+            # total entry points 
+            entry_total = sum(player["total_points"] for player in players_data)
+            
+            standings_data.append({
+                "entry": entry.name,
+                "entry_id": entry.id, 
+                "players": players_data,
+                "total_points": entry_total  
+            })
+
+        # sort by total points and add rank
+        standings_data = sorted(
+            standings_data,
+            key=lambda x: x["total_points"],
+            reverse=True
+        )
+
+         # add rank with handling of tied entries
+        final_data = []
+        prev_rank = 1
+        prev_points = None
+        current_rank = 1 
+
+        for rank, entry_data in enumerate(standings_data, 1):
+            # check if the total points same as the previous entry
+            # allows for ties in rankings
+            if prev_points is not None and entry_data["total_points"] == prev_points:
+                rank = prev_rank  
+            else:
+                rank = current_rank  
+            # print(f"Rank: {rank}\nEntry: {entry_data}")
+            final_data.append({
+                "id": entry_data["entry_id"], 
+                "name": entry_data["entry"],
+                "total": entry_data["total_points"],
+                "rank": rank,
+                "players": entry_data["players"]
+            })
+
+        
+        # # cache results for 30 minutes
+        cache.set(cache_key, {'entries': final_data}, 60 * 30)
+        return Response({'entries': final_data})

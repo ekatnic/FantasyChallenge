@@ -1,3 +1,5 @@
+export const BASE_URL = process.env.REACT_APP_API_BASE_URL || ""; // can remove when we replace home
+
 export const rosterPositions = [
   "QB",
   "RB1",
@@ -62,3 +64,21 @@ export const playoffTeams = [
   "PIT",
   "BUF",
 ]
+
+// NOTE: Update this to update the SurvivorStandings component to show eliminated players as red in table
+export const isPlayoffTeamAlive = {
+  LAR: true,
+  TB: true,
+  DET: true,
+  MIN: true,
+  GB: true,
+  PHI: true,
+  WAS: true,
+  KC: true,
+  LAC: true,
+  DEN: true,
+  HOU: true,
+  BAL: true,
+  PIT: true,
+  BUF: true,
+}

@@ -41,6 +41,7 @@ from fantasy_football_app.apis import(
     StandingsAPIView,
     PlayerOwnershipAPIView,
     PlayerWeeklyStatsAPIView,
+    SurvivorStandingsAPIView
 )
 
 from fantasy_football_app.auth_views import (
@@ -85,11 +86,15 @@ urlpatterns = [
     path('api/players/', PlayerListAPIView.as_view(), name='list-player-view'),
     path('api/player-ownership/', PlayerOwnershipAPIView.as_view(), name='player-ownership'),
     path('api/standings/', StandingsAPIView.as_view(), name='standings-api'),
+    
+    path('api/survivor-standings/', SurvivorStandingsAPIView.as_view(), name='survivor-standings-api'),
+
     path('api/player-weekly-stats/<int:player_id>/', PlayerWeeklyStatsAPIView.as_view(), name='weekly-stats-api'),
 
+
     # React routes
-    # path('create-entry/', react_view, name='create_entry'),
-    # path('edit-entry/<int:entry_id>', react_view, name='edit_entry'),
+    # # path('create-entry/', react_view, name='create_entry'),
+    # # path('edit-entry/<int:entry_id>', react_view, name='edit_entry'),
     path('my-entries/', react_view, name='user_home'),
     path('view-entry/<int:entry_id>', react_view, name='view_entry'),
     path('standings/', react_view, name='standings'),
