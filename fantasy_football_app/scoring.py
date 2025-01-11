@@ -48,9 +48,11 @@ def get_scaled_player_scoring_dict(rostered_player):
         dict: The scoring dictionary.
     """
     scoring_dict = get_raw_player_scoring_dict(rostered_player.player)
-    for week, score in scoring_dict.items():
-        if 'Scaled Flex' in rostered_player.roster_position:
-            scoring_dict[week] = round(score * get_player_scaled_flex_multiplier(rostered_player.player), 2)
+    if 'Scaled Flex' in rostered_player.roster_position:
+        multiplier = get_player_scaled_flex_multiplier(rostered_player.player)
+        for week, score in scoring_dict.items():
+            scoring_dict[week] = round(score * multiplier, 2)
+        scoring_dict['sf_multiplier'] = multiplier
     return scoring_dict
 
 def get_raw_player_scoring_dict(player):

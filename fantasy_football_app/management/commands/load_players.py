@@ -9,6 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # delete old players data like before
+        return
         Player.objects.all().delete()
         PlayerInfo.objects.all().delete()
         PlayerStats.objects.all().delete()

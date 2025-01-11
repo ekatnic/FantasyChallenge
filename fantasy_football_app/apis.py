@@ -19,7 +19,7 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
         return context
 
     def get_queryset(self):
-        queryset = Entry.objects.filter(user=self.request.user).prefetch_related('rosteredplayers_set')
+        queryset = Entry.objects.filter().prefetch_related('rosteredplayers_set')
         year = self.request.query_params.get('year')
         if year:
             queryset = queryset.filter(year=year)
@@ -37,7 +37,7 @@ class EntryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         # if self.request.user.is_superuser:
         #     return Entry.objects.all()
-        return Entry.objects.filter(user=self.request.user)
+        return Entry.objects.filter()
 
 class PlayerListAPIView(generics.ListAPIView):
     queryset = Player.objects.all()
@@ -60,7 +60,7 @@ class EntryRosterAPIView(generics.RetrieveAPIView):
         return Entry.objects.filter(user=self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
-        entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set'), id=kwargs['pk'], user=request.user)
+        entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set'), id=kwargs['pk'])
         player_total_dict = get_entry_score_dict(entry)
         entry_total_dict = get_entry_total_dict(player_total_dict)
 
