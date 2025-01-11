@@ -4,7 +4,7 @@ from django.db.models import (Case, Count, F, FloatField, Func, IntegerField,
 from django.db.models.functions import Round
 
 from .constants import FLEX_POSITIONS, INPUT_INDEXES
-from .models import Entry, Player, WeeklyStats
+from .models import Entry, Player, WeeklyStats, RosteredPlayers
 from .scoring import (get_raw_player_scoring_dict,
                       get_roster_percentage_multiplier,
                       get_scaled_player_scoring_dict)
@@ -159,3 +159,70 @@ def get_summarized_players():
 def update_and_return(dict_obj, update_dict):
     dict_obj.update(update_dict)
     return dict_obj
+
+def calc_survivor_standings():
+    entries = Entry.objects.prefetch_related(
+        'rosteredplayers_set__player',
+        'rosteredplayers_set__player__weeklystats_set'
+    ).all()
+
+    standings_data = []
+    for entry in entries:
+        players_data = get_rostered_players_data(entry)
+        entry_total = sum(player["total_points"] for player in players_data)
+        standings_data.append({
+            "entry": entry.name,
+            "entry_id": entry.id,
+            "players": players_data,
+            "total_points": entry_total
+        })
+
+    return rank_survivor_standings(standings_data)
+
+
+def get_rostered_players_data(entry):
+    rostered_players = RosteredPlayers.objects.filter(entry=entry)
+    players_data = []
+    for rp in rostered_players:
+        total_points = WeeklyStats.objects.filter(player=rp.player).aggregate(
+            total_score=Sum('week_score')
+        )['total_score'] or 0.0
+        players_data.append({
+            "rostered_position": rp.roster_position,
+            "total_points": round(total_points, 2),
+            "player_name": rp.player.name,
+            "team": rp.player.team
+        })
+    return players_data
+
+#
+def rank_survivor_standings(standings_data):
+    sorted_data = sorted(standings_data, key=lambda x: x["total_points"], reverse=True)
+    final_data = []
+    prev_points, prev_rank, current_rank = None, 1, 1
+    # TODO: review this logic 
+    for entry_data in sorted_data:
+        rank = prev_rank if prev_points is not None and prev_points == entry_data["total_points"] else current_rank
+        final_data.append({
+            "id": entry_data["entry_id"],
+            "name": entry_data["entry"],
+            "total": entry_data["total_points"],
+            "rank": rank,
+            "players": entry_data["players"]
+        })
+        prev_points  = entry_data["total_points"]
+        prev_rank    = rank
+        current_rank += 1
+
+    return final_data
+
+
+def filter_by_rostered_player(final_data, rostered_player_id):
+    entry_ids = RosteredPlayers.objects.filter(player_id=rostered_player_id).values_list('entry_id', flat=True)
+    return [entry for entry in final_data if entry.get("id") in entry_ids]
+
+def filter_by_scaled_flex(final_data, scaled_flex_id):
+    entry_ids = RosteredPlayers.objects.filter(
+        player_id=scaled_flex_id, roster_position__in=["Scaled Flex1", "Scaled Flex2"]
+    ).values_list('entry_id', flat=True)
+    return [entry for entry in final_data if entry.get("id") in entry_ids]
