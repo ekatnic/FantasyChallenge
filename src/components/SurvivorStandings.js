@@ -137,7 +137,7 @@ export default function SurvivorStandings() {
         headerName: position,
         // width: 150,
         flex: 1, 
-        minWidth: 80, 
+        minWidth: 100, 
         renderCell: (params) => getPlayerCell(params.row.players, position),
     }));
     
