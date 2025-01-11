@@ -16,8 +16,9 @@ def get_roster_percentage_multiplier(rostered_percentage):
         return 1.25
     elif 5 <= rostered_percentage < 12.5:
         return 1.5
-    else:
-        return 2.0
+    elif rostered_percentage == -1: #hack to get single owned player to return 3x mult
+        return 3.0
+    return 2.0
 
 def get_player_scaled_flex_multiplier(player):
     """
@@ -32,7 +33,7 @@ def get_player_scaled_flex_multiplier(player):
     total_entries = Entry.objects.all().count()
     rostered_count = RosteredPlayers.objects.filter(player=player).count()
     if rostered_count == 1:
-        return 3.0
+        return -1
     rostered_percentage = (rostered_count / total_entries) * 100
     return get_roster_percentage_multiplier(rostered_percentage)
 
