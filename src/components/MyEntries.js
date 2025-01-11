@@ -28,7 +28,7 @@ const MyEntries = () => {
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const data = await getEntries();
+        const data = await getEntries(true);
         setEntries(data);
         setLoading(false);
       } catch (error) {

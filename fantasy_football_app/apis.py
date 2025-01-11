@@ -14,17 +14,16 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = EntrySerializer
 
     def get_permissions(self):
-        #Added to prevent normal users from creating entries after roster lock
+        # Added to prevent normal users from creating entries after roster lock
         if (
             self.request.method == 'PUT'
             or self.request.method == 'PATCH'
             or self.request.method == 'POST'
-            ):
+        ):
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
-
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -33,9 +32,10 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Entry.objects.filter().prefetch_related('rosteredplayers_set')
-        year = self.request.query_params.get('year')
-        if year:
-            queryset = queryset.filter(year=year)
+        mine_only = self.request.query_params.get('mine_only')
+        if mine_only and mine_only.lower() == 'true':
+            queryset = queryset.filter(user=self.request.user)
+        
         return queryset
 
     def perform_create(self, serializer):
