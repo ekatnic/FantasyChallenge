@@ -117,22 +117,12 @@ export const getPlayerWeeklyStats = async (playerId) => {
   }
 };
 
-// export const getSurivorStandings = async (params = {}) => {
-//   try {
-//     const response = await axios.get(`${BASE_URL}/api/survivor-standings/`, { params });
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching standings:", error);
-//     throw error;
-//   }
-// };
-
-export const getSurivorStandings = async () => {
+export const getSurivorStandings = async (params = {}) => {
   try {
-    const response = await axios.get(`${BASE_URL}/api/survivor-standings/`);
+    const response = await axios.get(`${BASE_URL}/api/survivor-standings/`, { params });
     return response.data;
   } catch (error) {
-    console.error("Error fetching elimination standings:", error);
+    console.error("Error fetching survivor standings:", error);
     throw error;
   }
 };

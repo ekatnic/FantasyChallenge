@@ -11,8 +11,8 @@ export default function StandingsPage() {
   };
 
   return (
-    <Paper sx={{ p: 4, mt: 4 }}>
-          <Typography variant="h4"
+      <Paper sx={{ pl: 0, pr: 0, pt:4 , mt: 0, elevation : 0 }}>
+            <Typography variant="h4"
               // center the text
               sx={{
                   textAlign: "center",
@@ -20,7 +20,7 @@ export default function StandingsPage() {
 
               }}
               gutterBottom>
-                {{ selectedTab } === 0 ? "Entry Standings" : "Survivor Standings" }
+                {selectedTab === 0 ? "Entry Standings" : "Survivor Standings"}
             </Typography>
       <Tabs 
         value={selectedTab} 

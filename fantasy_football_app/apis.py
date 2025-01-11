@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.models import F, Sum
@@ -12,7 +12,19 @@ from django.core.cache import cache
 class EntryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        #Added to prevent normal users from creating entries after roster lock
+        if (
+            self.request.method == 'PUT'
+            or self.request.method == 'PATCH'
+            or self.request.method == 'POST'
+            ):
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -33,8 +45,20 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
 class EntryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
+
+    #Added to prevent normal users from updating/deleting entries after roster lock
+    def get_permissions(self):
+        if (
+            self.request.method == 'PUT'
+            or self.request.method == 'PATCH'
+            or self.request.method == 'DELETE'
+            or self.request.method == 'POST'
+            ):
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
     def get_queryset(self):
         # if self.request.user.is_superuser:
         #     return Entry.objects.all()
@@ -127,16 +151,32 @@ class SurvivorStandingsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        cache_key = "survivor_entry_standings"
-        # cache.delete(cache_key)
-        cached_data = cache.get(cache_key)
-        if cached_data:
-            return Response(cached_data)
-
         entries = Entry.objects.prefetch_related(
             'rosteredplayers_set__player',
             'rosteredplayers_set__player__weeklystats_set'
         ).all()
+
+        # TODO: Refactor into utils function. Move caching to cache all entries with all players,
+        # then filter based on rostered_player_id and scaled_flex_id and return response.
+
+        rostered_player_id = request.query_params.get('rostered_player')
+        scaled_flex_id = request.query_params.get('scaled_flex')
+
+        cache_key = f"survivor_entry_standings-{rostered_player_id if rostered_player_id else 'NA'}-{scaled_flex_id if scaled_flex_id else 'NA'}"
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        if rostered_player_id:
+            entry_ids = RosteredPlayers.objects.filter(player_id=rostered_player_id).values_list('entry_id', flat=True)
+            entries = [entry for entry in entries if entry.id in entry_ids]
+
+        # Filter entries based on scaled_flex
+        if scaled_flex_id:
+            entry_ids = RosteredPlayers.objects.filter(
+                player_id=scaled_flex_id, roster_position__in=["Scaled Flex1", "Scaled Flex2"]
+            ).values_list('entry_id', flat=True)
+            entries = [entry for entry in entries if entry.id in entry_ids]
 
         standings_data = []
         
@@ -144,7 +184,7 @@ class SurvivorStandingsAPIView(APIView):
             # all rostered players for this entry
             rostered_players = RosteredPlayers.objects.filter(
                 entry=entry
-            ).select_related('player')
+            )
 
             # calc total points for each player
             players_data = []

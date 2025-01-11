@@ -3,18 +3,9 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Paper,
   Typography,
   Box,
-  CircularProgress,
-  Tab,
-  IconButton,
   Button
 } from '@mui/material';
 import ResetIcon from "@mui/icons-material/Restore"; // Import the Reset Icon
@@ -42,7 +33,10 @@ const useStyles = makeStyles({
     right: 0,
     display: "flex",
     justifyContent: "flex-end",
-    marginBottom: 8,
+    marginBottom: 15,
+    paddingRight: 15,
+    paddingTop: 20,
+    paddingBottom: 10,
   },
 });
 
@@ -60,8 +54,10 @@ export default function SurvivorStandings() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getSurivorStandings();
-                console.log("SurvivorStandings.js: fetchData: response:", response)
+                const queryParams = new URLSearchParams(location.search);
+                const rosteredPlayer = queryParams.get('rostered_player');
+                const scaledFlex = queryParams.get('scaled_flex');
+                const response = await getSurivorStandings({ rostered_player: rosteredPlayer, scaled_flex: scaledFlex });                console.log("SurvivorStandings.js: fetchData: response:", response)
                 setStandings(response.entries);
                 setLoading(false);
             } catch (err) {
@@ -176,7 +172,7 @@ export default function SurvivorStandings() {
             endIcon={<ResetIcon />}
             variant="contained"
         >
-          Reset
+          Reset Table
         </Button>
       </Box>
       <DataGrid
