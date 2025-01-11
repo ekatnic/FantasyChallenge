@@ -79,8 +79,15 @@ export default function SurvivorStandings() {
     const getPlayerCell = (players, position) => {
         const player = players.find((p) => p.rostered_position === position);
         if (!player) return "-";
-    
+      
+
+
         const isTeamAlive = isPlayoffTeamAlive[player.team] ?? false;
+
+        const firstName = player.player_name.split(" ")[0];
+        const lastName  = player.player_name.split(" ")[1];
+        const shortName = firstName.charAt(0) + ". " + lastName;
+      
         return (
           <Box
             sx={{
@@ -106,7 +113,7 @@ export default function SurvivorStandings() {
                 textOverflow: "ellipsis",
               }}
             >
-              {player.player_name}
+              {shortName}
             </Typography>
             <Typography
               variant="caption"
@@ -130,7 +137,7 @@ export default function SurvivorStandings() {
         headerName: position,
         // width: 150,
         flex: 1, 
-        minWidth: 100, 
+        minWidth: 80, 
         renderCell: (params) => getPlayerCell(params.row.players, position),
     }));
     
@@ -150,7 +157,7 @@ export default function SurvivorStandings() {
             </span>
         ),
         },
-        { field: "total", headerName: "Total", flex: 1, minWidth: 100 },
+        { field: "total", headerName: "Total", flex: 1, minWidth: 80},
         ...positionColumns, // Spread the position columns here, defined above and ordered by rosterPositions
     ];
   
