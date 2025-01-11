@@ -12,7 +12,7 @@ import {
   Link
 } from "@mui/material";
 import PlayerProfile from "./PlayerProfile";
-
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 const PlayerTable = ({ filteredPlayers, handleSort, handleAddPlayer }) => {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
@@ -40,6 +40,9 @@ const PlayerTable = ({ filteredPlayers, handleSort, handleAddPlayer }) => {
 
     return (
       <TableRow ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
+        <TableCell>
+         <DragIndicatorIcon />
+       </TableCell>
         <TableCell>
           <Link
             component="button"
@@ -71,6 +74,9 @@ const PlayerTable = ({ filteredPlayers, handleSort, handleAddPlayer }) => {
       <Table stickyHeader>
         <TableHead>
           <TableRow>
+          <TableCell>
+              <b></b>
+            </TableCell>
             <TableCell onClick={() => handleSort("name")}>
               <b>Name</b>
             </TableCell>
