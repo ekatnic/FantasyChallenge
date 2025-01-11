@@ -1,7 +1,5 @@
 import axios from "axios";
-import { playoffTeams } from "../constants";
-
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
+import { BASE_URL, playoffTeams } from "../constants";
 
 export const getEntries = async () => {
   try {
@@ -115,6 +113,16 @@ export const getPlayerWeeklyStats = async (playerId) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching player ownership:", error);
+    throw error;
+  }
+};
+
+export const getSurivorStandings = async (params = {}) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/survivor-standings/`, { params });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching survivor standings:", error);
     throw error;
   }
 };

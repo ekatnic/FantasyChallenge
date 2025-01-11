@@ -51,9 +51,16 @@ export default function ProtectedHome() {
         <Button
           variant="contained"
           sx={{ bgcolor: "green" }}
-          startIcon={<AddIcon />} 
-          onClick={() => navigate("/create-entry")}>
-          Create Entry
+          startIcon={<ListIcon />} 
+          onClick={() => navigate("/standings")}>
+          Standings
+        </Button>
+        <Button
+          variant="contained"
+          sx={{ bgcolor: "purple" }}
+          startIcon={<ListIcon />} 
+          onClick={() => navigate("/players")}>
+          Players
         </Button>
       </Box>
       <Card

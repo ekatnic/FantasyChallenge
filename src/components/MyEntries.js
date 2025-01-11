@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Button, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { getEntries, deleteEntry } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+// import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
+import Pageview from "@mui/icons-material/Pageview";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
@@ -41,6 +42,10 @@ const MyEntries = () => {
   const handleEdit = (id) => {
     navigate(`/edit-entry/${id}`);
   };
+
+    const handleView = (id) => {
+      navigate(`/view-entry/${id}`);
+    };
 
   const handleDelete = async () => {
     try {
@@ -101,11 +106,14 @@ const MyEntries = () => {
                   <TableCell>{entry.super_bowl_score}</TableCell>
                   <TableCell>{entry.total}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleEdit(entry.id)}>
+                    {/* <IconButton onClick={() => handleEdit(entry.id)}>
                       <EditIcon />
                     </IconButton>
                     <IconButton onClick={() => handleClickOpen(entry)}>
                       <DeleteIcon />
+                    </IconButton> */}
+                     <IconButton onClick={() => handleView(entry.id)}>
+                      <Pageview />
                     </IconButton>
                   </TableCell>
                 </TableRow>

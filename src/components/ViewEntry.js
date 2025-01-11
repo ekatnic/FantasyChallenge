@@ -75,7 +75,26 @@ const ViewEntry = () => {
                 const { player, score } = getPlayerData(position);
                 return (
                   <TableRow key={position}>
-                    <TableCell>{position}</TableCell>
+                  <TableCell>
+                    {position} {position.includes("Scaled Flex") && (
+                      (() => {
+                        const multiplier = score.sf_multiplier.toString();
+                        const colorMap = {
+                          "0.75": "red",
+                          "1": "black",
+                          "1.25": "lightgreen",
+                          "1.5": "mediumseagreen",
+                          "2": "green",
+                          "3": "darkgreen"
+                        };
+                        return (
+                          <span style={{ color: colorMap[multiplier] }}>
+                            <b>({multiplier}x)</b>
+                          </span>
+                        );
+                      })()
+                    )}
+                  </TableCell>
                     <TableCell>{player.player_name}</TableCell>
                     <TableCell>{score.WC}</TableCell>
                     <TableCell>{score.DIV}</TableCell>
