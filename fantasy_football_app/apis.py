@@ -150,108 +150,102 @@ class PlayerWeeklyStatsAPIView(APIView):
 class SurvivorStandingsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-
-        cache_key = f"survivor_entry_standings"
-        cached_data = cache.get(cache_key)
-
-        if cached_data:
-            entries = cached_data
-            # return Response(cached_data)
-        else:
-            entries = Entry.objects.prefetch_related(
-                'rosteredplayers_set__player',
-                'rosteredplayers_set__player__weeklystats_set'
-            ).all()
-            # # cache results for 30 minutes
-            cache.set(cache_key, entries, 60 * 30)
-
+    def get(self, request, *args, **kwargs)
         # TODO: Refactor into utils function. Move caching to cache all entries with all players,
         # then filter based on rostered_player_id and scaled_flex_id and return response.
 
         rostered_player_id = request.query_params.get('rostered_player')
         scaled_flex_id = request.query_params.get('scaled_flex')
 
-        # cache_key = f"survivor_entry_standings-{rostered_player_id if rostered_player_id else 'NA'}-{scaled_flex_id if scaled_flex_id else 'NA'}"
-        # cached_data = cache.get(cache_key)
-        # if cached_data:
-        #     return Response(cached_data)
+        cache_key = f"survivor_entry_standings"
+        final_data = cache.get(cache_key)
 
+        if not final_data:
+            entries = Entry.objects.prefetch_related(
+                'rosteredplayers_set__player',
+                'rosteredplayers_set__player__weeklystats_set'
+            ).all()
+            # # # cache results for 30 minutes
+            # cache.set(cache_key, entries, 60 * 0.5)
+
+            standings_data = []
+            
+            for entry in entries:
+                # all rostered players for this entry
+                rostered_players = RosteredPlayers.objects.filter(
+                    entry=entry
+                )
+
+                # calc total points for each player
+                players_data = []
+                for rp in rostered_players:
+                    # total weekly points for this player
+                    total_points = WeeklyStats.objects.filter(
+                        player=rp.player
+                    ).aggregate(
+                        total_score=Sum('week_score')
+                    )['total_score'] or 0.0
+
+                    players_data.append({
+                        "rostered_position": rp.roster_position,
+                        "total_points": round(total_points, 2),
+                        "player_name": rp.player.name,
+                        "team": rp.player.team
+                    })
+
+                # total entry points 
+                entry_total = sum(player["total_points"] for player in players_data)
+                
+                standings_data.append({
+                    "entry": entry.name,
+                    "entry_id": entry.id, 
+                    "players": players_data,
+                    "total_points": entry_total  
+                })
+
+            # sort by total points and add rank
+            standings_data = sorted(
+                standings_data,
+                key=lambda x: x["total_points"],
+                reverse=True
+            )
+
+            # add rank with handling of tied entries
+            final_data = []
+            prev_rank = 1
+            prev_points = None
+            current_rank = 1 
+
+            for rank, entry_data in enumerate(standings_data, 1):
+                # check if the total points same as the previous entry
+                # allows for ties in rankings
+                if prev_points is not None and entry_data["total_points"] == prev_points:
+                    rank = prev_rank  
+                else:
+                    rank = current_rank  
+                # print(f"Rank: {rank}\nEntry: {entry_data}")
+                final_data.append({
+                    "id": entry_data["entry_id"], 
+                    "name": entry_data["entry"],
+                    "total": entry_data["total_points"],
+                    "rank": rank,
+                    "players": entry_data["players"]
+                })
+
+            # cache results for 30 minutes
+            cache.set(final_data, entries, 60 * 30)
+
+        # Filtering on the final data (possibly cached data) based on the entry_ids found via rostered_player_id and scaled_flex_id query params
         if rostered_player_id:
             entry_ids = RosteredPlayers.objects.filter(player_id=rostered_player_id).values_list('entry_id', flat=True)
-            entries = [entry for entry in entries if entry.id in entry_ids]
+            final_data = [entry for entry in final_data if entry.get("id") in entry_ids]
 
         # Filter entries based on scaled_flex
         if scaled_flex_id:
             entry_ids = RosteredPlayers.objects.filter(
                 player_id=scaled_flex_id, roster_position__in=["Scaled Flex1", "Scaled Flex2"]
             ).values_list('entry_id', flat=True)
-            entries = [entry for entry in entries if entry.id in entry_ids]
-
-        standings_data = []
-        
-        for entry in entries:
-            # all rostered players for this entry
-            rostered_players = RosteredPlayers.objects.filter(
-                entry=entry
-            )
-
-            # calc total points for each player
-            players_data = []
-            for rp in rostered_players:
-                # total weekly points for this player
-                total_points = WeeklyStats.objects.filter(
-                    player=rp.player
-                ).aggregate(
-                    total_score=Sum('week_score')
-                )['total_score'] or 0.0
-
-                players_data.append({
-                    "rostered_position": rp.roster_position,
-                    "total_points": round(total_points, 2),
-                    "player_name": rp.player.name,
-                    "team": rp.player.team
-                })
-
-            # total entry points 
-            entry_total = sum(player["total_points"] for player in players_data)
-            
-            standings_data.append({
-                "entry": entry.name,
-                "entry_id": entry.id, 
-                "players": players_data,
-                "total_points": entry_total  
-            })
-
-        # sort by total points and add rank
-        standings_data = sorted(
-            standings_data,
-            key=lambda x: x["total_points"],
-            reverse=True
-        )
-
-         # add rank with handling of tied entries
-        final_data = []
-        prev_rank = 1
-        prev_points = None
-        current_rank = 1 
-
-        for rank, entry_data in enumerate(standings_data, 1):
-            # check if the total points same as the previous entry
-            # allows for ties in rankings
-            if prev_points is not None and entry_data["total_points"] == prev_points:
-                rank = prev_rank  
-            else:
-                rank = current_rank  
-            # print(f"Rank: {rank}\nEntry: {entry_data}")
-            final_data.append({
-                "id": entry_data["entry_id"], 
-                "name": entry_data["entry"],
-                "total": entry_data["total_points"],
-                "rank": rank,
-                "players": entry_data["players"]
-            })
-
+            final_data = [entry for entry in final_data if entry.get("id") in entry_ids]
         
         # # cache results for 30 minutes
         # cache.set(cache_key, {'entries': final_data}, 60 * 30)
