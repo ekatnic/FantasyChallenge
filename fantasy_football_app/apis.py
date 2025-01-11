@@ -157,7 +157,8 @@ class SurvivorStandingsAPIView(APIView):
         rostered_player_id = request.query_params.get('rostered_player')
         scaled_flex_id = request.query_params.get('scaled_flex')
 
-        cache_key = f"survivor_entry_standings"
+        cache_key = "survivor_entry_standings"
+        # cache.delete(cache_key)
         final_data = cache.get(cache_key)
 
         if not final_data:
@@ -165,8 +166,6 @@ class SurvivorStandingsAPIView(APIView):
                 'rosteredplayers_set__player',
                 'rosteredplayers_set__player__weeklystats_set'
             ).all()
-            # # # cache results for 30 minutes
-            # cache.set(cache_key, entries, 60 * 0.5)
 
             standings_data = []
             
@@ -223,7 +222,6 @@ class SurvivorStandingsAPIView(APIView):
                     rank = prev_rank  
                 else:
                     rank = current_rank  
-                # print(f"Rank: {rank}\nEntry: {entry_data}")
                 final_data.append({
                     "id": entry_data["entry_id"], 
                     "name": entry_data["entry"],
@@ -231,9 +229,11 @@ class SurvivorStandingsAPIView(APIView):
                     "rank": rank,
                     "players": entry_data["players"]
                 })
+                prev_points = entry_data["total_points"]
+                current_rank += 1
 
             # cache results for 30 minutes
-            cache.set(final_data, entries, 60 * 30)
+            cache.set(cache_key, final_data, 60 * 30)
 
         # Filtering on the final data (possibly cached data) based on the entry_ids found via rostered_player_id and scaled_flex_id query params
         if rostered_player_id:
@@ -247,6 +247,4 @@ class SurvivorStandingsAPIView(APIView):
             ).values_list('entry_id', flat=True)
             final_data = [entry for entry in final_data if entry.get("id") in entry_ids]
         
-        # # cache results for 30 minutes
-        # cache.set(cache_key, {'entries': final_data}, 60 * 30)
         return Response({'entries': final_data})
