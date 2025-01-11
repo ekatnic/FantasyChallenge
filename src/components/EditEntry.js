@@ -10,6 +10,7 @@ import AvailableTeams from "./AvailableTeams";
 import Roster from "./Roster";
 import PlayerFilterAndTable from "./PlayerFilterAndTable";
 import {
+  BASE_URL,
   rosterPositions,
   positionOrder,
   rbPositions,
@@ -17,8 +18,6 @@ import {
   tePositions,
 } from "../constants";
 import ScoringRulesDialog from "./ScoringRulesDialog";
-
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || ""; // can remove when we replace home
 
 const EditEntry = () => {
   const { id } = useParams();

@@ -9,14 +9,13 @@ import Roster from "./Roster";
 import PlayerFilterAndTable from "./PlayerFilterAndTable";
 import ScoringRulesDialog from "./ScoringRulesDialog";
 import {
+  BASE_URL,
   rosterPositions,
   positionOrder,
   rbPositions,
   wrPositions,
   tePositions,
 } from "../constants";
-
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || ""; // can remove when we replace home
 
 const CreateEntry = () => {
   const [roster, setRoster] = useState({});

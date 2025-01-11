@@ -4,7 +4,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import UserProfile from "./UserProfile";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
+import {BASE_URL} from "../constants";
 
 const NavBar = () => {
   const { isAuthenticated, user} = useAuth();
@@ -17,7 +17,8 @@ const NavBar = () => {
 
   const privateNavItems = [
     { path: "/dashboard", label: "Home" },
-    { path: "/my-entries/", label: "My Entries" },
+    // { path: "/my-entries/", label: "My Entries" },
+    // { path: `/create-entry`, label: "Create Entry" },
     // { path: `${BASE_URL}/create-entry`, label: "Create Entry" },
     { path: "/standings/", label: "Standings" },
     { path: "/players/", label: "Players" },

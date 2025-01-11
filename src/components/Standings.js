@@ -1,10 +1,11 @@
+// Standings.js
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getStandings } from "../services/api"; // Make sure to import your API function
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography } from "@mui/material";
-
+import { Paper, Typography,  Box,  IconButton,  Button} from "@mui/material";
+import ResetIcon from "@mui/icons-material/Restore"; // Import the Reset Icon
 const useStyles = makeStyles({
   dataGrid: {
     "& .MuiDataGrid-cell": {
@@ -20,13 +21,27 @@ const useStyles = makeStyles({
   oddRow: {
     backgroundColor: "#ffffff", // White color for odd rows
   },
+  resetButtonContainer: {
+    position: "relative", // Position the reset button container absolutely
+    top: 0,
+    right: 0,
+    display: "flex",
+    justifyContent: "flex-end",
+    marginBottom: 15,
+    paddingRight: 15,
+    paddingTop: 20,
+    paddingBottom: 10,
+  },
 });
 
 export default function Standings() {
   const classes = useStyles();
+
   const [standings, setStandings] = useState([]);
+  const [muiTableKey, setMuiTableKey] = useState(1); // updating key will force reset/rerender of filter on DataGrid 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -46,6 +61,12 @@ export default function Standings() {
     };
     fetchStandings();
   }, [location.search]);
+  
+  // Increment key on DataGrid component to force a rerender 
+  // https://stackoverflow.com/questions/72810599/how-to-clear-all-applied-filters-in-mui-react-datagrid
+  const resetFilters = async () => {
+    setMuiTableKey(muiTableKey + 1); 
+  };
 
   const columns = [
     { field: "rank", headerName: "Rank", width: 100 },
@@ -73,10 +94,18 @@ export default function Standings() {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <Paper sx={{ p: 4, mt: 4 }}>
-      <Typography variant="h4" component="h2" gutterBottom>
-        Entry Standings
-      </Typography>
+    <Paper sx={{ p: 4, mt: 4, position : "relative" }}>
+      {/* Reset Button */}
+      <Box className={classes.resetButtonContainer}>
+        <Button
+            onClick={resetFilters}
+            
+            endIcon={<ResetIcon />}
+            variant="contained"
+        >
+          Reset Table
+        </Button>
+      </Box>
       <DataGrid
         rows={standings}
         columns={columns}
