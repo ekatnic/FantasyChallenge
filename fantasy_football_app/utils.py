@@ -4,7 +4,7 @@ from django.db.models import (Case, Count, F, FloatField, Func, IntegerField,
 from django.db.models.functions import Round
 
 from .constants import FLEX_POSITIONS, INPUT_INDEXES
-from .models import Entry, Player, WeeklyStats
+from .models import Entry, Player, WeeklyStats, RosteredPlayers
 from .scoring import (get_raw_player_scoring_dict,
                       get_roster_percentage_multiplier,
                       get_scaled_player_scoring_dict)

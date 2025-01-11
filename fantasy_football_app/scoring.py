@@ -8,7 +8,11 @@ def get_roster_percentage_multiplier(rostered_percentage):
     """
     Calculate and return the roster percentage multiplier based on the percentage of entries they are rostered in.
     """
-    if rostered_percentage >= 50:
+    total_entries = Entry.objects.all().count()
+    single_entry_percentage = round((1 / total_entries) * 100, 2)
+    if rostered_percentage == single_entry_percentage:
+        return 3.0
+    elif rostered_percentage >= 50:
         return .75
     elif 25 <= rostered_percentage < 50:
         return 1.0
@@ -16,8 +20,7 @@ def get_roster_percentage_multiplier(rostered_percentage):
         return 1.25
     elif 5 <= rostered_percentage < 12.5:
         return 1.5
-    else:
-        return 2.0
+    return 2.0
 
 def get_player_scaled_flex_multiplier(player):
     """
