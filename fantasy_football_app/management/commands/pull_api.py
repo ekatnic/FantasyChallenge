@@ -23,5 +23,6 @@ class Command(BaseCommand):
         updated_players = client.process_player_stats_for_date(date, week)
         cache.delete('ranked_entries_dict')
         cache.delete('players_scoring_dict')
+        cache.delete('survivor_entry_standings')
         logger.info(f'Players updated: {updated_players}')
         logger.info(f'Finished pulling API data for date {date} and week {week}')

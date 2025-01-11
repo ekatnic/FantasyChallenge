@@ -151,10 +151,20 @@ class SurvivorStandingsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        entries = Entry.objects.prefetch_related(
-            'rosteredplayers_set__player',
-            'rosteredplayers_set__player__weeklystats_set'
-        ).all()
+
+        cache_key = f"survivor_entry_standings"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            entries = cached_data
+            # return Response(cached_data)
+        else:
+            entries = Entry.objects.prefetch_related(
+                'rosteredplayers_set__player',
+                'rosteredplayers_set__player__weeklystats_set'
+            ).all()
+            # # cache results for 30 minutes
+            cache.set(cache_key, entries, 60 * 30)
 
         # TODO: Refactor into utils function. Move caching to cache all entries with all players,
         # then filter based on rostered_player_id and scaled_flex_id and return response.
@@ -162,10 +172,10 @@ class SurvivorStandingsAPIView(APIView):
         rostered_player_id = request.query_params.get('rostered_player')
         scaled_flex_id = request.query_params.get('scaled_flex')
 
-        cache_key = f"survivor_entry_standings-{rostered_player_id if rostered_player_id else 'NA'}-{scaled_flex_id if scaled_flex_id else 'NA'}"
-        cached_data = cache.get(cache_key)
-        if cached_data:
-            return Response(cached_data)
+        # cache_key = f"survivor_entry_standings-{rostered_player_id if rostered_player_id else 'NA'}-{scaled_flex_id if scaled_flex_id else 'NA'}"
+        # cached_data = cache.get(cache_key)
+        # if cached_data:
+        #     return Response(cached_data)
 
         if rostered_player_id:
             entry_ids = RosteredPlayers.objects.filter(player_id=rostered_player_id).values_list('entry_id', flat=True)
@@ -244,5 +254,5 @@ class SurvivorStandingsAPIView(APIView):
 
         
         # # cache results for 30 minutes
-        cache.set(cache_key, {'entries': final_data}, 60 * 30)
+        # cache.set(cache_key, {'entries': final_data}, 60 * 30)
         return Response({'entries': final_data})
