@@ -120,12 +120,6 @@ const ViewEntry = () => {
           <Button variant="contained" color="primary" onClick={() => navigate("/my-entries")}>
             Return to Entries
           </Button>
-          <Button variant="contained" color="secondary" onClick={() => navigate(`/edit-entry/${id}`)}>
-            Edit Entry
-          </Button>
-          <Button variant="contained" color="error" onClick={handleClickOpen}>
-            Delete Entry
-          </Button>
         </Box>
       </Paper>
 
