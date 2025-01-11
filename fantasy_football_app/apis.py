@@ -150,7 +150,7 @@ class PlayerWeeklyStatsAPIView(APIView):
 class SurvivorStandingsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
         # TODO: Refactor into utils function. Move caching to cache all entries with all players,
         # then filter based on rostered_player_id and scaled_flex_id and return response.
 
