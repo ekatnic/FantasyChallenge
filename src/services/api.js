@@ -1,20 +1,6 @@
 import axios from "axios";
 import { BASE_URL, playoffTeams } from "../constants";
 
-export const getEntries = async (mine_only = false) => {
-  try {
-    const response = await axios.get('/api/entries/', {
-      params: {
-        mine_only: mine_only
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching entries:", error);
-    throw error;
-  }
-};
-
 export const getEntry = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/api/entries/${id}/`);
