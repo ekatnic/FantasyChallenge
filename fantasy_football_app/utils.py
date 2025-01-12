@@ -48,6 +48,7 @@ def get_all_entry_score_dicts():
         {
             'id': entry.id,
             'name': entry.name,
+            'user_id': entry.user_id,
             'WC': scores['WC'],
             'DIV': scores['DIV'],
             'CONF': scores['CONF'],

@@ -1,11 +1,11 @@
-// Standings.js
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getStandings } from "../services/api"; // Make sure to import your API function
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography,  Box,  IconButton,  Button} from "@mui/material";
+import { Paper, Box, Button } from "@mui/material";
 import ResetIcon from "@mui/icons-material/Restore"; // Import the Reset Icon
+
 const useStyles = makeStyles({
   dataGrid: {
     "& .MuiDataGrid-cell": {
@@ -20,6 +20,9 @@ const useStyles = makeStyles({
   },
   oddRow: {
     backgroundColor: "#ffffff", // White color for odd rows
+  },
+  userRow: {
+    backgroundColor: "lightblue", // Light green color for user rows
   },
   resetButtonContainer: {
     position: "relative", // Position the reset button container absolutely
@@ -99,7 +102,6 @@ export default function Standings() {
       <Box className={classes.resetButtonContainer}>
         <Button
             onClick={resetFilters}
-            
             endIcon={<ResetIcon />}
             variant="contained"
         >
@@ -117,7 +119,7 @@ export default function Standings() {
           },
         }}
         getRowClassName={(params) =>
-          params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow
+          params.row.is_user_entry ? classes.userRow : (params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow)
         }
       />
     </Paper>

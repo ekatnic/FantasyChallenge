@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Button, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { getEntries, deleteEntry } from "../services/api";
+import { getStandings, deleteEntry } from "../services/api";
 import { useNavigate } from "react-router-dom";
 // import EditIcon from "@mui/icons-material/Edit";
 // import DeleteIcon from "@mui/icons-material/Delete";
@@ -28,8 +28,8 @@ const MyEntries = () => {
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const data = await getEntries(true);
-        setEntries(data);
+        const data = await getStandings({ mine_only: true });
+        setEntries(data.entries);
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -71,7 +71,7 @@ const MyEntries = () => {
   if (error) return <Typography>Error: {error.message}</Typography>;
 
   return (
-    <Box>
+      <Box>
       <Paper sx={{ p: 4, mt: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           My Entries
@@ -81,6 +81,7 @@ const MyEntries = () => {
             <TableHead>
               <TableRow>
                 <TableCell><strong>Entry Name</strong></TableCell>
+                <TableCell><strong>Standings Rank</strong></TableCell>
                 <TableCell><strong>Wild Card Score</strong></TableCell>
                 <TableCell><strong>Divisional Score</strong></TableCell>
                 <TableCell><strong>Conference Score</strong></TableCell>
@@ -90,7 +91,7 @@ const MyEntries = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {entries.map((entry, index) => (
+            {entries.map((entry, index) => (
                 <TableRow key={entry.id} className={index % 2 === 0 ? classes.evenRow : classes.oddRow}>
                   <TableCell>
                     <Button
@@ -100,19 +101,14 @@ const MyEntries = () => {
                       {entry.name}
                     </Button>
                   </TableCell>
-                  <TableCell>{entry.wild_card_score}</TableCell>
-                  <TableCell>{entry.divisional_score}</TableCell>
-                  <TableCell>{entry.conference_score}</TableCell>
-                  <TableCell>{entry.super_bowl_score}</TableCell>
+                  <TableCell>{entry.rank}</TableCell>
+                  <TableCell>{entry.WC}</TableCell>
+                  <TableCell>{entry.DIV}</TableCell>
+                  <TableCell>{entry.CONF}</TableCell>
+                  <TableCell>{entry.SB}</TableCell>
                   <TableCell>{entry.total}</TableCell>
                   <TableCell>
-                    {/* <IconButton onClick={() => handleEdit(entry.id)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleClickOpen(entry)}>
-                      <DeleteIcon />
-                    </IconButton> */}
-                     <IconButton onClick={() => handleView(entry.id)}>
+                    <IconButton onClick={() => handleView(entry.id)}>
                       <Pageview />
                     </IconButton>
                   </TableCell>

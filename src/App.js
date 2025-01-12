@@ -15,7 +15,6 @@ import ProtectedHome from "./components/ProtectedHome";
 import StandingsPage from "./components/StandingsPage";
 import PlayerOwnership from "./components/PlayerOwnership";
 import Rules from "./components/Rules";
-import EntryList from "./components/EntryList";
 // import CreateEntry from "./components/CreateEntry";
 // import EditEntry from "./components/EditEntry";
 import MyEntries from "./components/MyEntries";
@@ -46,7 +45,6 @@ const App = () => {
           {/* <Route path="/create-entry" element={<CreateEntry />} /> */}
           {/* <Route path="/edit-entry/:id" element={<EditEntry />} /> */}
           <Route path="/view-entry/:id" element={<ViewEntry />} />
-          <Route path="/view-entry" element={<EntryList />} />
         </Route>
 
         {/* Catch all route */}

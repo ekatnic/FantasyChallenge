@@ -113,6 +113,7 @@ class StandingsAPIView(APIView):
         # Get query parameters
         rostered_player_id = request.query_params.get('rostered_player')
         scaled_flex_id = request.query_params.get('scaled_flex')
+        mine_only = request.query_params.get('mine_only')
 
         if rostered_player_id:
             entry_ids = RosteredPlayers.objects.filter(player_id=rostered_player_id).values_list('entry_id', flat=True)
@@ -124,6 +125,11 @@ class StandingsAPIView(APIView):
                 player_id=scaled_flex_id, roster_position__in=["Scaled Flex1", "Scaled Flex2"]
             ).values_list('entry_id', flat=True)
             all_entries_list = [entry for entry in all_entries_list if entry['id'] in entry_ids]
+
+        for entry in all_entries_list:
+            entry['is_user_entry'] = entry['user_id'] == request.user.id
+        if mine_only and mine_only.lower() == 'true':
+            all_entries_list = [entry for entry in all_entries_list if entry['is_user_entry']]
 
         return Response({'entries': all_entries_list})
 
