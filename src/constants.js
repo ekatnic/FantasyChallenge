@@ -75,7 +75,7 @@ export const isPlayoffTeamAlive = {
   PHI: true,
   WAS: true,
   KC: true,
-  LAC: true,
+  LAC: false,
   DEN: true,
   HOU: true,
   BAL: true,
