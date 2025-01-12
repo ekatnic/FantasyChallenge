@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { useNavigate, useLocation } from "react-router-dom";
-import { getStandings } from "../services/api"; // Make sure to import your API function
+import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import { Paper, Box, Button } from "@mui/material";
-import ResetIcon from "@mui/icons-material/Restore"; // Import the Reset Icon
+import ResetIcon from "@mui/icons-material/Restore";
 
 const useStyles = makeStyles({
   dataGrid: {
@@ -40,38 +39,13 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Standings() {
+export default function Standings({ standings }) {
   const classes = useStyles();
-
-  const [standings, setStandings] = useState([]);
-  const [muiTableKey, setMuiTableKey] = useState(1); // updating key will force reset/rerender of filter on DataGrid 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const [muiTableKey, setMuiTableKey] = useState(1);
   const navigate = useNavigate();
-  const location = useLocation();
 
-  useEffect(() => {
-    const fetchStandings = async () => {
-      try {
-        const queryParams = new URLSearchParams(location.search);
-        const rosteredPlayer = queryParams.get('rostered_player');
-        const scaledFlex = queryParams.get('scaled_flex');
-        const data = await getStandings({ rostered_player: rosteredPlayer, scaled_flex: scaledFlex });
-        setStandings(data.entries);
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    };
-    fetchStandings();
-  }, [location.search]);
-  
-  // Increment key on DataGrid component to force a rerender 
-  // https://stackoverflow.com/questions/72810599/how-to-clear-all-applied-filters-in-mui-react-datagrid
-  const resetFilters = async () => {
-    setMuiTableKey(muiTableKey + 1); 
+  const resetFilters = () => {
+    setMuiTableKey(muiTableKey + 1);
   };
 
   const columns = [
@@ -96,22 +70,19 @@ export default function Standings() {
     { field: "total", headerName: "Total", width: 150 },
   ];
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
   return (
-    <Paper sx={{ p: 4, mt: 4, position : "relative" }}>
-      {/* Reset Button */}
+    <Paper sx={{ p: 4, mt: 4, position: "relative" }}>
       <Box className={classes.resetButtonContainer}>
         <Button
-            onClick={resetFilters}
-            endIcon={<ResetIcon />}
-            variant="contained"
+          onClick={resetFilters}
+          endIcon={<ResetIcon />}
+          variant="contained"
         >
           Reset Table
         </Button>
       </Box>
       <DataGrid
+        key={muiTableKey}
         rows={standings}
         columns={columns}
         pageSize={10}
@@ -122,7 +93,11 @@ export default function Standings() {
           },
         }}
         getRowClassName={(params) =>
-          params.row.is_user_entry ? classes.userRow : (params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow)
+          params.row.is_user_entry
+            ? classes.userRow
+            : params.indexRelativeToCurrentPage % 2 === 0
+            ? classes.evenRow
+            : classes.oddRow
         }
       />
     </Paper>
