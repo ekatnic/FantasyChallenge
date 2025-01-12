@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
@@ -15,26 +16,26 @@ import { rosterPositions, isPlayoffTeamAlive } from "../constants";
 const useStyles = makeStyles({
   dataGrid: {
     "& .MuiDataGrid-cell": {
-      fontSize: "1rem", // Adjust the font size for the cells
+      fontSize: "1rem",
     },
     "& .MuiDataGrid-columnHeaders": {
-      fontSize: "1rem", // Adjust the font size for the column headers
+      fontSize: "1rem",
     },
   },
   evenRow: {
-    backgroundColor: "#f5f5f5", // Light gray color for even rows
+    backgroundColor: "#f5f5f5",
   },
   oddRow: {
-    backgroundColor: "#ffffff", // White color for odd rows
+    backgroundColor: "#ffffff",
   },
   userRow: {
-    backgroundColor: "lightblue !important", // Light blue color for user rows
+    backgroundColor: "lightblue !important",
     "&:hover": {
-      backgroundColor: "lightblue !important", // Maintain light blue on hover
+      backgroundColor: "lightblue !important",
     },
   },
   resetButtonContainer: {
-    position: "relative", // Position the reset button container absolutely
+    position: "relative",
     top: 0,
     right: 0,
     display: "flex",
@@ -48,38 +49,28 @@ const useStyles = makeStyles({
 
 export default function SurvivorStandings() {
   const classes = useStyles();
-  
-  const [standings, setStandings] = useState([]);
-  const [muiTableKey, setMuiTableKey] = useState(1); // updating key will force reset/rerender of filter on DataGrid 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const [muiTableKey, setMuiTableKey] = useState(1);
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const queryParams = new URLSearchParams(location.search);
-        const rosteredPlayer = queryParams.get('rostered_player');
-        const scaledFlex = queryParams.get('scaled_flex');
-        const response = await getSurivorStandings({ rostered_player: rosteredPlayer, scaled_flex: scaledFlex });
-        setStandings(response.entries);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const queryParams = new URLSearchParams(location.search);
+  const rosteredPlayer = queryParams.get('rostered_player');
+  const scaledFlex = queryParams.get('scaled_flex');
 
-    fetchData();
-  }, [location.search]);
+  // sets up react query
+  const { data: standings, isLoading, isError, error } = useQuery({
+    queryKey: ['survivor-standings', rosteredPlayer, scaledFlex],
+    queryFn: () => getSurivorStandings({
+      rostered_player: rosteredPlayer,
+      scaled_flex: scaledFlex
+    }),
+    select: (data) => data.entries,
+    staleTime: 5 * 60 * 1000, //data is fresh for 5mins 
+    cacheTime: 30 * 60 * 1000, // keeps unused data cached for 3 mins 
+  });
 
-  // Increment key on DataGrid component to force a rerender 
-  // https://stackoverflow.com/questions/72810599/how-to-clear-all-applied-filters-in-mui-react-datagrid
-  const resetFilters = async () => {
-    setMuiTableKey(muiTableKey + 1); 
+  const resetFilters = () => {
+    setMuiTableKey(muiTableKey + 1);
   };
 
   const getPlayerCell = (players, position) => {
@@ -89,7 +80,7 @@ export default function SurvivorStandings() {
     const isTeamAlive = isPlayoffTeamAlive[player.team] ?? false;
 
     const firstName = player.player_name.split(" ")[0];
-    const lastName  = player.player_name.split(" ")[1];
+    const lastName = player.player_name.split(" ")[1];
     const shortName = firstName.charAt(0) + ". " + lastName;
   
     return (
@@ -134,22 +125,21 @@ export default function SurvivorStandings() {
       </Box>
     );
   };
-  
-  // generate the rosterPosition column definitions
+
   const positionColumns = rosterPositions.map((position) => ({
     field: position,
     headerName: position,
-    flex: 1, 
-    minWidth: 100, 
+    flex: 1,
+    minWidth: 100,
     renderCell: (params) => getPlayerCell(params.row.players, position),
   }));
-  
+
   const columns = [
     { field: "rank", headerName: "Rank", flex: 0.5, minWidth: 80 },
     {
       field: "name",
       headerName: "Entry Name",
-      flex: 1.5, 
+      flex: 1.5,
       minWidth: 150,
       renderCell: (params) => (
         <span
@@ -160,16 +150,15 @@ export default function SurvivorStandings() {
         </span>
       ),
     },
-    { field: "total", headerName: "Total", flex: 1, minWidth: 80},
-    ...positionColumns, // Spread the position columns here, defined above and ordered by rosterPositions
+    { field: "total", headerName: "Total", flex: 1, minWidth: 80 },
+    ...positionColumns,
   ];
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
 
   return (
-    <Paper sx={{ p: 4, mt: 4, position: "relative"}}>
-      {/* Reset Button */}
+    <Paper sx={{ p: 4, mt: 4, position: "relative" }}>
       <Box className={classes.resetButtonContainer}>
         <Button
           onClick={resetFilters}
@@ -180,8 +169,8 @@ export default function SurvivorStandings() {
         </Button>
       </Box>
       <DataGrid
-        key={muiTableKey} // Use the muiTableKey to trigger a re-render
-        rows={standings}
+        key={muiTableKey}
+        rows={standings || []}
         columns={columns}
         pageSize={10}
         className={classes.dataGrid}
@@ -191,7 +180,9 @@ export default function SurvivorStandings() {
           },
         }}
         getRowClassName={(params) =>
-          params.row.is_user_entry ? classes.userRow : (params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow)
+          params.row.is_user_entry 
+            ? classes.userRow 
+            : (params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow)
         }
       />
     </Paper>
