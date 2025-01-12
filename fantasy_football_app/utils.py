@@ -183,10 +183,11 @@ def calc_survivor_standings():
     standings_data = []
     for entry in entries:
         players_data = get_rostered_players_data(entry)
-        entry_total = sum(player["total_points"] for player in players_data)
+        entry_total = round(sum(player["total_points"] for player in players_data),2)
         standings_data.append({
             "entry": entry.name,
             "entry_id": entry.id,
+            "user_id": entry.user_id,
             "players": players_data,
             "total_points": entry_total
         })
@@ -215,6 +216,7 @@ def rank_survivor_standings(standings_data):
         final_data.append({
             "id": entry_data["entry_id"],
             "name": entry_data["entry"],
+            "user_id": entry_data["user_id"],
             "total": entry_data["total_points"],
             "rank": rank,
             "players": entry_data["players"]

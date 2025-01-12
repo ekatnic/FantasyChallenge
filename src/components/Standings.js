@@ -22,7 +22,10 @@ const useStyles = makeStyles({
     backgroundColor: "#ffffff", // White color for odd rows
   },
   userRow: {
-    backgroundColor: "lightblue", // Light green color for user rows
+    backgroundColor: "lightblue !important", // Light blue color for user rows
+    "&:hover": {
+      backgroundColor: "lightblue !important", // Maintain light blue on hover
+    },
   },
   resetButtonContainer: {
     position: "relative", // Position the reset button container absolutely

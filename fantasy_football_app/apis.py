@@ -172,4 +172,6 @@ class SurvivorStandingsAPIView(APIView):
         if scaled_flex_id:
             final_data = filter_by_scaled_flex(final_data, scaled_flex_id)
 
+        for entry in final_data:
+            entry['is_user_entry'] = entry['user_id'] == request.user.id
         return Response({'entries': final_data})
