@@ -117,15 +117,11 @@ class StandingsAPIView(APIView):
         mine_only = request.query_params.get('mine_only')
 
         if rostered_player_id:
-            entry_ids = RosteredPlayers.objects.filter(player_id=rostered_player_id).values_list('entry_id', flat=True)
-            all_entries_list = [entry for entry in all_entries_list if entry['id'] in entry_ids]
+            all_entries_list = filter_by_rostered_player(all_entries_list, rostered_player_id)
 
         # Filter entries based on scaled_flex
         if scaled_flex_id:
-            entry_ids = RosteredPlayers.objects.filter(
-                player_id=scaled_flex_id, roster_position__in=["Scaled Flex1", "Scaled Flex2"]
-            ).values_list('entry_id', flat=True)
-            all_entries_list = [entry for entry in all_entries_list if entry['id'] in entry_ids]
+            all_entries_list = filter_by_scaled_flex(all_entries_list, scaled_flex_id)
 
         for entry in all_entries_list:
             entry['is_user_entry'] = entry['user_id'] == request.user.id
@@ -162,7 +158,7 @@ class SurvivorStandingsAPIView(APIView):
         scaled_flex_id = request.query_params.get('scaled_flex')
         cache_key = "survivor_entry_standings"
 
-        # gett standings data from cache OR calculate and cache it
+        # get standings data from cache OR calculate and cache it
         final_data = cache.get(cache_key)
         if not final_data:
             final_data = calc_survivor_standings()

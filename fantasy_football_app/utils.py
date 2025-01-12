@@ -206,13 +206,11 @@ def get_rostered_players_data(entry):
         })
     return players_data
 
-#
 def rank_survivor_standings(standings_data):
     sorted_data = sorted(standings_data, key=lambda x: x["total_points"], reverse=True)
     final_data = []
-    prev_points, prev_rank, current_rank = None, 1, 1
-    # TODO: review this logic 
-    for entry_data in sorted_data:
+    prev_points, prev_rank = None, 1
+    for current_rank, entry_data in enumerate(sorted_data, start=1):
         rank = prev_rank if prev_points is not None and prev_points == entry_data["total_points"] else current_rank
         final_data.append({
             "id": entry_data["entry_id"],
@@ -221,9 +219,8 @@ def rank_survivor_standings(standings_data):
             "rank": rank,
             "players": entry_data["players"]
         })
-        prev_points  = entry_data["total_points"]
-        prev_rank    = rank
-        current_rank += 1
+        prev_points = entry_data["total_points"]
+        prev_rank = rank
 
     return final_data
 
