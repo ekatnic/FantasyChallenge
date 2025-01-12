@@ -1,34 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getStandings } from "../services/api"; // Make sure to import your API function
+import { getStandings } from "../services/api";
 import { makeStyles } from "@mui/styles";
 import { Paper, Box, Button } from "@mui/material";
-import ResetIcon from "@mui/icons-material/Restore"; // Import the Reset Icon
+import ResetIcon from "@mui/icons-material/Restore";
 
 const useStyles = makeStyles({
   dataGrid: {
     "& .MuiDataGrid-cell": {
-      fontSize: "1rem", // Adjust the font size for the cells
+      fontSize: "1rem",
     },
     "& .MuiDataGrid-columnHeaders": {
-      fontSize: "1rem", // Adjust the font size for the column headers
+      fontSize: "1rem",
     },
   },
   evenRow: {
-    backgroundColor: "#f5f5f5", // Light gray color for even rows
+    backgroundColor: "#f5f5f5",
   },
   oddRow: {
-    backgroundColor: "#ffffff", // White color for odd rows
+    backgroundColor: "#ffffff",
   },
   userRow: {
-    backgroundColor: "lightblue !important", // Light blue color for user rows
+    backgroundColor: "lightblue !important",
     "&:hover": {
-      backgroundColor: "lightblue !important", // Maintain light blue on hover
+      backgroundColor: "lightblue !important",
     },
   },
   resetButtonContainer: {
-    position: "relative", // Position the reset button container absolutely
+    position: "relative",
     top: 0,
     right: 0,
     display: "flex",
@@ -42,36 +43,28 @@ const useStyles = makeStyles({
 
 export default function Standings() {
   const classes = useStyles();
-
-  const [standings, setStandings] = useState([]);
-  const [muiTableKey, setMuiTableKey] = useState(1); // updating key will force reset/rerender of filter on DataGrid 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const [muiTableKey, setMuiTableKey] = useState(1);
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    const fetchStandings = async () => {
-      try {
-        const queryParams = new URLSearchParams(location.search);
-        const rosteredPlayer = queryParams.get('rostered_player');
-        const scaledFlex = queryParams.get('scaled_flex');
-        const data = await getStandings({ rostered_player: rosteredPlayer, scaled_flex: scaledFlex });
-        setStandings(data.entries);
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    };
-    fetchStandings();
-  }, [location.search]);
   
-  // Increment key on DataGrid component to force a rerender 
-  // https://stackoverflow.com/questions/72810599/how-to-clear-all-applied-filters-in-mui-react-datagrid
-  const resetFilters = async () => {
-    setMuiTableKey(muiTableKey + 1); 
+  const queryParams = new URLSearchParams(location.search);
+  const rosteredPlayer = queryParams.get('rostered_player');
+  const scaledFlex = queryParams.get('scaled_flex');
+
+  // sets up react query
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['standings', rosteredPlayer, scaledFlex],
+    queryFn: () => getStandings({ 
+      rostered_player: rosteredPlayer, 
+      scaled_flex: scaledFlex 
+    }),
+    select: (data) => data.entries, // get just the entries
+    staleTime: 5 * 60 * 1000, //data is fresh for 5mins 
+    cacheTime: 30 * 60 * 1000, // keeps unused data cached for 3 mins 
+  });
+
+  const resetFilters = () => {
+    setMuiTableKey(muiTableKey + 1);
   };
 
   const columns = [
@@ -96,23 +89,23 @@ export default function Standings() {
     { field: "total", headerName: "Total", width: 150 },
   ];
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
 
   return (
-    <Paper sx={{ p: 4, mt: 4, position : "relative" }}>
-      {/* Reset Button */}
+    <Paper sx={{ p: 4, mt: 4, position: "relative" }}>
       <Box className={classes.resetButtonContainer}>
         <Button
-            onClick={resetFilters}
-            endIcon={<ResetIcon />}
-            variant="contained"
+          onClick={resetFilters}
+          endIcon={<ResetIcon />}
+          variant="contained"
         >
           Reset Table
         </Button>
       </Box>
       <DataGrid
-        rows={standings}
+        key={muiTableKey}
+        rows={data || []}
         columns={columns}
         pageSize={10}
         className={classes.dataGrid}
@@ -122,7 +115,9 @@ export default function Standings() {
           },
         }}
         getRowClassName={(params) =>
-          params.row.is_user_entry ? classes.userRow : (params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow)
+          params.row.is_user_entry 
+            ? classes.userRow 
+            : (params.indexRelativeToCurrentPage % 2 === 0 ? classes.evenRow : classes.oddRow)
         }
       />
     </Paper>

@@ -19,6 +19,9 @@ import Rules from "./components/Rules";
 // import EditEntry from "./components/EditEntry";
 import MyEntries from "./components/MyEntries";
 import ViewEntry from "./components/ViewEntry";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const App = () => {
   
@@ -29,28 +32,30 @@ const App = () => {
   }
 
   return (
-    <Routes>
-      <Route element={<LayoutWrapper />}>
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-        <Route path="/confirm-forgot-password" element={<ConfirmForgotPassword />} />
-        <Route path="/rules" element={<Rules />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<ProtectedHome />} />
-          <Route path="/my-entries" element={<MyEntries />} />
-          <Route path="/standings" element={<StandingsPage />} />
-          <Route path="/players" element={<PlayerOwnership />} />
-          {/* <Route path="/create-entry" element={<CreateEntry />} /> */}
-          {/* <Route path="/edit-entry/:id" element={<EditEntry />} /> */}
-          <Route path="/view-entry/:id" element={<ViewEntry />} />
-        </Route>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route element={<LayoutWrapper />}>
+          <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+          <Route path="/confirm-forgot-password" element={<ConfirmForgotPassword />} />
+          <Route path="/rules" element={<Rules />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<ProtectedHome />} />
+            <Route path="/my-entries" element={<MyEntries />} />
+            <Route path="/standings" element={<StandingsPage />} />
+            <Route path="/players" element={<PlayerOwnership />} />
+            {/* <Route path="/create-entry" element={<CreateEntry />} /> */}
+            {/* <Route path="/edit-entry/:id" element={<EditEntry />} /> */}
+            <Route path="/view-entry/:id" element={<ViewEntry />} />
+          </Route>
 
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Route>
-    </Routes>
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Route>
+      </Routes>
+    </QueryClientProvider>
   );
 };
 
