@@ -5,8 +5,15 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.models import F, Sum
 from .models import Entry, Player, RosteredPlayers, WeeklyStats
-from .utils import get_entry_score_dict, get_entry_total_dict, get_all_entry_score_dicts, get_summarized_players, \
-    calc_survivor_standings, filter_by_rostered_player, filter_by_scaled_flex
+from .utils import (
+    get_entry_score_dict, 
+    get_entry_total_dict, 
+    get_all_entry_score_dicts, 
+    get_summarized_players,
+    get_survivor_standings, 
+    filter_by_rostered_player, 
+    filter_by_scaled_flex
+)
 from .serializers import WeeklyStatsSerializer, EntrySerializer, PlayerSerializer, RosteredPlayersSerializer
 from django.core.cache import cache
 
@@ -134,11 +141,7 @@ class PlayerOwnershipAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        players_scoring_dict = cache.get('players_scoring_dict')
-        if not players_scoring_dict:
-            players_scoring_dict = get_summarized_players()
-            cache.set('players_scoring_dict', players_scoring_dict, 60 * 30)  # Cache for 30 minutes
-        return Response({'players_scoring_dict': players_scoring_dict})
+        return Response({'players_scoring_dict': get_summarized_players()})
 
 class PlayerWeeklyStatsAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -156,22 +159,18 @@ class SurvivorStandingsAPIView(APIView):
     def get(self, request, *args, **kwargs):
         rostered_player_id = request.query_params.get('rostered_player')
         scaled_flex_id = request.query_params.get('scaled_flex')
-        cache_key = "survivor_entry_standings"
 
         # get standings data from cache OR calculate and cache it
-        final_data = cache.get(cache_key)
-        if not final_data:
-            final_data = calc_survivor_standings()
-            cache.set(cache_key, final_data, 60 * 30)
+        standings_data = get_survivor_standings()
 
         # Filter entries based on rostered_player_id
         if rostered_player_id:
-            final_data = filter_by_rostered_player(final_data, rostered_player_id)
+            standings_data = filter_by_rostered_player(standings_data, rostered_player_id)
 
         # Filter entries based on scaled_flex
         if scaled_flex_id:
-            final_data = filter_by_scaled_flex(final_data, scaled_flex_id)
+            standings_data = filter_by_scaled_flex(standings_data, scaled_flex_id)
 
-        for entry in final_data:
+        for entry in standings_data:
             entry['is_user_entry'] = entry['user_id'] == request.user.id
-        return Response({'entries': final_data})
+        return Response({'entries': standings_data})
