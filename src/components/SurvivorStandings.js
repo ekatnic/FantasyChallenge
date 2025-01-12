@@ -110,7 +110,8 @@ export default function SurvivorStandings({ standings }) {
     field: position,
     headerName: position,
     flex: 1,
-    minWidth: "100%",
+    // minWidth: "100%",
+    minWidth : 85,
     sortable : false,
     renderCell: (params) => getPlayerCell(params.row.players, position),
   }));
