@@ -1,6 +1,8 @@
 # load_player_stats.py
 import logging
 import os
+import datetime
+import pytz
 
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
@@ -14,20 +16,28 @@ from fantasy_football_app.utils import (
 
 logger = logging.getLogger(__name__)
 
-class Command(BaseCommand):
-    help = 'Loads player stats for a given date and week'
+def get_current_week(current_date, tz):
+    if current_date < datetime.datetime(current_date.year, 1, 18, tzinfo=tz):
+        return 'WC'
+    elif current_date < datetime.datetime(current_date.year, 1, 25, tzinfo=tz):
+        return 'DIV'
+    elif current_date < datetime.datetime(current_date.year, 2, 1, tzinfo=tz):
+        return 'CONF'
+    else:
+        return 'SB'
 
-    def add_arguments(self, parser):
-        parser.add_argument('date', type=str, help='The game date in YYYYMMDD format')
-        parser.add_argument('week', type=str, help='The week of the game', choices=[choice[0] for choice in WEEK_CHOICES])
+class Command(BaseCommand):
+    help = 'Loads player stats for current week'
 
     def handle(self, *args, **options):
         job_enabled = os.getenv('LIVE_GAME_LOAD_ENABLED', 'false').lower() == 'true'
         if not job_enabled:
             print("Job is disabled in Heroku vars. Set LIVE_GAME_LOAD_ENABLED to 'true' to pull data. Exiting.")
             return
-        date = options['date']
-        week = options['week']
+        pst = pytz.timezone('America/Los_Angeles')
+        date = datetime.datetime.now(pst)
+        week = get_current_week(date, pst)
+        date = date.strftime('%Y%m%d')
         logger.info(f'Starting to pull API data for date {date} and week {week}')
         client = TankAPIClient()
         updated_players = client.process_player_stats_for_date(date, week)
