@@ -24,7 +24,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         job_enabled = os.getenv('LIVE_GAME_LOAD_ENABLED', 'false').lower() == 'true'
         if not job_enabled:
-            print("Job is disabled in Heroku vars. Re-enable to pull data. Exiting.")
+            print("Job is disabled in Heroku vars. Set LIVE_GAME_LOAD_ENABLED to 'true' to pull data. Exiting.")
             return
         date = options['date']
         week = options['week']
