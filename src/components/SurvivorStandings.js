@@ -70,9 +70,9 @@ export default function SurvivorStandings({ standings }) {
   const getPlayerCell = (players, position) => {
     const player = players.find((p) => p.rostered_position === position);
     if (!player) return "-";
-  
+
     const isTeamAlive = isPlayoffTeamAlive[player.team] ?? false;
-  
+
     const firstName = player.player_name.split(" ")[0];
     const lastName  = player.player_name.split(" ")[1];
     const shortName = firstName.charAt(0) + ". " + lastName;
@@ -131,8 +131,7 @@ export default function SurvivorStandings({ standings }) {
     field: position,
     headerName: position,
     flex: 1,
-    // minWidth: "100%",
-    minWidth : 85,
+    minWidth: "100%",
     sortable : false,
     renderCell: (params) => getPlayerCell(params.row.players, position),
   }));
