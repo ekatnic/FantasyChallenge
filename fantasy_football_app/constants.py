@@ -85,7 +85,7 @@ TEAM_ABBREV_TO_TEAM_NAME = {
     'SEA': 'Seattle Seahawks',
     'TB': 'Tampa Bay Buccaneers',
     'TEN': 'Tennessee Titans',
-    'WAS': 'Washington Commanders',
+    'WSH': 'Washington Commanders',
 }
 
 
