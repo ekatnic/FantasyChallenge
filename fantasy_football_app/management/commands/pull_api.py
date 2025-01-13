@@ -1,5 +1,6 @@
 # load_player_stats.py
 import logging
+import os
 
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
@@ -21,6 +22,10 @@ class Command(BaseCommand):
         parser.add_argument('week', type=str, help='The week of the game', choices=[choice[0] for choice in WEEK_CHOICES])
 
     def handle(self, *args, **options):
+        job_enabled = os.getenv('LIVE_GAME_LOAD_ENABLED', 'false').lower() == 'true'
+        if not job_enabled:
+            print("Job is disabled in Heroku vars. Re-enable to pull data. Exiting.")
+            return
         date = options['date']
         week = options['week']
         logger.info(f'Starting to pull API data for date {date} and week {week}')

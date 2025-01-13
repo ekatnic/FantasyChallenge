@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
-import { Paper, Typography, Box, Button } from '@mui/material';
+import { Paper, Typography, Box, Button, Tooltip } from '@mui/material';
 import ResetIcon from "@mui/icons-material/Restore";
 import { rosterPositions, isPlayoffTeamAlive } from "../constants";
+import PlayerWeeklyStats from "./PlayerWeeklyStats";
 
 const useStyles = makeStyles({
   dataGrid: {
@@ -49,17 +50,29 @@ export default function SurvivorStandings({ standings }) {
   const classes = useStyles();
   const [muiTableKey, setMuiTableKey] = useState(1);
   const navigate = useNavigate();
+  const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+  const [statsDialogOpen, setStatsDialogOpen] = useState(false);
 
   const resetFilters = () => {
     setMuiTableKey(muiTableKey + 1);
   };
 
+  const handlePlayerClick = (playerId) => {
+    setSelectedPlayerId(playerId);
+    setStatsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setSelectedPlayerId(null);
+    setStatsDialogOpen(false);
+  };
+
   const getPlayerCell = (players, position) => {
     const player = players.find((p) => p.rostered_position === position);
     if (!player) return "-";
-
+  
     const isTeamAlive = isPlayoffTeamAlive[player.team] ?? false;
-
+  
     const firstName = player.player_name.split(" ")[0];
     const lastName  = player.player_name.split(" ")[1];
     const shortName = firstName.charAt(0) + ". " + lastName;
@@ -79,18 +92,26 @@ export default function SurvivorStandings({ standings }) {
           boxSizing: "border-box",
         }}
       >
-        <Typography
-          variant="body2"
-          noWrap
-          sx={{
-            color: !isTeamAlive ? "white" : "text.primary",
-            fontSize: "0.75rem",
-            lineHeight: 1.1,
-            textOverflow: "ellipsis",
-          }}
-        >
-          {shortName}
-        </Typography>
+        <Tooltip title="Click to view player stats">
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{
+              color: !isTeamAlive ? "white" : "text.primary",
+              fontSize: "0.75rem",
+              lineHeight: 1.1,
+              textOverflow: "ellipsis",
+              cursor: "pointer",
+              textDecoration: "none", // No underline by default
+              "&:hover": {
+                textDecoration: "underline", // Underline on hover
+              },
+            }}
+            onClick={() => handlePlayerClick(player.player_id)} // Add onClick handler
+          >
+            {shortName}
+          </Typography>
+        </Tooltip>
         <Typography
           variant="caption"
           noWrap
@@ -165,6 +186,11 @@ export default function SurvivorStandings({ standings }) {
             ? classes.evenRow
             : classes.oddRow
         }
+      />
+      <PlayerWeeklyStats
+        playerId={selectedPlayerId}
+        open={statsDialogOpen}
+        onClose={handleDialogClose}
       />
     </Paper>
   );

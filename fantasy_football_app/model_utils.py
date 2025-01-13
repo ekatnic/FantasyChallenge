@@ -8,6 +8,8 @@ def calculate_weekly_score_for_player(weekly_stats):
         base_score += weekly_stats.safeties * 5
         base_score += weekly_stats.defensive_tds * 6
         base_score += weekly_stats.return_tds * 6
+        base_score += weekly_stats.two_pt_conversions * 2
+        base_score += weekly_stats.kicks_blocked
         if weekly_stats.points_allowed == 0:
             base_score += 12
         elif weekly_stats.points_allowed <= 6:

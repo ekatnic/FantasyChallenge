@@ -213,6 +213,7 @@ def get_rostered_players_data(entry):
             "rostered_position": rp.roster_position,
             "total_points": round(total_points, 2),
             "player_name": rp.player.name,
+            "player_id": rp.player.id,
             "team": rp.player.team
         })
     return players_data
