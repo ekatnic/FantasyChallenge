@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { getEntryRoster, deleteEntry } from "../services/api";
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from "@mui/material";
+import { getEntryRoster } from "../services/api";
 import { rosterPositions } from "../constants";
+import PlayerWeeklyStats from "./PlayerWeeklyStats"; 
 
 const ViewEntry = () => {
   const { id } = useParams();
@@ -10,7 +11,8 @@ const ViewEntry = () => {
   const [entry, setEntry] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [selectedPlayerId, setSelectedPlayerId] = useState(null); // State for selected player
+  const [statsDialogOpen, setStatsDialogOpen] = useState(false); // State for dialog open
 
   useEffect(() => {
     const fetchEntry = async () => {
@@ -26,21 +28,14 @@ const ViewEntry = () => {
     fetchEntry();
   }, [id]);
 
-  const handleDelete = async () => {
-    try {
-      await deleteEntry(id);
-      navigate("/my-entries");
-    } catch (error) {
-      console.error("Failed to delete entry:", error);
-    }
+  const handlePlayerClick = (playerId) => {
+    setSelectedPlayerId(playerId);
+    setStatsDialogOpen(true);
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+  const handleDialogClose = () => {
+    setSelectedPlayerId(null);
+    setStatsDialogOpen(false);
   };
 
   if (loading) return <Typography>Loading...</Typography>;
@@ -75,27 +70,34 @@ const ViewEntry = () => {
                 const { player, score } = getPlayerData(position);
                 return (
                   <TableRow key={position}>
-                  <TableCell>
-                    {position} {position.includes("Scaled Flex") && (
-                      (() => {
-                        const multiplier = score.sf_multiplier.toString();
-                        const colorMap = {
-                          "0.75": "red",
-                          "1": "black",
-                          "1.25": "lightgreen",
-                          "1.5": "mediumseagreen",
-                          "2": "green",
-                          "3": "darkgreen"
-                        };
-                        return (
-                          <span style={{ color: colorMap[multiplier] }}>
-                            <b>({multiplier}x)</b>
-                          </span>
-                        );
-                      })()
-                    )}
-                  </TableCell>
-                    <TableCell>{player.player_name}</TableCell>
+                    <TableCell>
+                      {position} {position.includes("Scaled Flex") && (
+                        (() => {
+                          const multiplier = score.sf_multiplier.toString();
+                          const colorMap = {
+                            "0.75": "red",
+                            "1": "black",
+                            "1.25": "lightgreen",
+                            "1.5": "mediumseagreen",
+                            "2": "green",
+                            "3": "darkgreen"
+                          };
+                          return (
+                            <span style={{ color: colorMap[multiplier] }}>
+                              <b>({multiplier}x)</b>
+                            </span>
+                          );
+                        })()
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        style={{ cursor: "pointer", color: "blue" }}
+                        onClick={() => handlePlayerClick(player.player_id)}
+                      >
+                        {player.player_name}
+                      </span>
+                    </TableCell>
                     <TableCell>{score.WC}</TableCell>
                     <TableCell>{score.DIV}</TableCell>
                     <TableCell>{score.CONF}</TableCell>
@@ -123,22 +125,11 @@ const ViewEntry = () => {
         </Box>
       </Paper>
 
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this entry?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDelete} color="error">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <PlayerWeeklyStats
+        playerId={selectedPlayerId}
+        open={statsDialogOpen}
+        onClose={handleDialogClose}
+      />
     </Box>
   );
 };

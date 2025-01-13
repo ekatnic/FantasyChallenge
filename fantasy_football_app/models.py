@@ -157,6 +157,7 @@ class WeeklyStats(ComputedFieldsModel):
     return_tds = models.IntegerField(default=0)
     points_allowed = models.IntegerField(default=0)
     two_pt_conversions = models.IntegerField(default=0)
+    kicks_blocked = models.IntegerField(default=0)
     fg_made = models.IntegerField(default=0)
     fg_missed = models.IntegerField(default=0)
     xp_made = models.IntegerField(default=0)
@@ -166,8 +167,8 @@ class WeeklyStats(ComputedFieldsModel):
         'rushing_yards', 'rushing_tds', 'receptions', 'receiving_yards', 
         'receiving_tds', 'fumbles_lost', 'sacks', 'interceptions', 
         'fumbles_recovered', 'safeties', 'defensive_tds', 'return_tds', 
-        'points_allowed', 'two_pt_conversions', 'fg_made', 'fg_missed',
-        'xp_made', 'xp_missed']),
+        'points_allowed', 'two_pt_conversions', 'kicks_blocked', 'fg_made',
+        'fg_missed', 'xp_made', 'xp_missed']),
         ( 'player', ['position']),
         ]
     )
