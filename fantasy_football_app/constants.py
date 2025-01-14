@@ -1,5 +1,7 @@
 FLEX_POSITIONS = ['RB', 'WR', 'TE']
+
 POSITION_ORDER = ['QB', 'RB 1', 'RB 2', 'WR 1', 'WR 2', 'TE', 'FLEX 1', 'FLEX 2', 'FLEX 3', 'FLEX 4', 'SCALED FLEX', 'DEF']
+
 INPUT_INDEXES = {
     'passing_yards': 7,
     'passing_tds': 8,
@@ -19,12 +21,20 @@ INPUT_INDEXES = {
     'defensive_tds': 26,
     'return_tds': 27,
 }
+
 WEEK_CHOICES = [
         ('WC', 'Wild Card'),
         ('DIV', 'Divisional'),
         ('CONF', 'Conference'),
         ('SB', 'Super Bowl'),
     ]
+
+WEEK_START_DATES = {
+    'WC': '20250111',
+    'DIV': '20250118',
+    'CONF': '20250125',
+    'SB': '20250201',
+}
 
 DEFENSE_STATS_NAMES = {
     'week': 'WEEK',
@@ -87,7 +97,6 @@ TEAM_ABBREV_TO_TEAM_NAME = {
     'TEN': 'Tennessee Titans',
     'WSH': 'Washington Commanders',
 }
-
 
 ROSTER_POSITIONS = [
     ('QB', 'QB'),
