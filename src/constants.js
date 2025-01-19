@@ -69,7 +69,7 @@ export const playoffTeams = [
 export const isPlayoffTeamAlive = {
   LAR: true,
   TB: false,
-  DET: true,
+  DET: false,
   MIN: false,
   GB: false,
   PHI: true,
@@ -77,7 +77,7 @@ export const isPlayoffTeamAlive = {
   KC: true,
   LAC: false,
   DEN: false,
-  HOU: true,
+  HOU: false,
   BAL: true,
   PIT: false,
   BUF: true,
