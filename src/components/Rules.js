@@ -16,16 +16,16 @@ import ScaledFlexRulesTable from "./ScaledFlexRulesTable";
 
 export default function Rules() {
   const payouts = [
-    { position: "1st", amount: "55% of pot" },
-    { position: "2nd", amount: "20% of pot" },
-    { position: "3rd", amount: "10% of pot" },
-    { position: "4th", amount: "7.5% of pot" },
-    { position: "5th", amount: "5% of pot" },
+    { position: "1st", amount: "$1650" },
+    { position: "2nd", amount: "$600" },
+    { position: "3rd", amount: "$300" },
+    { position: "4th", amount: "$225" },
+    { position: "5th", amount: "$150" },
     { position: "6th", amount: "$20" },
     { position: "7th", amount: "$20" },
     { position: "Last Place", amount: "$20" },
   ];
-
+  
   const pricing = [
     { entries: "1 entry", price: "$20" },
     { entries: "3 entries", price: "$55" },
