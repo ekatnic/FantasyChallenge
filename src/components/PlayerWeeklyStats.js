@@ -46,7 +46,7 @@ export default function PlayerWeeklyStats({ playerId, open, onClose }) {
     { field: "return_tds", headerName: "Return TDs", width: 150 },
     { field: "points_allowed", headerName: "Points Allowed", width: 150 },
     { field: "two_pt_conversions", headerName: "2-pt Conversions", width: 150 },
-    { field: "blocked_kicks", headerName: "Blocked Kicks", width: 150 },
+    { field: "kicks_blocked", headerName: "Blocked Kicks", width: 150 },
   ];
 
   if (loading) return <div>Loading...</div>;

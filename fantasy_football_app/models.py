@@ -112,7 +112,7 @@ class Entry(models.Model):
     conference_score = models.FloatField(default=0.0)
     super_bowl_score = models.FloatField(default=0.0)
     total = models.FloatField(default=0.0) #a calculated field?
-    year = models.CharField(max_length=12, choices=[('2024', '2024'), ('2025', '2025')], default='2024')
+    year = models.CharField(max_length=12, choices=[('2024', '2024'), ('2025', '2025'), ('2026', '2026')], default='2026')
 
     def save(self, *args, **kwargs):
         if not self.name:

@@ -108,7 +108,7 @@ export default function ProtectedHome() {
           </Typography>
           <Typography variant="body1" gutterBottom>
             Lineups lock at kickoff of the first playoff game:
-            <strong> 4:30 PM EST, Saturday, Jan 11th</strong>.
+            <strong> 4:30 PM EST, Saturday, Jan 10th</strong>.
           </Typography>
           <Typography variant="body1" gutterBottom>
             <strong>Live Updates:</strong> Scoring, stats, and standings will be updated live throughout the contest.

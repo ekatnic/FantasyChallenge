@@ -42,7 +42,7 @@ const NavBar = () => {
             textDecoration: "none",
           }}
         >
-          Fantasy Football Challenge 2025
+          Fantasy Football Challenge 2026
         </Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
           {isAuthenticated ? (
