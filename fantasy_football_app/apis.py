@@ -46,27 +46,35 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
         serializer.save()
         cache.delete("ranked_entries_dict")
 
+class IsOwnerOrAdmin(permissions.BasePermission):
+    """Object-level permission to only allow owners of an object or admins to access it."""
+
+    def has_object_permission(self, request, view, obj):
+        # Allow admins full access
+        if request.user and request.user.is_superuser:
+            return True
+        # Otherwise only allow owners
+        return getattr(obj, "user", None) == request.user
+
+
 class EntryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
 
-    #Added to prevent normal users from updating/deleting entries after roster lock
     def get_permissions(self):
-        if (
-            self.request.method == 'PUT'
-            or self.request.method == 'PATCH'
-            or self.request.method == 'DELETE'
-            or self.request.method == 'POST'
-            ):
+        # When roster creation/editing is locked, only admins may perform unsafe methods
+        if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE'] and flag_is_active(self.request, 'entry_lock'):
             permission_classes = [IsAdminUser]
         else:
-            permission_classes = [IsAuthenticated]
-        return [permission() for permission in permission_classes]
+            # Require authentication and enforce object-level ownership for object actions
+            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+        return [perm() for perm in permission_classes]
 
     def get_queryset(self):
-        # if self.request.user.is_superuser:
-        #     return Entry.objects.all()
-        return Entry.objects.filter()
+        # Superusers can access all entries; normal users only their own entries
+        if self.request.user.is_superuser:
+            return Entry.objects.all()
+        return Entry.objects.filter(user=self.request.user)
 
 class PlayerListAPIView(generics.ListAPIView):
     queryset = Player.objects.all()
