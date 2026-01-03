@@ -141,14 +141,16 @@ class PlayerOwnershipAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        return Response({'players_scoring_dict': get_summarized_players()})
+        season = request.query_params.get('season', '2026')
+        return Response({'players_scoring_dict': get_summarized_players(season=season)})
 
 class PlayerWeeklyStatsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, player_id, *args, **kwargs):
         player = get_object_or_404(Player, id=player_id)
-        weekly_stats = WeeklyStats.objects.filter(player=player)
+        season = request.query_params.get('season', '2026')
+        weekly_stats = WeeklyStats.objects.filter(player=player, season=season)
         player_data = PlayerSerializer(player).data
         weekly_stats_data = WeeklyStatsSerializer(weekly_stats, many=True).data
         return Response({'player': player_data, 'weekly_stats': weekly_stats_data})
@@ -159,9 +161,10 @@ class SurvivorStandingsAPIView(APIView):
     def get(self, request, *args, **kwargs):
         rostered_player_id = request.query_params.get('rostered_player')
         scaled_flex_id = request.query_params.get('scaled_flex')
+        season = request.query_params.get('season', '2026')
 
         # get standings data from cache OR calculate and cache it
-        standings_data = get_survivor_standings()
+        standings_data = get_survivor_standings(season=season)
 
         # Filter entries based on rostered_player_id
         if rostered_player_id:

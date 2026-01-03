@@ -1,6 +1,6 @@
 from django.core.cache import cache
 from django.db.models import (Case, Count, F, FloatField, Func, IntegerField,
-                              Prefetch, Sum, When)
+                              Prefetch, Sum, When, Q)
 from django.db.models.functions import Round
 
 from .constants import FLEX_POSITIONS, INPUT_INDEXES
@@ -85,7 +85,7 @@ def get_entry_score_dict(entry):
     entry_score_dict = {}
     rostered_player_list = entry.rosteredplayers_set.all().order_by('id')
     for rostered_player in rostered_player_list:
-        entry_score_dict[rostered_player] = get_scaled_player_scoring_dict(rostered_player)
+        entry_score_dict[rostered_player] = get_scaled_player_scoring_dict(rostered_player, season=entry.year)
     return entry_score_dict
 
 
@@ -107,25 +107,27 @@ def get_entry_total_dict(entry_score_dict):
         final_dict[entry] = round(total, 2) 
     return final_dict
 
-def get_summarized_players():
+def get_summarized_players(season='2026'):
     """
-    Get a list of player data with rostership counts and percentages
+    Get a list of player data with rostership counts and percentages for a given season.
     returns: list of summarized player data dictionaries
     """
-    cache_key = "players_scoring_dict"
+    cache_key = f"players_scoring_dict_{season}"
     players_scoring_dict = cache.get(cache_key)
     if players_scoring_dict:
         return players_scoring_dict
-    total_entries = float(Entry.objects.count())
+
+    total_entries = float(Entry.objects.filter(year=season).count())
     if not total_entries:
         return []
+
     player_counts = Player.objects.annotate(
-        roster_count=Count('rosteredplayers'),
+        roster_count=Count('rosteredplayers', filter=Q(rosteredplayers__entry__year=season)),
         roster_percentage=Round(F('roster_count') / total_entries * 100, 2),
         scaled_flex_count=Sum(
             Case(
-                When(rosteredplayers__roster_position="Scaled Flex1", then=1),
-                When(rosteredplayers__roster_position="Scaled Flex2", then=1),
+                When(Q(rosteredplayers__entry__year=season) & Q(rosteredplayers__roster_position="Scaled Flex1"), then=1),
+                When(Q(rosteredplayers__entry__year=season) & Q(rosteredplayers__roster_position="Scaled Flex2"), then=1),
                 default=0,
                 output_field=IntegerField()
             )
@@ -133,13 +135,13 @@ def get_summarized_players():
         scaled_flex_percentage=Round(F('scaled_flex_count') / total_entries * 100, 2),
     )
 
-    # Filter the QuerySet to include only Players with one or more RosteredPlayer
+    # Filter the QuerySet to include only Players with one or more RosteredPlayer for this season
     player_counts = player_counts.order_by('-roster_percentage')
     summarized_players = []
     for player in player_counts:
         if not player.roster_count:
             continue
-        player_dict = get_raw_player_scoring_dict(player)
+        player_dict = get_raw_player_scoring_dict(player, season=season)
         summarized_player = {
             'id': player.id,
             'name': player.name,
@@ -159,7 +161,7 @@ def get_summarized_players():
             )
         }
         summarized_players.append(summarized_player)
-    cache.set(cache_key, summarized_players, 60 * 30)
+    # cache.set(cache_key, summarized_players, 60 * 30)
     return summarized_players
 
 def update_and_return(dict_obj, update_dict):
@@ -178,13 +180,13 @@ def get_player_scores_for_entries_list(entry_list):
     """
     return {entry: get_entry_score_dict(entry) for entry in entry_list}
 
-def get_survivor_standings():
-    cache_key = "survivor_entry_standings"
+def get_survivor_standings(season='2026'):
+    cache_key = f"survivor_entry_standings_{season}"
     players_data = cache.get(cache_key)
     if players_data:
         return players_data
 
-    entries = Entry.objects.prefetch_related(
+    entries = Entry.objects.filter(year=season).prefetch_related(
         'rosteredplayers_set__player',
         'rosteredplayers_set__player__weeklystats_set'
     ).all()
@@ -208,7 +210,7 @@ def get_rostered_players_data(entry):
     rostered_players = RosteredPlayers.objects.filter(entry=entry)
     players_data = []
     for rp in rostered_players:
-        total_points = get_scaled_player_scoring_dict(rp).get('total', 0.0)
+        total_points = get_scaled_player_scoring_dict(rp, season=rp.entry.year).get('total', 0.0)
         players_data.append({
             "rostered_position": rp.roster_position,
             "total_points": round(total_points, 2),
