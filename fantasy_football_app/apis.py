@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.models import F, Sum
+from waffle import flag_is_active
 from .models import Entry, Player, RosteredPlayers, WeeklyStats
 from .utils import (
     get_entry_score_dict, 
@@ -22,16 +23,11 @@ class EntryListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = EntrySerializer
 
     def get_permissions(self):
-        # Added to prevent normal users from creating entries after roster lock
-        if (
-            self.request.method == 'PUT'
-            or self.request.method == 'PATCH'
-            or self.request.method == 'POST'
-        ):
+        if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE'] and flag_is_active(self.request, 'entry_lock'):
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [IsAuthenticated]
-        return [permission() for permission in permission_classes]
+        return [perm() for perm in permission_classes]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

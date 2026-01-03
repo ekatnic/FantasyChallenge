@@ -52,6 +52,13 @@ export default function ProtectedHome() {
           variant="contained"
           sx={{ bgcolor: "green" }}
           startIcon={<ListIcon />} 
+          onClick={() => navigate("/create-entry")}>
+          Create New Entry
+        </Button>
+        {/* <Button
+          variant="contained"
+          sx={{ bgcolor: "green" }}
+          startIcon={<ListIcon />} 
           onClick={() => navigate("/standings")}>
           Standings
         </Button>
@@ -61,7 +68,7 @@ export default function ProtectedHome() {
           startIcon={<ListIcon />} 
           onClick={() => navigate("/players")}>
           Players
-        </Button>
+        </Button> */}
       </Box>
       <Card
         sx={{
