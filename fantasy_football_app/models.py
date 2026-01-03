@@ -137,9 +137,10 @@ class RosteredPlayers(models.Model):
 
 class WeeklyStats(ComputedFieldsModel):    
     class Meta:
-        unique_together = (('player', 'week'),)
+        unique_together = (('player', 'week', 'season'),)
     player = models.ForeignKey(Player, on_delete=models.CASCADE, null=True, blank=True)
     week = models.CharField(max_length=12, choices=WEEK_CHOICES, null=True, blank=True)
+    season = models.CharField(max_length=12, default='2025')
     passing_yards = models.IntegerField(default=0)
     passing_tds = models.IntegerField(default=0)
     passing_interceptions = models.IntegerField(default=0)

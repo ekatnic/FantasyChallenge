@@ -54,9 +54,9 @@ class TankAPIClient:
         return merged_player_dict, merged_defense_dict
 
     # Define a method to process player stats for a specific date
-    def process_player_stats_for_date(self, date, week):
+    def process_player_stats_for_date(self, date, week, season='2026'):
         game_id_list = self.get_games_for_date(date)
         player_stats_dict, defensive_stats_dict = self.get_stats_from_game_id_list(game_id_list)
-        player_set = DataProcessor.process_player_stats_dict(player_stats_dict, week)
-        defense_set = DataProcessor.process_defense_stats_dict(defensive_stats_dict, week)
+        player_set = DataProcessor.process_player_stats_dict(player_stats_dict, week, season)
+        defense_set = DataProcessor.process_defense_stats_dict(defensive_stats_dict, week, season)
         return list(player_set.union(defense_set))

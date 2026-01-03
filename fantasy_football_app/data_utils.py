@@ -2,22 +2,23 @@ from django.core.cache import cache
 
 from .models import Player, WeeklyStats
 
-def create_or_update_weekly_stats_from_stats(stats, player, week):
+def create_or_update_weekly_stats_from_stats(stats, player, week, season='2026'):
     """
-    This function creates or updates a WeeklyStats object for a given player and week.
+    This function creates or updates a WeeklyStats object for a given player, week, and season.
 
     Parameters:
-    row (list): A list representing a row of data from the pull api job.
+    stats (dict): A dictionary representing stats for the player for the given week.
     player (Player): A Player object representing the player for whom the stats are being updated.
-    stats_attribute (str): A string representing the week for which the stats are being updated.
+    week (str): A string representing the week for which the stats are being updated.
+    season (str): The season/year for these stats.
 
     Returns:
     None
     """
     try:
-        weekly_stats = WeeklyStats.objects.get(player=player, week=week)
+        weekly_stats = WeeklyStats.objects.get(player=player, week=week, season=season)
     except WeeklyStats.DoesNotExist:
-        weekly_stats = WeeklyStats(player=player, week=week)
+        weekly_stats = WeeklyStats(player=player, week=week, season=season)
     if player.position == 'DEF':
         process_defense_weekly_stat(weekly_stats, stats)
     else:

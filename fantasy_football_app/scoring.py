@@ -4,11 +4,11 @@ from django.db.models import F
 from .models import Entry, RosteredPlayers
 
 
-def get_roster_percentage_multiplier(rostered_percentage):
+def get_roster_percentage_multiplier(rostered_percentage, season='2026'):
     """
     Calculate and return the roster percentage multiplier based on the percentage of entries they are rostered in.
     """
-    total_entries = Entry.objects.all().count()
+    total_entries = Entry.objects.filter(year='2026').count()
     single_entry_percentage = round((1 / total_entries) * 100, 2)
     if rostered_percentage == single_entry_percentage:
         return 3.0
@@ -22,7 +22,7 @@ def get_roster_percentage_multiplier(rostered_percentage):
         return 1.5
     return 2.0
 
-def get_player_scaled_flex_multiplier(player):
+def get_player_scaled_flex_multiplier(player, season="2026"):
     """
     Calculate and return the scaled flex multiplier for a player based on the percentage of entries they are rostered in.
 
@@ -32,24 +32,28 @@ def get_player_scaled_flex_multiplier(player):
     Returns:
         float: The scaled flex multiplier.
     """
-    total_entries = Entry.objects.all().count()
-    rostered_count = RosteredPlayers.objects.filter(player=player).count()
+    total_entries = Entry.objects.filter(year=season).count()
+    rostered_count = RosteredPlayers.objects.filter(player=player, entry__year=season).count()
     if rostered_count == 1:
         return 3.0
     rostered_percentage = (rostered_count / total_entries) * 100
-    return get_roster_percentage_multiplier(rostered_percentage)
+    return get_roster_percentage_multiplier(rostered_percentage, season=season)
 
 
-def get_scaled_player_scoring_dict(rostered_player):
+def get_scaled_player_scoring_dict(rostered_player, season=None):
     """
     Get the scoring dictionary for a player, applying multipliers for captain and scaled flex positions.
 
     Args:
         rostered_player (RosteredPlayers): The rostered player to get the scoring dictionary for.
+        season (str): The season to use for scoring (defaults to rostered player's entry year or '2026').
 
     Returns:
         dict: The scoring dictionary.
     """
+    if season is None:
+        season = getattr(rostered_player.entry, 'year', '2026')
+    scoring_dict = get_raw_player_scoring_dict(rostered_player.player, season=season)
     scoring_dict = get_raw_player_scoring_dict(rostered_player.player)
     if 'Scaled Flex' in rostered_player.roster_position:
         multiplier = get_player_scaled_flex_multiplier(rostered_player.player)
@@ -58,7 +62,7 @@ def get_scaled_player_scoring_dict(rostered_player):
         scoring_dict['sf_multiplier'] = multiplier
     return scoring_dict
 
-def get_raw_player_scoring_dict(player):
+def get_raw_player_scoring_dict(player, season='2026'):
     """
     Get the raw scoring dictionary for a player without applying any multipliers.
 
@@ -76,7 +80,7 @@ def get_raw_player_scoring_dict(player):
         "SB": 0.0,
         "total": 0.0,
     }
-    weekly_scores = player.weeklystats_set.all()
+    weekly_scores = player.weeklystats_set.filter(season=season).all()
     for week_score in weekly_scores:
         total += week_score.week_score
         scoring_dict[week_score.week] = week_score.week_score
