@@ -91,13 +91,17 @@ class PlayerListAPIView(generics.ListAPIView):
 class EntryRosterAPIView(generics.RetrieveAPIView):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
 
     def get_queryset(self):
-        return Entry.objects.filter(user=self.request.user)
+        # Superusers can access all entries; normal users only their own entries
+        if self.request.user.is_superuser:
+            return Entry.objects.all().prefetch_related('rosteredplayers_set__player__weeklystats_set')
+        return Entry.objects.filter(user=self.request.user).prefetch_related('rosteredplayers_set__player__weeklystats_set')
 
     def retrieve(self, request, *args, **kwargs):
-        entry = get_object_or_404(Entry.objects.prefetch_related('rosteredplayers_set__player__weeklystats_set'), id=kwargs['pk'])
+        # Use DRF's object retrieval which enforces object-level permissions
+        entry = self.get_object()
         player_total_dict = get_entry_score_dict(entry)
         entry_total_dict = get_entry_total_dict(player_total_dict)
 
