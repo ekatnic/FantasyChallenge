@@ -31,10 +31,10 @@ export const deleteEntry = async (id) => {
   }
 };
 
-export const getPlayers = async () => {
+export const getPlayers = async (season = '2025') => {
   try {
     const response = await axios.get(`${BASE_URL}/api/players/`, {
-      params: { teams: playoffTeams.join(',') }
+      params: { teams: playoffTeams.join(','), season }
     });
     return response.data;
   } catch (error) {

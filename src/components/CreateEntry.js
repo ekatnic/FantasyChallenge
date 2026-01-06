@@ -38,7 +38,7 @@ const CreateEntry = () => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const data = await getPlayers();
+        const data = await getPlayers('2025');
         setPlayers(data);
         setAllPlayers(data);
         setLoading(false);

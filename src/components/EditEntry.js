@@ -42,7 +42,7 @@ const EditEntry = () => {
     const fetchData = async () => {
       try {
         const [playersData, entryData] = await Promise.all([
-          getPlayers(),
+          getPlayers('2025'),
           getEntry(id),
         ]);
         setPlayers(playersData);

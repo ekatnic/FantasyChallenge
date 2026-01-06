@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     Entry, 
     Player,
+    PlayerStats,
     RosteredPlayers,
     WeeklyStats
 )
@@ -38,3 +39,10 @@ class WeeklyStatsAdmin(admin.ModelAdmin):
     readonly_fields = ('week_score',)
 
 admin.site.register(WeeklyStats, WeeklyStatsAdmin)
+
+class PlayerStatsAdmin(admin.ModelAdmin):
+    list_display = ('player', 'season')
+    list_filter = ('season',)
+    search_fields = ('player__name',)
+
+admin.site.register(PlayerStats, PlayerStatsAdmin)

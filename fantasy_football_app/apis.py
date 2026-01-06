@@ -83,9 +83,13 @@ class PlayerListAPIView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Player.objects.select_related('info').prefetch_related('stats')
         teams = self.request.query_params.get('teams')
+        season = self.request.query_params.get('season')
         if teams:
             team_list = teams.split(',')
             queryset = queryset.filter(team__in=team_list)
+        # If a season is provided, return only players who have PlayerStats for that season
+        if season:
+            queryset = queryset.filter(stats__season=season).distinct()
         return queryset
 
 class EntryRosterAPIView(generics.RetrieveAPIView):
