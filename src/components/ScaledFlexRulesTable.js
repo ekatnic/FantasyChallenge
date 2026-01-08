@@ -34,7 +34,7 @@ export default function ScaledFlexRulesTable() {
       ownership: "10-15% - Uncommon",
       multiplier: "1.3x",
       score: "10 points = 13 points",
-      color: "lightgreen",
+      color: "#70bb70",
     },
     {
       ownership: "5-10% - Very Uncommon",
