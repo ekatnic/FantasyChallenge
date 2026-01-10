@@ -115,7 +115,7 @@ def get_summarized_players(season='2026'):
     Get a list of player data with rostership counts and percentages for a given season.
     returns: list of summarized player data dictionaries
     """
-    cache_key = f"players_scoring_dict_{season}"
+    cache_key = f"players_scoring_dict"
     players_scoring_dict = cache.get(cache_key)
     if players_scoring_dict:
         return players_scoring_dict
@@ -184,7 +184,7 @@ def get_player_scores_for_entries_list(entry_list):
     return {entry: get_entry_score_dict(entry) for entry in entry_list}
 
 def get_survivor_standings(season='2026'):
-    cache_key = f"survivor_entry_standings_{season}"
+    cache_key = f"survivor_entry_standings"
     players_data = cache.get(cache_key)
     if players_data:
         return players_data
