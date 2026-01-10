@@ -135,7 +135,7 @@ class StandingsAPIView(APIView):
 
         # Remove after cache is re-enabled and rosters are locked
         if mine_only and mine_only.lower() == 'true':
-            return Response({'entries': EntrySerializer(Entry.objects.filter(user=request.user), many=True).data})
+            return Response({'entries': EntrySerializer(Entry.objects.filter(user=request.user, year=2026), many=True).data})
         
         if rostered_player_id:
             all_entries_list = filter_by_rostered_player(all_entries_list, rostered_player_id)
