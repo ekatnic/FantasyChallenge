@@ -71,7 +71,26 @@ const ViewEntry = () => {
                 return (
                   <TableRow key={position}>
                     <TableCell>
-                      {position}
+                      {position} {position.includes("Scaled Flex") && (
+                        (() => {
+                          const multiplier = score.sf_multiplier.toString();
+                          const colorMap = {
+                            "0.6": "red",
+                            "0.8": "darkred",
+                            "1": "black",
+                            "1.3": "#70bb70",
+                            "1.75": "green",
+                            "2.25": "green",
+                            "2.75": "darkgreen",
+                            "3.5": "darkgoldenrod",
+                          };
+                          return (
+                            <span style={{ color: colorMap[multiplier] }}>
+                              <b>({multiplier}x)</b>
+                            </span>
+                          );
+                        })()
+                      )}
                     </TableCell>
                     <TableCell>
                       <span

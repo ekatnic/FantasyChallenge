@@ -118,8 +118,8 @@ const MyEntries = () => {
           </Table>
         </TableContainer>
         <Box sx={{ mt: 2 }}>
-          <Button variant="contained" color="primary" onClick={() => navigate("/create-entry")}>
-            Create New Entry
+          <Button variant="contained" color="primary" onClick={() => navigate("/dashboard")}>
+            Return Home
           </Button>
         </Box>
       </Paper>

@@ -11,16 +11,20 @@ def get_roster_percentage_multiplier(rostered_percentage, season='2026'):
     total_entries = Entry.objects.filter(year='2026').count()
     single_entry_percentage = round((1 / total_entries) * 100, 2)
     if rostered_percentage == single_entry_percentage:
-        return 3.0
-    elif rostered_percentage >= 50:
-        return .75
-    elif 25 <= rostered_percentage < 50:
-        return 1.0
-    elif 12.5 <= rostered_percentage < 25:
-        return 1.25
-    elif 5 <= rostered_percentage < 12.5:
-        return 1.5
-    return 2.0
+        return 3.5
+    elif rostered_percentage >= 40:
+        return 0.6
+    elif 25 <= rostered_percentage < 40:
+        return 0.8
+    elif 15 <= rostered_percentage < 25:
+        return 1
+    elif 10 <= rostered_percentage < 15:
+        return 1.3
+    elif 5 <= rostered_percentage < 10:
+        return 1.75
+    elif 2 <= rostered_percentage < 5:
+        return 2.25
+    return 2.75
 
 def get_player_scaled_flex_multiplier(player, season="2026"):
     """
@@ -35,7 +39,7 @@ def get_player_scaled_flex_multiplier(player, season="2026"):
     total_entries = Entry.objects.filter(year=season).count()
     rostered_count = RosteredPlayers.objects.filter(player=player, entry__year=season).count()
     if rostered_count == 1:
-        return 3.0
+        return 3.5
     rostered_percentage = (rostered_count / total_entries) * 100
     return get_roster_percentage_multiplier(rostered_percentage, season=season)
 
@@ -54,7 +58,6 @@ def get_scaled_player_scoring_dict(rostered_player, season=None):
     if season is None:
         season = getattr(rostered_player.entry, 'year', '2026')
     scoring_dict = get_raw_player_scoring_dict(rostered_player.player, season=season)
-    scoring_dict = get_raw_player_scoring_dict(rostered_player.player)
     if 'Scaled Flex' in rostered_player.roster_position:
         multiplier = get_player_scaled_flex_multiplier(rostered_player.player)
         for week, score in scoring_dict.items():

@@ -1,6 +1,6 @@
 import logging
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.shortcuts import get_object_or_404
 
 from ..constants import TEAM_ABBREV_TO_TEAM_NAME
@@ -18,10 +18,43 @@ class DataProcessor:
             if not any(player_stats.get(stat_type) for stat_type in STAT_TYPES):
                 logging.warning(f'Player {player_stats["longName"]} does not have offensive stats')
                 continue
+            player_name = player_stats["longName"]
+
+
+            # We have a data model issue -- "Player" should be unique, but we have 1 for each team
+            # Weekly stats should be associated with PlayerStats, not Player
+            # PlayerStats should really be something like PlayerSeason
+            # We should deprecate Player.team and rely on PlayerSeason for a given season
+            # to inform which players to choose. This is a workaround.
             try:
-                player = Player.objects.get(name=player_stats["longName"], season=season)
+                player = Player.objects.get(name=player_name)
+
+            except MultipleObjectsReturned:
+                print(f"Multiple players found with name '{player_name}'")
+                # More than one player with same name
+                players = Player.objects.filter(name=player_name)
+
+                # Find the one with stats for this season
+                players_with_stats = players.filter(
+                    stats__season='2025'
+                ).distinct()
+
+                if players_with_stats.count() == 1:
+                    player = players_with_stats.first()
+                    print(f"Selected player '{player.name}' with ID {player.id} and team '{player.team}'")
+                elif players_with_stats.count() > 1:
+                    logging.error(
+                        f"Multiple players named '{player_name}' found with stats for season {season}"
+                    )
+                    continue
+                else:
+                    logging.error(
+                        f"No PlayerStats found for '{player_name}' in season {season}"
+                    )
+                    continue
+
             except ObjectDoesNotExist:
-                logging.error(f'Player {player_stats["longName"]} in season {season} does not exist')
+                logging.error(f"Player '{player_name}' does not exist")
                 continue
             create_or_update_weekly_stats_from_stats(player_stats, player, week, season)
             player_set.add(player_stats["longName"])
