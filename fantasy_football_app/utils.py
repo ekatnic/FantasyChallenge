@@ -37,15 +37,14 @@ def get_all_entry_score_dicts():
     # Removing the cache until roster lock
 
     # Try to get the result from the cache
-    # ranked_entries_dict = cache.get('ranked_entries_dict')
+    ranked_entries_dict = cache.get('ranked_entries_dict')
     # If the result was not in the cache, calculate it and store it in the cache
     
-    # if ranked_entries_dict is None:
-    entries = Entry.objects.filter(year="2026").prefetch_related('rosteredplayers_set__player__weeklystats_set').order_by('id')
-    all_entry_score_dict = get_entry_list_score_dict(entries)
-    ranked_entries_dict = rank_entries(all_entry_score_dict)
-    
-    #     cache.set('ranked_entries_dict', ranked_entries_dict, 60 * 30)  # Cache results for 30 minutes
+    if ranked_entries_dict is None:
+        entries = Entry.objects.filter(year="2026").prefetch_related('rosteredplayers_set__player__weeklystats_set').order_by('id')
+        all_entry_score_dict = get_entry_list_score_dict(entries)
+        ranked_entries_dict = rank_entries(all_entry_score_dict)
+        cache.set('ranked_entries_dict', ranked_entries_dict, 60 * 30)  # Cache results for 30 minutes
 
     # Convert the dictionary to a list of dictionaries with the required fields
     result = [
@@ -165,7 +164,7 @@ def get_summarized_players(season='2026'):
             )
         }
         summarized_players.append(summarized_player)
-    # cache.set(cache_key, summarized_players, 60 * 30)
+    cache.set(cache_key, summarized_players, 60 * 30)
     return summarized_players
 
 def update_and_return(dict_obj, update_dict):
