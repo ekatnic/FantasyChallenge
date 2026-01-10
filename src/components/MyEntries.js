@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Button, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { getStandings, deleteEntry } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+// import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
 import Pageview from "@mui/icons-material/Pageview";
 import { makeStyles } from "@mui/styles";
 
@@ -108,15 +108,9 @@ const MyEntries = () => {
                   <TableCell>{entry.SB}</TableCell>
                   <TableCell>{entry.total}</TableCell>
                   <TableCell>
-                    {/* <IconButton onClick={() => handleView(entry.id)}>
+                    <IconButton onClick={() => handleView(entry.id)}>
                       <Pageview />
-                    </IconButton> */}
-                    <IconButton onClick={() => handleEdit(entry.id)}>
-                      <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => handleClickOpen(entry)}>
-                      <DeleteIcon />
-                    </IconButton> 
                   </TableCell>
                 </TableRow>
               ))}
@@ -124,8 +118,8 @@ const MyEntries = () => {
           </Table>
         </TableContainer>
         <Box sx={{ mt: 2 }}>
-          <Button variant="contained" color="primary" onClick={() => navigate("/create-entry")}>
-            Create New Entry
+          <Button variant="contained" color="primary" onClick={() => navigate("/dashboard")}>
+            Return Home
           </Button>
         </Box>
       </Paper>

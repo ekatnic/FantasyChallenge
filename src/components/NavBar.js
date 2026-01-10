@@ -4,6 +4,8 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import UserProfile from "./UserProfile";
 
+import {BASE_URL} from "../constants";
+
 const NavBar = () => {
   const { isAuthenticated, user} = useAuth();
   const location = useLocation();
@@ -16,9 +18,10 @@ const NavBar = () => {
   const privateNavItems = [
     { path: "/dashboard", label: "Home" },
     { path: "/my-entries/", label: "My Entries" },
-    { path: "/create-entry", label: "Create Entry" },
-    // { path: "/standings/", label: "Standings" },
-    // { path: "/players/", label: "Players" },
+    // { path: `/create-entry`, label: "Create Entry" },
+    // { path: `${BASE_URL}/create-entry`, label: "Create Entry" },
+    { path: "/standings/", label: "Standings" },
+    { path: "/players/", label: "Players" },
     { path: "/rules", label: "Rules" },
   ];
 

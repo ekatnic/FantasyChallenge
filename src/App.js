@@ -12,11 +12,11 @@ import Signup from "./components/auth/Signup";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Home from "./components/Home";
 import ProtectedHome from "./components/ProtectedHome";
-// import StandingsPage from "./components/StandingsPage";
-// import PlayerOwnership from "./components/PlayerOwnership";
+import StandingsPage from "./components/StandingsPage";
+import PlayerOwnership from "./components/PlayerOwnership";
 import Rules from "./components/Rules";
-import CreateEntry from "./components/CreateEntry";
-import EditEntry from "./components/EditEntry";
+// import CreateEntry from "./components/CreateEntry";
+// import EditEntry from "./components/EditEntry";
 import MyEntries from "./components/MyEntries";
 import ViewEntry from "./components/ViewEntry";
 
@@ -40,10 +40,10 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<ProtectedHome />} />
           <Route path="/my-entries" element={<MyEntries />} />
-          {/* <Route path="/standings" element={<StandingsPage />} /> */}
-          {/* <Route path="/players" element={<PlayerOwnership />} /> */}
-          <Route path="/create-entry" element={<CreateEntry />} />
-          <Route path="/edit-entry/:id" element={<EditEntry />} />
+          <Route path="/standings" element={<StandingsPage />} />
+          <Route path="/players" element={<PlayerOwnership />} />
+          {/* <Route path="/create-entry" element={<CreateEntry />} /> */}
+          {/* <Route path="/edit-entry/:id" element={<EditEntry />} /> */}
           <Route path="/view-entry/:id" element={<ViewEntry />} />
         </Route>
 
