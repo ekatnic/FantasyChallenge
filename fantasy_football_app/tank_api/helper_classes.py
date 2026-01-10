@@ -19,9 +19,9 @@ class DataProcessor:
                 logging.warning(f'Player {player_stats["longName"]} does not have offensive stats')
                 continue
             try:
-                player = Player.objects.get(name=player_stats["longName"])
+                player = Player.objects.get(name=player_stats["longName"], season=season)
             except ObjectDoesNotExist:
-                logging.error(f'Player {player_stats["longName"]} does not exist')
+                logging.error(f'Player {player_stats["longName"]} in season {season} does not exist')
                 continue
             create_or_update_weekly_stats_from_stats(player_stats, player, week, season)
             player_set.add(player_stats["longName"])
@@ -32,7 +32,7 @@ class DataProcessor:
         defense_set = set()
         for defense_abbrev, defensive_stats in defense_stats_dict.items():
             try:
-                player = get_object_or_404(Player, name=TEAM_ABBREV_TO_TEAM_NAME[defense_abbrev])
+                player = get_object_or_404(Player, name=TEAM_ABBREV_TO_TEAM_NAME[defense_abbrev], season=season)
             except:
                 print(f'Player {defense_abbrev} does not exist')
                 continue

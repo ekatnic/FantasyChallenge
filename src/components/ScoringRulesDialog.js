@@ -8,40 +8,52 @@ const ScoringRulesDialog = ({ open, onClose }) => {
       title: "Scaled Flex Scoring",
       rules: [
         {
-          ownership: "Rostership >= 50% - Extremely Popular",
-          multiplier: ".75",
-          score: "10 points scored = 7.5 points",
+          ownership: "Rostership >= 40% - Extremely Popular",
+          multiplier: ".6x",
+          score: "10 points scored = 6 points",
           color: "red",
         },
         {
-          ownership: "Rostership 25-50% - Popular",
+          ownership: "Rostership 25-40% - Popular",
+          multiplier: ".8x",
+          score: "10 points scored = 8 points",
+          color: "darkred",
+        },
+        {
+          ownership: "Rostership 15-25% - Common",
           multiplier: "1x",
           score: "10 points scored = 10 points",
           color: "black",
         },
         {
-          ownership: "Rostership 12.5-25% - Common",
-          multiplier: "1.25x",
-          score: "10 points scored = 12.5 points",
-          color: "lightgreen",
+          ownership: "Rostership 10-15% - Uncommon",
+          multiplier: "1.3x",
+          score: "10 points scored = 13 points",
+          color: "#70bb70",
         },
-        {
-          ownership: "Rostership 5-12.5% - Uncommon",
-          multiplier: "1.5x",
-          score: "10 points scored = 15 points",
+                {
+          ownership: "Rostership 5-10% - Very Uncommon",
+          multiplier: "1.75x",
+          score: "10 points scored = 17.5 points",
           color: "mediumseagreen",
         },
         {
-          ownership: "Rostership .01-5% - Very Uncommon",
-          multiplier: "2x",
-          score: "10 points scored = 20 points",
+          ownership: "Rostership 2-5% - Rare",
+          multiplier: "2.25x",
+          score: "10 points scored = 22.5 points",
           color: "green",
         },
         {
-          ownership: "Only Roster With That Player - Unique",
-          multiplier: "3x",
-          score: "10 points scored = 30 points",
+          ownership: "Rostership 1-2% - Very Rare",
+          multiplier: "2.75x",
+          score: "10 points scored = 27.5 points",
           color: "darkgreen",
+        },
+        {
+          ownership: "Only Roster With That Player - Unique",
+          multiplier: "3.5x",
+          score: "10 points scored = 35 points",
+          color: "darkgoldenrod",
         },
       ],
     },
@@ -212,10 +224,10 @@ const ScoringRulesDialog = ({ open, onClose }) => {
       </DialogTitle>
       <DialogContent>
         <Typography>
-          Create a lineup of 12 players aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup. You can only select <strong>ONE PLAYER PER TEAM</strong>. So if you choose Lamar Jackson, you cannot also have Derrick Henry in your lineup.
+          Create a lineup of 12 players aiming to score the most points over the course of the playoffs. Once the playoffs start, you will not be able to change your lineup. You can only select <strong>ONE PLAYER PER TEAM</strong>. So if you choose Puka Nacua, you cannot also have Davante Adams in your lineup.
         </Typography>
         <Typography variant="body1" sx={{ my: 2 }}>
-          You will select 2 Scaled FLEX's. The scoring of this position is based on how commonly selected that player is. You are rewarded with a higher bonus if the player is less popular in others' rosters. Meaning if you selected Derrick Henry for your scaled flex and he was in 55% of lineups, he would score .75x points over the course of the playoffs, but if you selected Rashod Bateman and you were the only person to have him selected, he would score 3x points each game.
+          You will select 2 Scaled FLEX's. The scoring of this position is based on how commonly selected that player is. You are rewarded with a higher bonus if the player is less popular in others' rosters. Meaning if you selected Puka Nacua for your scaled flex and he was in 55% of lineups, he would score .6x points over the course of the playoffs, but if you selected Blake Corum and you were the only person to have him selected, he would score 3.5x points each game.
         </Typography>
         <Typography variant="body1" sx={{ mb: 3 }}>
           <strong>Warning:</strong> You get fewer points if you choose an extremely popular player. (Ownership is determined by entire rostership, not just scaled flex position)

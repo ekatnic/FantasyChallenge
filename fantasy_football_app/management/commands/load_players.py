@@ -9,10 +9,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # delete old players data like before
-        return
-        Player.objects.all().delete()
-        PlayerInfo.objects.all().delete()
-        PlayerStats.objects.all().delete()
+        # Player.objects.all().delete()
+        # PlayerInfo.objects.all().delete()
+        # PlayerStats.objects.all().delete()
         cache.delete('ranked_entries_dict')
         cache.delete('players_scoring_dict')
 

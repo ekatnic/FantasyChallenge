@@ -30,11 +30,16 @@ class PlayerSerializer(serializers.ModelSerializer):
     info = PlayerInfoSerializer(read_only=True)  # one to one with Players model 
 
     # many to one with Players model (one player can have many stats entries, different seasons, regular season, post season, etc.) 
-    stats = PlayerStatsSerializer(many=True, read_only=True) 
+    # Return stats ordered by season (descending) to ensure latest-season stats come first
+    stats = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
         fields = '__all__'
+
+    def get_stats(self, obj):
+        qs = obj.stats.all().order_by('-season')
+        return PlayerStatsSerializer(qs, many=True).data
 
     def __str__(self):
         return f'{self.name} ({self.position}) - {self.team}'

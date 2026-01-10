@@ -13,40 +13,52 @@ import {
 export default function ScaledFlexRulesTable() {
   const scaledFlexScoring = [
     {
-      ownership: ">= 50% - Extremely Popular",
-      multiplier: ".75",
-      score: "10 points = 7.5 points",
+      ownership: ">= 40% - Extremely Popular",
+      multiplier: ".6x",
+      score: "10 points = 6 points",
       color: "red",
     },
     {
-      ownership: "25-50% - Popular",
+      ownership: "25-40% - Popular",
+      multiplier: ".8x",
+      score: "10 points = 8 points",
+      color: "darkred",
+    },
+    {
+      ownership: "15-25% - Common",
       multiplier: "1x",
       score: "10 points = 10 points",
       color: "black",
     },
     {
-      ownership: "12.5-25% - Common",
-      multiplier: "1.25x",
-      score: "10 points = 12.5 points",
-      color: "lightgreen",
+      ownership: "10-15% - Uncommon",
+      multiplier: "1.3x",
+      score: "10 points = 13 points",
+      color: "#70bb70",
     },
     {
-      ownership: "5-12.5% - Uncommon",
-      multiplier: "1.5x",
-      score: "10 points = 15 points",
+      ownership: "5-10% - Very Uncommon",
+      multiplier: "1.75x",
+      score: "10 points = 17.5 points",
       color: "mediumseagreen",
     },
     {
-      ownership: ".01-5% - Very Uncommon",
-      multiplier: "2x",
-      score: "10 points = 20 points",
+      ownership: "2-5% - Rare",
+      multiplier: "2.25x",
+      score: "10 points = 22.5 points",
       color: "green",
+    },
+        {
+      ownership: "1-2% - Very Rare",
+      multiplier: "2.75x",
+      score: "10 points = 27.5 points",
+      color: "darkgreen",
     },
     {
       ownership: "Only Entry With That Player - Unique",
-      multiplier: "3x",
-      score: "10 points = 30 points",
-      color: "darkgreen",
+      multiplier: "3.5x",
+      score: "10 points = 35 points",
+      color: "darkgoldenrod",
     },
   ];
 
@@ -60,8 +72,8 @@ export default function ScaledFlexRulesTable() {
          The scoring of this position is based on how commonly selected that player is.
           You are rewarded with a higher bonus if the player is <strong>less</strong> popular in others' rosters.
           <br/>
-           Meaning if you selected Derrick Henry for your scaled flex and he was in 55% of lineups, he would score .75x points over the course of the playoffs,
-            but if you selected Rashod Bateman and you were the only person to have him selected, he would score 3x points each game. 
+           Meaning if you selected Puka Nacua for your scaled flex and he was in 55% of lineups, he would score .6x points over the course of the playoffs,
+            but if you selected Blake Corum and you were the only person to have him selected, he would score 3.5x points each game. 
             
             <br/>
             Warning: You get fewer points if you choose an extremely popular player.

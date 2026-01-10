@@ -83,9 +83,13 @@ class PlayerListAPIView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Player.objects.select_related('info').prefetch_related('stats')
         teams = self.request.query_params.get('teams')
+        season = self.request.query_params.get('season')
         if teams:
             team_list = teams.split(',')
             queryset = queryset.filter(team__in=team_list)
+        # If a season is provided, return only players who have PlayerStats for that season
+        if season:
+            queryset = queryset.filter(stats__season=season).distinct()
         return queryset
 
 class EntryRosterAPIView(generics.RetrieveAPIView):
@@ -122,17 +126,20 @@ class EntryRosterAPIView(generics.RetrieveAPIView):
 
 class StandingsAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
     def get(self, request, *args, **kwargs):
-        all_entries_list = get_all_entry_score_dicts()
 
         # Get query parameters
         rostered_player_id = request.query_params.get('rostered_player')
         scaled_flex_id = request.query_params.get('scaled_flex')
         mine_only = request.query_params.get('mine_only')
 
+        # Remove after cache is re-enabled and rosters are locked
+        if mine_only and mine_only.lower() == 'true':
+            return Response({'entries': EntrySerializer(Entry.objects.filter(user=request.user), many=True).data})
+        
         if rostered_player_id:
             all_entries_list = filter_by_rostered_player(all_entries_list, rostered_player_id)
+        all_entries_list = get_all_entry_score_dicts()
 
         # Filter entries based on scaled_flex
         if scaled_flex_id:
@@ -140,8 +147,6 @@ class StandingsAPIView(APIView):
 
         for entry in all_entries_list:
             entry['is_user_entry'] = entry['user_id'] == request.user.id
-        if mine_only and mine_only.lower() == 'true':
-            all_entries_list = [entry for entry in all_entries_list if entry['is_user_entry']]
 
         return Response({'entries': all_entries_list})
 
