@@ -65,7 +65,7 @@ class DataProcessor:
         defense_set = set()
         for defense_abbrev, defensive_stats in defense_stats_dict.items():
             try:
-                player = get_object_or_404(Player, name=TEAM_ABBREV_TO_TEAM_NAME[defense_abbrev], season=season)
+                player = get_object_or_404(Player, name=TEAM_ABBREV_TO_TEAM_NAME[defense_abbrev])
             except:
                 print(f'Player {defense_abbrev} does not exist')
                 continue
