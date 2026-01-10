@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     Entry, 
     Player,
+    PlayerInfo,
     PlayerStats,
     RosteredPlayers,
     WeeklyStats
@@ -46,3 +47,9 @@ class PlayerStatsAdmin(admin.ModelAdmin):
     search_fields = ('player__name',)
 
 admin.site.register(PlayerStats, PlayerStatsAdmin)
+
+class PlayerInfoAdmin(admin.ModelAdmin):
+    list_display = ('player', 'school')
+    search_fields = ('player__name',)
+
+admin.site.register(PlayerInfo, PlayerInfoAdmin)
